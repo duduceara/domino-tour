@@ -24,3 +24,18 @@ test('Samsung landscape and portrait table bounds never report INVALID_BOUNDS af
   }
  }
 });
+
+test('Samsung bounds remain valid with an actual progressing four-seat engine chain',async()=>{
+ const {newGame,auditedBotTurn}=await import('../dist/src/engine.js');
+ const s=newGame(100,6,n=>n-1);
+ s.players.forEach(p=>p.kind='bot');
+ for(let turn=0;turn<24&&s.phase==='playing';turn++){
+  auditedBotTurn(s);
+  const byId=new Map(s.chain.map(t=>[t.id,t]));
+  for(const [w,h] of [[568,79],[572,102],[740,104]]){
+   const fitted=fittedTableSpace(w,h);
+   const m=buildTableModel(s.placements,{x:0,y:0,width:fitted.width,height:fitted.height},'horizontal','classic',byId);
+   assert.notEqual(m.failure,'INVALID_BOUNDS',`turn ${turn}, ${w}x${h}`);
+  }
+ }
+});
