@@ -43,9 +43,9 @@ test('levels make distinct choices, difficult uses public pass history; public h
  const s=newGame(100,6,rng(1));s.phase='round-complete';s.nextOpeningSeat=0;s.events.push({type:'pass',seat:2,left:1,right:2});continueRound(s,rng(3));assert.equal(viewFor(s,0).history.length,0);
  assert.throws(()=>chooseBotMove(base,'unknown'));
 });
-test('organize only reorders own hand; selected difficulty survives rounds and new matches',()=>{
- const session=new LocalSession(100,6,'expert');const before=structuredClone(session.state);session.organizeHand();
- const sorted=structuredClone(before);sorted.players[0].hand.sort((a,b)=>a.a-b.a||a.b-b.b||a.id-b.id);assert.deepEqual(session.state,sorted);assert.equal(session.difficulty,'expert');
+test('manual arrangement never sorts engine hand; difficulty survives rounds and new matches',()=>{
+ const session=new LocalSession(100,6,'expert');const before=structuredClone(session.state),order=session.orderedHand().map(t=>t.id);
+ session.moveHandTile(order.at(-1),order[0],order[0]);assert.deepEqual(session.state,before);assert.equal(session.orderedHand()[0].id,order.at(-1));assert.equal(session.difficulty,'expert');
  session.newMatch();assert.equal(session.difficulty,'expert');session.setDifficulty('hard');assert.equal(session.difficulty,'hard');assert.throws(()=>session.setDifficulty('invalid'));assert.equal(session.difficulty,'hard');
 });
 test('comparison: balanced seats and same seeded deals, bounded expert evaluations',()=>{

@@ -1,3 +1,4 @@
+import {reconcileHandLayout, previewHandMove, restoreHandLayout} from './hand.js';
 import {validateDifficulty} from './bots.js';
 import { newGame, runBotTurn, play, pass, legalTiles, continueRound, declareFour, canDeclareFour, assertStateIntegrity } from './engine.js';
 import { TableInteraction, buildTableModel, validSides } from './table.js';
@@ -10,6 +11,7 @@ export class LocalSession {
     routeStyle = 'classic';
     bounds = { x: 0, y: 0, width: 800, height: 430 };
     previews = new Map();
+    handLayout = null;
     constructor(target = 100, dealSize = 6, difficulty = 'easy') { this.difficulty = validateDifficulty(difficulty); this.state = newGame(target, dealSize); this.model = this.solve(); this.interaction = this.makeInteraction(); }
     solve() { return buildTableModel(this.state.placements, this.bounds, this.orientation, this.routeStyle, new Map(this.state.chain.map(t => [t.id, t]))); }
     geometry() { const center = { x: this.bounds.x + this.bounds.width / 2, y: this.bounds.y + this.bounds.height / 2 }; return this.model.geometry ?? { bounds: this.bounds, orientation: this.orientation, style: this.routeStyle, tileWidth: 0, tileHeight: 0, tiles: [], links: [], endpoints: { left: center, right: center } }; }
@@ -61,10 +63,36 @@ export class LocalSession {
     humanPass() { if (this.state.turn !== 0 || legalTiles(this.state, 0).length || this.state.phase !== 'playing')
         return false; pass(this.state, 0); this.refresh(); return true; }
     setDifficulty(level) { this.difficulty = validateDifficulty(level); }
-    organizeHand() {
+    orderedHand() {
+        this.handLayout = reconcileHandLayout(this.handLayout, this.state.players[0].hand);
+        const tiles = new Map(this.state.players[0].hand.map(t => [t.id, t]));
+        return this.handLayout.order.map(id => tiles.get(id));
+    }
+    previewHandMove(tileId, beforeId, neighborId) {
+        this.orderedHand();
+        return previewHandMove(this.handLayout, this.state.players[0].hand, tileId, beforeId, neighborId);
+    }
+    moveHandTile(tileId, beforeId = null, neighborId = null) {
+        if (this.state.phase !== 'playing') return false;
+        const result = this.previewHandMove(tileId, beforeId, neighborId);
+        if (!result) return false;
         this.interaction.cancel();
-        this.state.players[0].hand.sort((a,b) => a.a - b.a || a.b - b.b || a.id - b.id);
-        this.refresh();
+        this.handLayout = result;
+        return true;
+    }
+    flipHandTile(tileId) {
+        if (this.state.phase !== 'playing' || !this.orderedHand().some(t => t.id === tileId)) return false;
+        this.handLayout.flipped[tileId] = !this.handLayout.flipped[tileId];
+        return true;
+    }
+    snapshotHandLayout() {
+        this.orderedHand();
+        return {...structuredClone(this.handLayout), round: this.state.roundsCompleted};
+    }
+    restoreHandLayout(snapshot) {
+        const layout = restoreHandLayout(snapshot, this.state.players[0].hand, this.state.roundsCompleted);
+        this.interaction.cancel();
+        this.handLayout = layout;
     }
     canDeclareFour() { return canDeclareFour(this.state, 0); }
     declareFour() {
@@ -78,8 +106,9 @@ export class LocalSession {
         if (this.state.phase !== 'round-complete')
             return false;
         continueRound(this.state);
+        this.handLayout = null;
         this.refresh();
         return true;
     }
-    newMatch(target = this.state.target, dealSize = this.state.dealSize) { this.state = newGame(target, dealSize); this.model = this.solve(); this.previews.clear(); this.interaction = this.makeInteraction(); }
+    newMatch(target = this.state.target, dealSize = this.state.dealSize) { this.handLayout = null; this.state = newGame(target, dealSize); this.model = this.solve(); this.previews.clear(); this.interaction = this.makeInteraction(); }
 }
