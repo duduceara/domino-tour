@@ -120,10 +120,10 @@ Simulações: 60 mesas legais, 30 distribuições de seis e 30 de sete, quatro a
 - Sem dispositivo físico conectado. A automação de handlers Node não cobre layout, hit-testing nativo, captura real de ponteiro nem rotação em navegador móvel; critério 2 permanece pendente.
 
 ### Estado de aceite do M01
-1. Automatizados: TESTADO, CI original confirmado e nova suíte local aprovada; verificar CI do commit desta etapa.
+1. Automatizados: TESTADO, CI original confirmado e nova suíte local aprovada; CI ampliado confirmado: https://github.com/duduceara/domino-tour/actions/runs/41823270175, job 126551480334, commit dd9c423587e1c8b02e068a004822731d1f6f2349; sintaxe válida, 12/12 testes, 0 falhas. Logs em docs/evidencias/M01-ci.log.
 2. Interação mobile: PARCIAL, handlers testados; navegador móvel/Android físico pendentes.
 3. Motor/regras: BLOQUEADO por divergências descritas; distribuição e integridade testadas.
 4. Robôs 3s: TESTADO por relógio controlado executando código real do app; aceite automatizado, sem homologação física.
 5. Partida completa: BLOQUEADO por jogo fechado sem resolução; não homologado.
 Progresso: 2 de 5 critérios com aceite automatizado (40%); não significa 40% do produto nem homologação física. M01 NÃO homologado integralmente.
-Próxima entrega objetiva: resolver contrato de fechamento/abertura/pontuação da base e implementar a resolução de jogo fechado em alteração isolada, com testes de desempate e partida completa, antes de avançar para M02 ou interfaces.
+Commit da cobertura: dd9c423587e1c8b02e068a004822731d1f6f2349. Este fechamento documental não altera código executável e dispensa nova execução de testes.\nPróxima entrega objetiva: resolver contrato de fechamento/abertura/pontuação da base e implementar a resolução de jogo fechado em alteração isolada, com testes de desempate e partida completa, antes de avançar para M02 ou interfaces.
