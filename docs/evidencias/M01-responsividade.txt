@@ -1,0 +1,21 @@
+✔ viewport 568x320: landscape and safe-area coordinate roundtrip (1.514068ms)
+✔ viewport 640x360: landscape and safe-area coordinate roundtrip (0.212355ms)
+✔ viewport 740x360: landscape and safe-area coordinate roundtrip (0.140449ms)
+✔ viewport 844x390: landscape and safe-area coordinate roundtrip (0.182231ms)
+✔ viewport 915x412: landscape and safe-area coordinate roundtrip (0.154199ms)
+✔ viewport 1024x768: landscape and safe-area coordinate roundtrip (0.11473ms)
+✔ viewport 1280x800: landscape and safe-area coordinate roundtrip (0.077785ms)
+✔ viewport 1366x1024: landscape and safe-area coordinate roundtrip (0.128881ms)
+✔ viewport 720x540: landscape and safe-area coordinate roundtrip (0.734902ms)
+✔ viewport 1440x900: landscape and safe-area coordinate roundtrip (0.152767ms)
+✔ viewport 1920x1080: landscape and safe-area coordinate roundtrip (0.08095ms)
+✔ viewport 2560x1440: landscape and safe-area coordinate roundtrip (0.059699ms)
+✔ resize and orientation preserve match state (5.773083ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 99.627932
