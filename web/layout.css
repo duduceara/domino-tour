@@ -73,3 +73,14 @@ header{grid-row:1;position:relative}header>span{display:none}
 @media(max-width:600px){header strong{font-size:14px}header button{padding-inline:8px}.play-controls button{padding-inline:8px}}
 
 .arena{height:100%;max-height:660px;align-self:center}
+
+/* Browser chrome can leave <309 CSS px: move north/south badges into existing bars. */
+.app[data-dense="true"] .table{inset:4px 74px;border-width:4px}
+.app[data-dense="true"] header strong{display:block;font-size:12px}
+.app[data-dense="true"] header{justify-content:flex-end}
+.app[data-dense="true"] #fullscreen{font-size:22px;width:44px;height:44px;min-width:44px;line-height:1;padding:0}
+
+.app[data-dense="true"] .seat:nth-child(3){top:-32px;max-width:160px;z-index:2}
+.app[data-dense="true"] .seat:nth-child(1){bottom:-66px;max-width:160px;z-index:2}
+.app[data-dense="true"] .play-controls{justify-content:flex-end}
+.app[data-dense="true"] .play-controls .message{position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden}
