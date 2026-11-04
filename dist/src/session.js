@@ -1,4 +1,4 @@
-import { newGame, runBotTurn, play, pass, legalTiles, assertStateIntegrity } from './engine.js';
+import { newGame, runBotTurn, play, pass, legalTiles, continueRound, assertStateIntegrity } from './engine.js';
 import { TableInteraction, buildTableModel, validSides } from './table.js';
 export class LocalSession {
     state;
@@ -58,5 +58,12 @@ export class LocalSession {
     }
     humanPass() { if (this.state.turn !== 0 || legalTiles(this.state, 0).length || this.state.phase !== 'playing')
         return false; pass(this.state, 0); this.refresh(); return true; }
+    nextRound() {
+        if (this.state.phase !== 'round-complete')
+            return false;
+        continueRound(this.state);
+        this.refresh();
+        return true;
+    }
     newMatch(target = this.state.target, dealSize = this.state.dealSize) { this.state = newGame(target, dealSize); this.model = this.solve(); this.previews.clear(); this.interaction = this.makeInteraction(); this.advanceBots(); }
 }
