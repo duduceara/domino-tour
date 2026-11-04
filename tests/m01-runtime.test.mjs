@@ -32,3 +32,27 @@ for(const size of [6,7])test(`engine: ${size} tiles, four seats, integrity and r
 test('engine: seeded four-seat simulations through terminal result or blocked state',t=>{let rng=1;t.mock.method(webcrypto,'getRandomValues',buffer=>{for(let i=0;i<buffer.length;i++)buffer[i]=(rng=(Math.imul(rng,1664525)+1013904223)>>>0);return buffer});let finished=0,blocked=0;const samples=[];for(const size of [6,7])for(let seed=1;seed<=30;seed++){rng=seed;let n=seed;const s=engine.newGame(100,size,k=>((n=(Math.imul(n,1664525)+1013904223)>>>0)%k));s.players.forEach(p=>p.kind='bot');let turns=0;while(s.phase==='playing'&&turns<5000){engine.auditedBotTurn(s);turns++}assert.notEqual(s.phase,'playing');assert.equal(engine.totalScore(s),400);if(s.phase==='finished')finished++;else blocked++;samples.push({size,seed,phase:s.phase,turns,rounds:s.roundsCompleted,winner:s.winner})}console.log('SIMULATION_RESULTS',JSON.stringify({finished,blocked,samples}));assert.equal(finished+blocked,60)});
 
 test('app drag: preview never commits; cancellation and repeated release are safe',()=>{const h=app();h.fixture();let tile=h.get('hand').children[0];h.emit(tile,'pointerdown');h.emit(tile,'pointermove',{clientX:60,clientY:60});assert.equal(h.run('plays.length'),0);assert.notEqual(h.run('floatingTile'),null);h.emit(tile,'pointercancel');assert.equal(h.run('floatingTile'),null);assert.equal(h.run('plays.length'),0);tile=h.get('hand').children[0];h.emit(tile,'pointerdown');h.emit(tile,'pointermove',{clientX:50,clientY:50});assert.equal(h.run('plays.length'),0);h.emit(tile,'pointerup',{clientX:50,clientY:50});h.emit(tile,'pointerup',{clientX:50,clientY:50});assert.equal(h.run('plays.length'),1);assert.equal(h.run('floatingTile'),null)});
+
+test('automatic human pass: one debit, beneficiary +5, notice for two seconds',()=>{
+ const h=app();h.fixture(6,6);
+ h.run('game.state.lastPlayed=3;game.state.players[3].score=100;game.state.players[0].score=100;scheduleBots()');
+ h.tick(0);
+ assert.equal(h.run("game.state.events.filter(e=>e.type==='pass'&&e.seat===0).length"),1);
+ assert.equal(h.run('game.state.players[0].score'),95);
+ assert.equal(h.run('game.state.players[3].score'),105);
+ assert.equal(h.get('pass-notice').hidden,false);
+ assert.match(h.get('pass-notice').textContent,/VOCÊ PASSOU/);
+ h.tick(1999);assert.equal(h.get('pass-notice').hidden,false);
+ h.tick(1);assert.equal(h.get('pass-notice').hidden,true);
+ h.run('scheduleBots();scheduleBots()');
+ assert.equal(h.run("game.state.events.filter(e=>e.type==='pass'&&e.seat===0).length"),1);
+});
+test('bot pass notice identifies seat and pauses subsequent bot action',()=>{
+ const h=app();h.run("stopBotSequence();game.state.phase='playing';game.state.turn=1;game.state.lastPlayed=0;globalThis.calls=0;game.advanceBots=()=>{calls++;game.state.events.push({type:'pass',seat:1,delta:-5,beneficiary:0});game.state.turn=2};sync=()=>{};scheduleBots()");
+ h.tick(3000);assert.equal(h.run('calls'),1);
+ assert.match(h.get('pass-notice').textContent,/ROBÔ 1 PASSOU/);
+ h.tick(1999);assert.equal(h.run('calls'),1);
+ h.tick(1);assert.equal(h.get('pass-notice').hidden,true);
+ h.tick(2999);assert.equal(h.run('calls'),1);
+ h.tick(1);assert.equal(h.run('calls'),2);
+});
