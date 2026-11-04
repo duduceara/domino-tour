@@ -1,3 +1,4 @@
+import {chooseBotMove, validateDifficulty} from './bots.js';
 export class RuleError extends Error {
     constructor(message) { super(message); this.name = 'RuleError'; }
 }
@@ -112,7 +113,7 @@ export function play(s, seat, tileId, side) {
     s.passesInRow = 0;
     s.playedSeats ??= [];
     if (!s.playedSeats.includes(seat)) s.playedSeats.push(seat);
-    s.events.push({ type: 'play', seat });
+    s.events.push({ type: 'play', seat, tileId, side });
     if (p.hand.length === 0) {
         const category = bothEnds ? 'la-e-lo' : tile.a === tile.b ? 'double' : !(s.passedSeats ?? []).includes(seat) ? 'without-pass' : 'simple';
         completeRound(s, seat, category, { 'la-e-lo': 40, double: 30, 'without-pass': 20, simple: 10 }[category]);
@@ -129,7 +130,7 @@ export function pass(s, seat, randomIndex = secureIndex) {
     s.passedSeats ??= [];
     if (!s.passedSeats.includes(seat)) s.passedSeats.push(seat);
     scoreTransfer(s, seat, s.lastPlayed, 5);
-    s.events.push({ type: 'pass', seat, delta: -5, beneficiary: s.lastPlayed });
+    s.events.push({ type: 'pass', seat, delta: -5, beneficiary: s.lastPlayed, left: s.left, right: s.right });
     finishIfWon(s, s.lastPlayed);
     if (s.phase === 'finished')
         return;
@@ -176,6 +177,7 @@ export function startNextRound(s, openingSeat, randomIndex = secureIndex) {
     s.passedSeats = [];
     s.playedSeats = [];
     s.declaredFour = [];
+    s.roundHistoryStart = s.events.length;
     declareFiveAtDeal(s);
 }
 /** Score-only recharge. Wallet authorization must be handled by an external economy service. */
@@ -199,7 +201,8 @@ export function viewFor(s, seat) {
         players: s.players.map(p => ({ seat: p.seat, kind: p.kind, score: p.score, connected: p.connected, handCount: p.hand.length })),
         ownHand: s.players[seat].hand.map(t => ({ ...t })), sleepingCount: s.sleeping.length,
         chain: s.chain.map(t => ({ ...t })), placements: s.placements.map(p => ({ ...p })), left: s.left, right: s.right, turn: s.turn,
-        lastPlayed: s.lastPlayed, target: s.target, phase: s.phase, winner: s.winner, openingRequiredTileId: s.openingRequiredTileId
+        lastPlayed: s.lastPlayed, target: s.target, phase: s.phase, winner: s.winner, openingRequiredTileId: s.openingRequiredTileId,
+        history: s.events.slice(s.roundHistoryStart ?? 0).filter(e => ['play', 'pass', 'declare-four'].includes(e.type)).map(e => ({...e}))
     };
 }
 /** Passes conserve scores; round awards add the approved fixed points. */
@@ -212,37 +215,18 @@ export function assertTileIntegrity(s) {
 }
 /** Legacy unresolved-state predicate retained for compatibility. */
 export function isBlocked(s) { return s.phase === 'blocked-awaiting-rule'; }
-export function decideBot(view) {
-    if (view.phase !== 'playing')
-        throw new RuleError('Bot cannot act outside active round');
-    const seat = view.turn;
-    if (view.players[seat]?.kind !== 'bot')
-        throw new RuleError('Current seat is not a bot');
-    const options = [];
-    for (const tile of view.ownHand) {
-        if (view.left === null) {
-            if (view.openingRequiredTileId === null || tile.id === view.openingRequiredTileId)
-                options.push({ tileId: tile.id, side: 'right', weight: tile.a + tile.b });
-            continue;
-        }
-        if (tile.a === view.left || tile.b === view.left)
-            options.push({ tileId: tile.id, side: 'left', weight: tile.a + tile.b });
-        if (tile.a === view.right || tile.b === view.right)
-            options.push({ tileId: tile.id, side: 'right', weight: tile.a + tile.b });
-    }
-    if (!options.length)
-        return { type: 'pass' };
-    // Simple baseline heuristic: shed high-pip tiles, stable tie-breaks.
-    options.sort((a, b) => b.weight - a.weight || a.tileId - b.tileId || a.side.localeCompare(b.side));
-    const best = options[0];
-    return { type: 'play', tileId: best.tileId, side: best.side };
+export function decideBot(view, difficulty = 'easy') {
+    if (view.phase !== 'playing') throw new RuleError('Bot cannot act outside active round');
+    if (view.players[view.turn]?.kind !== 'bot') throw new RuleError('Current seat is not a bot');
+    return chooseBotMove(view, difficulty);
 }
 /** Validated bot turn; the engine, not the heuristic, enforces every rule. */
-export function runBotTurn(s, randomIndex = secureIndex) {
+export function runBotTurn(s, randomIndex = secureIndex, difficulty = 'easy') {
     checkTurn(s, s.turn);
     if (s.players[s.turn].kind !== 'bot')
         throw new RuleError('Current seat is not a bot');
-    const decision = decideBot(viewFor(s, s.turn));
+    validateDifficulty(difficulty);
+    const decision = decideBot(viewFor(s, s.turn), difficulty);
     if (decision.type === 'pass')
         pass(s, s.turn, randomIndex);
     else
@@ -274,9 +258,9 @@ export function assertStateIntegrity(s) {
         throw new RuleError('Missing table state');
 }
 /** One deterministic AI action, with safety assertions before and after. */
-export function auditedBotTurn(s, randomIndex = secureIndex) {
+export function auditedBotTurn(s, randomIndex = secureIndex, difficulty = 'easy') {
     assertStateIntegrity(s);
-    const decision = runBotTurn(s, randomIndex);
+    const decision = runBotTurn(s, randomIndex, difficulty);
     assertStateIntegrity(s);
     return decision;
 }

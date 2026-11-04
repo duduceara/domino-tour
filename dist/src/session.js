@@ -1,14 +1,16 @@
+import {validateDifficulty} from './bots.js';
 import { newGame, runBotTurn, play, pass, legalTiles, continueRound, declareFour, canDeclareFour, assertStateIntegrity } from './engine.js';
 import { TableInteraction, buildTableModel, validSides } from './table.js';
 export class LocalSession {
     state;
     interaction;
     model;
+    difficulty = 'easy';
     orientation = 'horizontal';
     routeStyle = 'classic';
     bounds = { x: 0, y: 0, width: 800, height: 430 };
     previews = new Map();
-    constructor(target = 100, dealSize = 6) { this.state = newGame(target, dealSize); this.model = this.solve(); this.interaction = this.makeInteraction(); }
+    constructor(target = 100, dealSize = 6, difficulty = 'easy') { this.difficulty = validateDifficulty(difficulty); this.state = newGame(target, dealSize); this.model = this.solve(); this.interaction = this.makeInteraction(); }
     solve() { return buildTableModel(this.state.placements, this.bounds, this.orientation, this.routeStyle, new Map(this.state.chain.map(t => [t.id, t]))); }
     geometry() { const center = { x: this.bounds.x + this.bounds.width / 2, y: this.bounds.y + this.bounds.height / 2 }; return this.model.geometry ?? { bounds: this.bounds, orientation: this.orientation, style: this.routeStyle, tileWidth: 0, tileHeight: 0, tiles: [], links: [], endpoints: { left: center, right: center } }; }
     makeInteraction() { return new TableInteraction(this.state, 0, this.geometry(), (id, side) => this.preview(id, side), (id, side) => this.humanPlay(id, side)); }
@@ -39,7 +41,7 @@ export class LocalSession {
     setRouteStyle(style) { if (style === this.routeStyle)
         return; this.routeStyle = style; this.refresh(); }
     advanceBots(maxTurns = 100) { let n = 0; while (this.state.phase === 'playing' && this.state.turn !== 0 && n < maxTurns) {
-        runBotTurn(this.state);
+        runBotTurn(this.state, undefined, this.difficulty);
         n++;
         assertStateIntegrity(this.state);
     } this.refresh(); return n; }
@@ -58,6 +60,12 @@ export class LocalSession {
     }
     humanPass() { if (this.state.turn !== 0 || legalTiles(this.state, 0).length || this.state.phase !== 'playing')
         return false; pass(this.state, 0); this.refresh(); return true; }
+    setDifficulty(level) { this.difficulty = validateDifficulty(level); }
+    organizeHand() {
+        this.interaction.cancel();
+        this.state.players[0].hand.sort((a,b) => a.a - b.a || a.b - b.b || a.id - b.id);
+        this.refresh();
+    }
     canDeclareFour() { return canDeclareFour(this.state, 0); }
     declareFour() {
         if (!this.canDeclareFour()) return false;
