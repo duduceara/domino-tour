@@ -1,3 +1,5 @@
+> Atualização WORK 02C: as posições laterais históricas abaixo foram substituídas pelo sentido horário aprovado: Você embaixo, RobiX à esquerda, AndroX acima, DomiX à direita. Ver [contrato atual](OFFLINE_02C_2026-11-04.md). Artes preservadas.
+
 # DOMINÓ TOUR — Referência visual obrigatória da mesa premium (M01)
 
 Aprovada pelo proprietário em 04/11/2026, com base na imagem enviada na conversa: mesa oval de madeira polida e feltro verde, cenário de pôr do sol tropical, quatro jogadores com avatares e placas de pontos, pedras grandes e legíveis, mão humana na base, logotipo DOMINÓ TOUR / EDVÓRIA, barra superior com modalidade e meta, moedas/diamantes e controles discretos.
