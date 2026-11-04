@@ -37,10 +37,13 @@ function sync(){
  const hand=$('hand');hand.replaceChildren();
  for(const tile of human.hand){
   const b=tileEl(tile,'inhand'+(game.interaction.selectedTile===tile.id?' selected':'')+(validSides(s,0,tile.id).length?' playable':' unavailable'));b.setAttribute('aria-pressed',String(game.interaction.selectedTile===tile.id));b.disabled=s.turn!==0||s.phase!=='playing'||game.model.status==='unavailable'||validSides(s,0,tile.id).length===0;
+  let secondTapCandidate=false;
   b.addEventListener('pointerdown',e=>{
+   secondTapCandidate=false;
    if(gestureBlocked)return;
    if(dragId!==null){cancelGesture();drawBoard(game.model);return}
    if(e.button!==0||!e.isPrimary)return;
+   secondTapCandidate=game.interaction.selectedTile===tile.id;
    if(!game.interaction.begin(e.pointerId,tile.id,coords(e)))return;
    dragId=e.pointerId;origin=coords(e);dragMoved=false;b.setPointerCapture(e.pointerId);
   });
@@ -52,14 +55,14 @@ function sync(){
    if(result.committed){dragId=null;origin=null;ghost=null;afterAction();return}
    if(result.preview?.model){ghost=result.preview.tileId;drawBoard(result.preview.model,ghost)}else if(ghost!==null){ghost=null;drawBoard(game.model)}
   });
-  b.addEventListener('pointerup',e=>{if(dragId!==e.pointerId)return;const wasDragging=dragMoved;const result=wasDragging?game.interaction.move(e.pointerId,coords(e)):null;if(result?.committed){dragId=null;origin=null;ghost=null;afterAction();return}game.interaction.end(e.pointerId);if(wasDragging&&!gestureBlocked){game.interaction.select(tile.id)}dragId=null;origin=null;dragMoved=false;ghost=null;sync();if(wasDragging&&game.interaction.selectedTile===tile.id)$('message').textContent='Pedra selecionada. Toque em uma das pontas destacadas para encaixar.'});
+  b.addEventListener('pointerup',e=>{if(dragId!==e.pointerId)return;const wasDragging=dragMoved;const result=wasDragging?game.interaction.move(e.pointerId,coords(e)):null;if(result?.committed){dragId=null;origin=null;ghost=null;afterAction();return}game.interaction.end(e.pointerId);if(!wasDragging&&!gestureBlocked&&secondTapCandidate){const sides=validSides(game.state,0,tile.id);if(sides.length===1&&game.interaction.tapEndpoint(sides[0])){dragId=null;origin=null;ghost=null;secondTapCandidate=false;afterAction();return}}if(wasDragging&&!gestureBlocked){game.interaction.select(tile.id)}secondTapCandidate=false;dragId=null;origin=null;dragMoved=false;ghost=null;sync();if(wasDragging&&game.interaction.selectedTile===tile.id)$('message').textContent='Pedra selecionada. Toque em uma das pontas destacadas para encaixar.'});
   b.addEventListener('pointercancel',()=>{cancelGesture();sync()});
   b.addEventListener('lostpointercapture',()=>{if(dragId!==null){cancelGesture();sync()}});
-  b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();game.interaction.select(tile.id);sync()}});
+  b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();const wasSelected=game.interaction.selectedTile===tile.id;const sides=validSides(game.state,0,tile.id);if(wasSelected&&sides.length===1&&game.interaction.tapEndpoint(sides[0])){afterAction();return}game.interaction.select(tile.id);sync()}});
   hand.append(b);
  }
  $('pass').disabled=s.turn!==0||s.phase!=='playing'||legalTiles(s,0).length>0;
- $('message').textContent=game.model.status==='unavailable'?'Mesa não desenhada: '+game.model.failure:s.phase==='finished'?'Partida encerrada. Vencedor: '+(s.winner===0?'Você':`Robô ${s.winner}`):s.phase==='blocked-awaiting-rule'?'Rodada bloqueada: regra da V0.21 preservada.':s.turn===0?(game.interaction.selectedTile!==null?'Pedra selecionada. Escolha uma ponta iluminada.':'Sua vez! Selecione uma pedra e uma ponta.'):`Robô ${s.turn} pensando... (3 segundos por jogada)`;
+ $('message').textContent=game.model.status==='unavailable'?'Mesa não desenhada: '+game.model.failure:s.phase==='finished'?'Partida encerrada. Vencedor: '+(s.winner===0?'Você':`Robô ${s.winner}`):s.phase==='blocked-awaiting-rule'?'Rodada bloqueada: regra da V0.21 preservada.':s.turn===0?(game.interaction.selectedTile!==null?(validSides(s,0,game.interaction.selectedTile).length===1?'Uma ponta disponível: toque novamente na pedra para jogar.':'Duas pontas disponíveis: escolha uma ponta iluminada.'):'Sua vez! Selecione uma pedra e uma ponta.'):`Robô ${s.turn} pensando... (3 segundos por jogada)`;
 }
 // Capture phase sees a second pointer even outside the rack/first captured element.
 document.addEventListener('pointerdown',e=>{activePointers.add(e.pointerId);if(activePointers.size>1){gestureBlocked=true;cancelGesture();drawBoard(game.model)}},true);
