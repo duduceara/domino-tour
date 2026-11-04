@@ -71,3 +71,14 @@ test('entry overlay defers robot scheduler until the player enters the table',()
  h.run('scheduleBots()');h.tick(2999);assert.equal(h.run('botCalls'),0);
  h.tick(1);assert.equal(h.run('botCalls'),1);
 });
+
+test('domino pip faces display exact 0-6 values without changing tile identity',()=>{
+ const h=app();
+ for(let value=0;value<=6;value++){
+  const html=h.run(`tileEl({id:19,a:${value},b:0}).innerHTML`);
+  const halves=html.match(/class="pip-face"/g)||[];
+  assert.equal(halves.length,2);
+  assert.equal((html.match(/class="pip on"/g)||[]).length,value);
+  assert.equal(h.run(`tileEl({id:19,a:${value},b:0}).dataset.tileId`),19);
+ }
+});
