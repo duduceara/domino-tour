@@ -74,8 +74,11 @@ function sync(){
   b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();const wasSelected=game.interaction.selectedTile===tile.id;const sides=validSides(game.state,0,tile.id);if(wasSelected&&sides.length===1&&game.interaction.tapEndpoint(sides[0])){afterAction();return}game.interaction.select(tile.id);sync()}});
   hand.append(b);
  }
+ $('next-round').hidden=s.phase!=='round-complete';
+ $('play-again').hidden=s.phase!=='finished';
+ $('pass').hidden=s.phase==='round-complete'||s.phase==='finished';
  $('pass').disabled=s.turn!==0||s.phase!=='playing'||legalTiles(s,0).length>0;
- $('message').textContent=game.model.status==='unavailable'?'Mesa não desenhada: '+game.model.failure:s.phase==='finished'?'Partida encerrada. Vencedor: '+(s.winner===0?'Você':`Robô ${s.winner}`):s.phase==='blocked-awaiting-rule'?'Rodada bloqueada: regra da V0.21 preservada.':s.turn===0?(game.interaction.selectedTile!==null?(validSides(s,0,game.interaction.selectedTile).length===1?'Uma ponta disponível: toque novamente na pedra para jogar.':'Duas pontas disponíveis: escolha uma ponta iluminada.'):'Sua vez! Selecione uma pedra e uma ponta.'):`Robô ${s.turn} pensando... (3 segundos por jogada)`;
+ $('message').textContent=game.model.status==='unavailable'?'Mesa não desenhada: '+game.model.failure:s.phase==='round-complete'?'Rodada encerrada! Vencedor: '+(s.nextOpeningSeat===0?'Você':`Robô ${s.nextOpeningSeat}`)+'. Pontuação atualizada. Toque em Próxima rodada para continuar.':s.phase==='finished'?'Partida encerrada. Vencedor: '+(s.winner===0?'Você':`Robô ${s.winner}`):s.phase==='blocked-awaiting-rule'?'Rodada bloqueada: regra da V0.21 preservada.':s.turn===0?(game.interaction.selectedTile!==null?(validSides(s,0,game.interaction.selectedTile).length===1?'Uma ponta disponível: toque novamente na pedra para jogar.':'Duas pontas disponíveis: escolha uma ponta iluminada.'):'Sua vez! Selecione uma pedra e uma ponta.'):`Robô ${s.turn} pensando... (3 segundos por jogada)`;
 }
 // Capture phase sees a second pointer even outside the rack/first captured element.
 document.addEventListener('pointerdown',e=>{activePointers.add(e.pointerId);if(activePointers.size>1){gestureBlocked=true;cancelGesture();drawBoard(game.model)}},true);
@@ -84,6 +87,8 @@ window.addEventListener('blur',()=>{cancelGesture();activePointers.clear();gestu
 document.addEventListener('visibilitychange',()=>{if(document.hidden){stopBotSequence();cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(game.model)}else{sync();scheduleBots()}});
 function afterAction(){clearDragVisual();dragId=null;origin=null;ghost=null;sync();scheduleBots()}
 $('pass').onclick=()=>{if(game.humanPass())afterAction()};
+$('next-round').onclick=()=>{if(game.state.phase!=='round-complete')return;stopBotSequence();cancelGesture();if(game.nextRound()){sync();scheduleBots()}};
+$('play-again').onclick=()=>{if(game.state.phase!=='finished')return;stopBotSequence();cancelGesture();game.newMatch();sync();scheduleBots()};
 $('restart').onclick=()=>{stopBotSequence();cancelGesture();game=new LocalSession(Number($('target').value),Number($('deal').value));routeStyle=$('route').value==='random'?chooseRoute(secureIndex):$('route').value;sync();scheduleBots()};
 $('route').onchange=()=>{cancelGesture();routeStyle=$('route').value==='random'?chooseRoute(secureIndex):$('route').value;sync()};
 $('zoom').onclick=()=>{cancelGesture();zoom=zoom>=8?1:Math.min(8,zoom*2);pan={x:0,y:0};drawBoard(game.model)};
