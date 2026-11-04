@@ -65,3 +65,37 @@ Pesos iniciais para planejamento: M00 3%, M01 12%, M02 8%, M03 5%, M04 15%, M05 
 
 ## 8. Política de execução e relatório
 Para cada tijolinho: objetivo -> implementação isolada -> teste afetado -> evidência -> aceite -> atualização deste Documento Mestre. Reportar marco, resultado, commit, teste, pendência, risco e próximo passo. Não modificar main, preview/github-pages nem publicar sem autorização. Não prometer trabalho assíncrono.
+
+## 9. M00 — Catálogo de decisões das interfaces 01–05 (consolidado em 2026-11-04)
+**Origem da evidência:** decisões expressas do usuário em conversas de 2026-11-03 e referências anteriores do projeto, recuperadas do histórico; Documento Mestre V5 de 2026-11-03 e showcase visual como referências documentais. **Distinção:** aprovação de conceito/arte não comprova implementação no GitHub, aprovação funcional ou que os PNGs originais estejam versionados. Não confundir o showcase promocional com aprovação individual.
+
+### Identidade visual transversal — APROVADA como diretriz
+Logo oficial: globo azul-oceano, continentes/rotas dourados, duas pedras marfim, DOMINÓ em dourado e faixa TOUR azul. Não alterar sem autorização.
+Linguagem premium: azul-oceano, madeira polida, feltro verde, dourado, marfim, botões arredondados, avatares detalhados, contexto visual consistente. Referência V5: feltro #154C41, profundo #103A32, madeira #38251E, dourado #E2B65B, azul viagem #154B68, marfim #FFF5DF. São diretrizes, não prova de implementação pixel-perfect.
+Marca EDVÓRIA discreta. Não copiar interfaces ou personagens de produtos de referência.
+
+### Tela 01 — Carregamento — APROVAÇÃO EXPRESSA de conceito/arte
+Fundo azul-oceano; logotipo oficial; EDVÓRIA discreta; barra curta animada sem percentual; exibição por no mínimo 2 segundos. Pendente: implementação e validação de duração/fluxo.
+
+### Tela 02 — Acesso — APROVAÇÃO EXPRESSA de conceito/arte
+Opções Entrar, Criar conta e Visitante, com assinatura discreta. Pendente: fluxo de conta, persistência, integração e testes. Não confundir com uma antiga proposta de tela de apresentação de outro aplicativo.
+
+### Tela 03 — Identidade — APROVAÇÃO EXPRESSA de conceito/arte
+Foto pessoal opcional, escolha de avatar e apelido editável; identidade azul-oceano/dourado. Pendente: catálogo definitivo, políticas de foto/privacidade, persistência e integração.
+
+### Tela 04 — Menu principal — APROVAÇÃO EXPRESSA de conceito/arte
+Identidade premium, destino/progressão, navegação e recursos visuais; painel “Sua Próxima Conquista” e caixinha de bônus aprovados em refinamento posterior. Diretriz V5: marca, avatar, apelido, configurações, card de próxima etapa, ação principal JOGAR, navegação Início/Jornada/Torneios/Ranking/Perfil; destino Ceará como referência do menu. Pendente: especificação de cada componente, artes versionadas, navegação e integração.
+
+### Tela 05 — Preparar partida — APROVAÇÃO EXPRESSA de conceito/arte
+Seleção dinâmica Offline/Online. Offline: jogador humano com três robôs, dificuldade ajustável. Online: partida rápida, criar sala e entrar em sala. Metas de pontuação 100/200/300; mesas gratuitas e premium apenas cosméticas; ação “Iniciar Partida”. Pendente: consistência entre protótipo técnico (que hoje exibe 100/150/200 e 6/7 pedras) e especificação visual aprovada, além da implementação online. A diferença 100/150/200 versus 100/200/300 é uma divergência **a resolver na integração**, não autorização para alterar código no M00.
+
+### Telas 06–16 — PROPOSTA DE INVENTÁRIO, NÃO APROVAÇÃO INDIVIDUAL
+06 Jornada; 07 Destino/desafio; 08 Mesa; 09 Resultado; 10 Torneios; 11 Detalhes; 12 Ranking; 13 Perfil; 14 Conquistas/passaporte; 15 Configurações; 16 Como jogar/Sobre. Número e divisão podem crescer após mapa de navegação. Nenhuma dessas telas deve ser considerada aprovada apenas por estar listada.
+
+### Referências e rastreabilidade visual
+Documento Mestre V5 de 2026-11-03: diretrizes aprovadas para turismo sequencial, Brasil como partida, ranking, ligas semanais, avatares/foto opcional, interface e paleta. Showcase Premium: ilustra conceitos de Tela 03 e Tela 05, mas não substitui as artes individualmente aprovadas. As imagens finais de 01–05 e seus identificadores/arquivos originais **não foram verificados no repositório nesta auditoria**; portanto a rastreabilidade binária da arte permanece pendente. Proibir redesenho automático ou substituição das referências sem conferência.
+
+## 10. Fechamento controlado do M00 e transferência para M01
+Entregues e verificados: Documento Mestre versionado, inventário de três branches encontradas, arquivos centrais da mesa técnica, teste focal e workflow, catálogo de decisões visuais com aprovação/proposta distinguida, backlog, riscos, critérios e sequência de marcos.
+Limitações documentadas: inventário de diretórios não é exaustivo; não foram localizados/versionados os arquivos finais de arte aprovados; CI real e teste físico continuam sem evidência. Esses pontos **não são aprovações**. A falta das artes originais vira pendência de rastreabilidade para M03, sem bloquear o fechamento documental do M00; a falta de CI e teste físico pertence ao critério de saída do M01.
+**M00: concluído no escopo documental com ressalvas de rastreabilidade.** Próxima entrega principal: M01, obter resultado verificável dos testes e prova de partida offline no navegador móvel. Não iniciar Tela 06 antes dos critérios de saída do M01 e do mapa de telas M03. Sem alteração do motor, main ou prévia pública nesta consolidação.
