@@ -172,3 +172,21 @@ header strong{font-family:Georgia,serif;line-height:1;font-size:20px}header stro
 .app[data-dense="true"] .seat:nth-child(3){top:0}
 .app[data-dense="true"] .seat:nth-child(1){bottom:-84px}
 .app[data-dense="true"] #next-round,.app[data-dense="true"] #play-again{margin-right:auto}
+
+/* WORK 02C: official turn order maps bottom -> left -> top -> right. */
+.seat:nth-child(2){right:auto;left:0}.seat:nth-child(4){left:auto;right:0}
+/* Rack uses vertical pieces so identical values can align at the same height. */
+.app{grid-template-rows:44px minmax(0,1fr) 88px 44px}
+.app[data-compact="true"]:not([data-dense="true"]){grid-template-rows:44px minmax(0,1fr) 76px 44px}
+.app[data-dense="true"]{grid-template-rows:44px minmax(0,1fr) 72px 44px}
+.hand{gap:10px;touch-action:none}
+.piece.inhand,.app[data-compact="false"] .piece.inhand{width:40px;height:80px;max-width:none;aspect-ratio:1/2;flex-direction:column;flex-shrink:0}
+.app[data-dense="true"] .piece.inhand{width:34px;height:68px;aspect-ratio:1/2}
+.piece.inhand .pip-face,.piece.rack-floating .pip-face{width:82%;height:43%}
+.piece.inhand .divider,.piece.rack-floating .divider{width:80%;height:1px;flex:0 0 1px;box-shadow:0 1px #fff9}
+.piece.inhand::after{inset:0 auto 0 50%;width:max(44px,100%);height:100%;transform:translateX(-50%)}
+.piece.rack-floating{flex-direction:column}
+.piece.inhand[data-dragging="true"]{opacity:.35}
+.hand-insertion{position:absolute;width:3px;border-radius:3px;background:#f6d889;box-shadow:0 0 6px #f6d88980;pointer-events:none;z-index:90}
+.app[data-dense="true"] .seat:nth-child(1){bottom:-118px}
+@media(prefers-reduced-motion:reduce){.hand-insertion{box-shadow:none}}

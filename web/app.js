@@ -3,7 +3,9 @@ import {LocalSession} from '../dist/src/session.js';
 import {validSides,chooseRoute} from '../dist/src/table.js';
 import {legalTiles,secureIndex} from '../dist/src/engine.js';
 const $=id=>document.getElementById(id);
+const PLAYER_NAMES=['Você','RobiX','AndroX','DomiX'];
 let game=new LocalSession();let routeStyle=chooseRoute(secureIndex);
+let handDrag=null,insertionMarker=null;
 let dragId=null,origin=null,dragMoved=false,ghost=null,floatingTile=null;const activePointers=new Set();let gestureBlocked=false;
 let rotated=false,zoom=1,pan={x:0,y:0},panStart=null;
 let tableSpace={width:800,height:430,scale:1},viewportSignature='',orientationPending=false;
@@ -12,7 +14,7 @@ let botTimer=null,botEpoch=0,passNoticeTimer=null,passNoticeEpoch=0;
 function clearPassNotice(){passNoticeEpoch++;if(passNoticeTimer!==null){clearTimeout(passNoticeTimer);passNoticeTimer=null}$('pass-notice').hidden=true}
 function stopBotSequence(){closeDeclaration();botEpoch++;if(botTimer!==null){clearTimeout(botTimer);botTimer=null}clearPassNotice()}
 function showPassNotice(seat){
- clearPassNotice();const notice=$('pass-notice');notice.textContent=seat===0?'VOCÊ PASSOU! −5 pontos':`ROBÔ ${seat} PASSOU! −5 pontos`;notice.hidden=false;
+ clearPassNotice();const notice=$('pass-notice');notice.textContent=seat===0?'VOCÊ PASSOU! −5 pontos':`${PLAYER_NAMES[seat]} PASSOU! −5 pontos`;notice.hidden=false;
  const epoch=passNoticeEpoch;passNoticeTimer=setTimeout(()=>{if(epoch!==passNoticeEpoch)return;passNoticeTimer=null;notice.hidden=true;scheduleBots()},2000);
 }
 function scheduleBots(){
@@ -49,12 +51,40 @@ async function lockLandscape(gesture=false){
  finally{orientationPending=false;queueViewport()}
 }
 function rect(){const physical={width:$('table').clientWidth,height:$('table').clientHeight};const fitted=fittedTableSpace(physical.width,physical.height);if(!fitted)return null;tableSpace=fitted;return {x:0,y:0,width:fitted.width,height:fitted.height}}
-function clearDragVisual(){floatingTile?.remove?.();floatingTile=null}
-function followPointer(e,tile,source){if(!floatingTile){floatingTile=tileEl(tile,'drag-floating');floatingTile.setAttribute('aria-hidden','true');floatingTile.style.width=(source.offsetWidth||88)+'px';floatingTile.style.height=(source.offsetHeight||44)+'px';$('app').append(floatingTile)}const p=framePoint({x:e.clientX,y:e.clientY},$('app').getBoundingClientRect(),rotated);floatingTile.style.left=p.x+'px';floatingTile.style.top=p.y+'px'}
-function cancelGesture(){clearDragVisual();game.interaction.cancel();dragId=null;origin=null;dragMoved=false;ghost=null;panStart=null}
+function clearDragVisual(){floatingTile?.remove?.();floatingTile=null;insertionMarker?.remove?.();insertionMarker=null;for(const el of $('hand').children)delete el.dataset.dragging}
+function followPointer(e,tile,source){if(!floatingTile){floatingTile=tileEl(tile,'drag-floating rack-floating',handDrag?.flipped??false);floatingTile.setAttribute('aria-hidden','true');floatingTile.style.width=(source.offsetWidth||34)+'px';floatingTile.style.height=(source.offsetHeight||68)+'px';$('app').append(floatingTile)}const p=framePoint({x:e.clientX,y:e.clientY},$('app').getBoundingClientRect(),rotated);floatingTile.style.left=p.x+'px';floatingTile.style.top=p.y+'px'}
+function cancelGesture(){handDrag=null;clearDragVisual();game.interaction.cancel();dragId=null;origin=null;dragMoved=false;ghost=null;panStart=null}
 const PIP_POSITIONS=[[],[4],[0,8],[0,4,8],[0,2,6,8],[0,2,4,6,8],[0,2,3,5,6,8]];
 function pipFace(value){const occupied=new Set(PIP_POSITIONS[value]??[]);return '<span class="pip-face" aria-hidden="true">'+Array.from({length:9},(_,i)=>'<i class="pip'+(occupied.has(i)?' on':'')+'"></i>').join('')+'</span>'}
-function tileEl(tile,css=''){const b=document.createElement('button');b.className='piece '+css;b.dataset.tileId=tile.id;b.innerHTML=pipFace(tile.a)+'<span class="divider"></span>'+pipFace(tile.b);b.setAttribute('aria-label',`Pedra ${tile.a} e ${tile.b}`);return b}
+function tileEl(tile,css='',flipped=false){const b=document.createElement('button');b.className='piece '+css;b.dataset.tileId=tile.id;b.innerHTML=pipFace(flipped?tile.b:tile.a)+'<span class="divider"></span>'+pipFace(flipped?tile.a:tile.b);b.dataset.flipped=String(flipped);b.setAttribute('aria-label',`Pedra ${tile.a} e ${tile.b}`);return b}
+// Pointer zones are measured in the logical landscape frame, including visual rotation.
+function frameRect(element){
+ const r=element.getBoundingClientRect(),app=$('app').getBoundingClientRect();
+ const a=framePoint({x:r.left,y:r.top},app,rotated),b=framePoint({x:r.left+r.width,y:r.top+r.height},app,rotated);
+ return {x:Math.min(a.x,b.x),y:Math.min(a.y,b.y),width:Math.abs(b.x-a.x),height:Math.abs(b.y-a.y)};
+}
+function pointerFrame(e){return framePoint({x:e.clientX,y:e.clientY},$('app').getBoundingClientRect(),rotated)}
+function within(p,r,padding=0){return p.x>=r.x-padding&&p.x<=r.x+r.width+padding&&p.y>=r.y-padding&&p.y<=r.y+r.height+padding}
+function handDropPlan(e,tileId){
+ const point=pointerFrame(e),rack=frameRect($('hand'));
+ if(!within(point,rack,6))return null;
+ const tiles=[...$('hand').children].filter(el=>Number(el.dataset.tileId)!==tileId).map(el=>({id:Number(el.dataset.tileId),rect:frameRect(el)}));
+ const before=tiles.find(t=>point.x<t.rect.x+t.rect.width/2);
+ const neighbor=tiles.reduce((best,t)=>!best||Math.abs(point.x-t.rect.x-t.rect.width/2)<Math.abs(point.x-best.rect.x-best.rect.width/2)?t:best,null);
+ return {beforeId:before?.id??null,neighborId:neighbor?.id??null,x:before?before.rect.x-3:tiles.length?tiles.at(-1).rect.x+tiles.at(-1).rect.width+3:rack.x+rack.width/2,rack};
+}
+function previewRackDrop(e,tile,source){
+ const plan=handDropPlan(e,tile.id);
+ insertionMarker?.remove?.();insertionMarker=null;
+ if(!plan)return false;
+ const layout=game.previewHandMove(tile.id,plan.beforeId,plan.neighborId);
+ handDrag.flipped=layout?.flipped[tile.id]??handDrag.flipped;
+ // Only the moving preview turns; stationary neighbors retain their orientation.
+ if(floatingTile)floatingTile.innerHTML=pipFace(handDrag.flipped?tile.b:tile.a)+'<span class="divider"></span>'+pipFace(handDrag.flipped?tile.a:tile.b);
+ insertionMarker=document.createElement('span');insertionMarker.className='hand-insertion';insertionMarker.setAttribute('aria-hidden','true');
+ insertionMarker.style.left=plan.x+'px';insertionMarker.style.top=plan.rack.y+'px';insertionMarker.style.height=plan.rack.height+'px';$('app').append(insertionMarker);
+ source.dataset.dragging='true';return true;
+}
 function drawBoard(model,previewId=null){
  const surface=$('table');surface.replaceChildren();const table=document.createElement('div');table.className='board-layer';// Camera fits the occupied chain, not the solver's mostly empty canvas.
  let camera=previewId!==null?tableSpace.camera:null;
@@ -75,43 +105,81 @@ function drawBoard(model,previewId=null){
  }
 }
 function sync(){
+ if(handDrag)cancelGesture();
  const prior=rect();if(!prior){$('table').dataset.layout='waiting';return} $('table').dataset.layout='ready';game.setRouteStyle(routeStyle);game.resize(prior,'horizontal');
  const s=game.state,human=s.players[0];
- $('scores').replaceChildren(...s.players.map(p=>{const e=document.createElement('span');e.className='seat'+(s.turn===p.seat?' active':'');e.dataset.seat=String(p.seat);e.setAttribute('aria-label',p.seat===0?'Seu placar':`Placar do robô ${p.seat}`);e.textContent=`${p.seat===0?'Você':`Robô ${p.seat}`} · ${p.score} pts · ${p.hand.length} pedras`;const avatar=document.createElement('img');avatar.src=`./assets/avatar-${p.seat}.svg`;avatar.alt='';avatar.className='avatar';e.append(avatar);return e}));
+ $('scores').replaceChildren(...s.players.map(p=>{const e=document.createElement('span');e.className='seat'+(s.turn===p.seat?' active':'');e.dataset.seat=String(p.seat);e.setAttribute('aria-label',p.seat===0?'Seu placar':`Placar de ${PLAYER_NAMES[p.seat]}`);e.textContent=`${p.seat===0?'Você':PLAYER_NAMES[p.seat]} · ${p.score} pts · ${p.hand.length} pedras`;const avatar=document.createElement('img');avatar.src=`./assets/avatar-${p.seat}.svg`;avatar.alt='';avatar.className='avatar';e.append(avatar);return e}));
  drawBoard(game.model);
  const hand=$('hand');hand.replaceChildren();
- for(const tile of human.hand){
-  const b=tileEl(tile,'inhand'+(game.interaction.selectedTile===tile.id?' selected':'')+(validSides(s,0,tile.id).length?' playable':' unavailable'));b.setAttribute('aria-pressed',String(game.interaction.selectedTile===tile.id));b.disabled=s.turn!==0||s.phase!=='playing'||game.model.status==='unavailable'||validSides(s,0,tile.id).length===0;
+ for(const tile of game.orderedHand()){
+  const b=tileEl(tile,'inhand'+(game.interaction.selectedTile===tile.id?' selected':'')+(validSides(s,0,tile.id).length?' playable':' unavailable'),game.handLayout.flipped[tile.id]);b.setAttribute('aria-pressed',String(game.interaction.selectedTile===tile.id));b.disabled=s.phase!=='playing';b.setAttribute('aria-keyshortcuts','Alt+ArrowLeft Alt+ArrowRight R');b.title='Arraste na mão para organizar. R gira; Alt + setas move.';
   let secondTapCandidate=false;
   b.addEventListener('pointerdown',e=>{
    secondTapCandidate=false;
-   if(gestureBlocked)return;
+   if(gestureBlocked||declarationContext||s.phase!=='playing')return;
    if(dragId!==null){cancelGesture();drawBoard(game.model);return}
    if(e.button!==0||!e.isPrimary)return;
    secondTapCandidate=game.interaction.selectedTile===tile.id;
-   if(!game.interaction.begin(e.pointerId,tile.id,coords(e)))return;
+   game.interaction.cancel();
+   handDrag={state:s,round:s.roundsCompleted,pointerId:e.pointerId,tileId:tile.id,start:pointerFrame(e),tableStart:coords(e),tableStarted:false,flipped:game.handLayout.flipped[tile.id]};
    dragId=e.pointerId;origin=coords(e);dragMoved=false;b.setPointerCapture(e.pointerId);
   });
   b.addEventListener('pointermove',e=>{
-   if(dragId!==e.pointerId)return;
-   const pos=coords(e);if(origin&&Math.hypot(pos.x-origin.x,pos.y-origin.y)>=8)dragMoved=true;
+   if(dragId!==e.pointerId||!handDrag)return;
+   if(handDrag.state!==game.state||handDrag.round!==game.state.roundsCompleted){cancelGesture();return}
+   const point=pointerFrame(e);if(Math.hypot(point.x-handDrag.start.x,point.y-handDrag.start.y)>=8)dragMoved=true;
    if(!dragMoved)return;
    followPointer(e,tile,b);
-   // Movement previews only. Release is the sole pointer commit boundary.
-   const preview=game.interaction.preview(tile.id,pos);
+   if(previewRackDrop(e,tile,b)){
+    if(handDrag.tableStarted){game.interaction.cancel();handDrag.tableStarted=false}
+    if(ghost!==null){ghost=null;drawBoard(game.model)}return;
+   }
+   if(!within(point,frameRect($('table')))){if(ghost!==null){ghost=null;drawBoard(game.model)}return}
+   if(!handDrag.tableStarted)handDrag.tableStarted=Boolean(game.interaction.begin(e.pointerId,tile.id,handDrag.tableStart));
+   if(!handDrag.tableStarted)return;
+   const preview=game.interaction.preview(tile.id,coords(e));
    if(preview?.model){ghost=preview.tileId;drawBoard(preview.model,ghost)}else if(ghost!==null){ghost=null;drawBoard(game.model)}
   });
-  b.addEventListener('pointerup',e=>{if(dragId!==e.pointerId)return;clearDragVisual();const wasDragging=dragMoved;const result=wasDragging?game.interaction.move(e.pointerId,coords(e)):null;if(result?.committed){dragId=null;origin=null;ghost=null;afterAction();return}game.interaction.end(e.pointerId);if(!wasDragging&&!gestureBlocked&&secondTapCandidate){const sides=validSides(game.state,0,tile.id);if(sides.length===1&&game.interaction.tapEndpoint(sides[0])){dragId=null;origin=null;ghost=null;secondTapCandidate=false;afterAction();return}}if(wasDragging&&!gestureBlocked){game.interaction.select(tile.id)}secondTapCandidate=false;dragId=null;origin=null;dragMoved=false;ghost=null;sync();if(wasDragging&&game.interaction.selectedTile===tile.id)$('message').textContent='Pedra selecionada. Toque em uma das pontas destacadas para encaixar.'});
+  b.addEventListener('pointerup',e=>{
+   if(dragId!==e.pointerId||!handDrag)return;
+   const active=handDrag,point=pointerFrame(e),wasDragging=dragMoved||Math.hypot(point.x-active.start.x,point.y-active.start.y)>=8;
+   if(active.state!==game.state||active.round!==game.state.roundsCompleted||gestureBlocked){cancelGesture();sync();return}
+   const plan=wasDragging?handDropPlan(e,tile.id):null;
+   if(plan){
+    cancelGesture();game.moveHandTile(tile.id,plan.beforeId,plan.neighborId);sync();return;
+   }
+   let committed=false;
+   if(wasDragging&&within(point,frameRect($('table')))){
+    if(!active.tableStarted)active.tableStarted=Boolean(game.interaction.begin(e.pointerId,tile.id,active.tableStart));
+    committed=active.tableStarted&&game.interaction.move(e.pointerId,coords(e))?.committed===true;
+   }
+   handDrag=null;clearDragVisual();dragId=null;origin=null;dragMoved=false;ghost=null;
+   if(committed){afterAction();return}
+   game.interaction.end(e.pointerId);
+   if(!wasDragging){
+    const sides=validSides(s,0,tile.id);
+    if(secondTapCandidate&&sides.length===1){game.interaction.select(tile.id);if(game.interaction.tapEndpoint(sides[0])){secondTapCandidate=false;afterAction();return}}
+    game.interaction.select(tile.id);
+   }else game.interaction.cancel();
+   secondTapCandidate=false;sync();
+  });
   b.addEventListener('pointercancel',e=>{if(dragId!==e.pointerId)return;cancelGesture();sync()});
   b.addEventListener('lostpointercapture',e=>{if(dragId===e.pointerId){cancelGesture();sync()}});
-  b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();const wasSelected=game.interaction.selectedTile===tile.id;const sides=validSides(game.state,0,tile.id);if(wasSelected&&sides.length===1&&game.interaction.tapEndpoint(sides[0])){afterAction();return}game.interaction.select(tile.id);sync()}});
+  b.addEventListener('keydown',e=>{
+   if(e.altKey&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){
+    e.preventDefault();cancelGesture();const order=game.orderedHand(),i=order.findIndex(t=>t.id===tile.id),destination=i+(e.key==='ArrowLeft'?-1:1);
+    if(destination>=0&&destination<order.length){const before=e.key==='ArrowLeft'?order[destination].id:order[destination+1]?.id??null;game.moveHandTile(tile.id,before,order[destination].id);sync();[...$('hand').children].find(el=>Number(el.dataset.tileId)===tile.id)?.focus?.()}return;
+   }
+   if(e.key.toLowerCase()==='r'){e.preventDefault();cancelGesture();game.flipHandTile(tile.id);sync();return}
+   if(e.key==='Enter'||e.key===' '){e.preventDefault();const wasSelected=game.interaction.selectedTile===tile.id;const sides=validSides(s,0,tile.id);if(wasSelected&&sides.length===1&&game.interaction.tapEndpoint(sides[0])){afterAction();return}game.interaction.select(tile.id);sync()}
+  });
   hand.append(b);
  }
  $('declare-four').hidden=!game.canDeclareFour();
  if(declarationContext && (declarationContext.state!==s || declarationContext.events!==s.events.length || !game.canDeclareFour()))closeDeclaration();
  $('next-round').hidden=s.phase!=='round-complete';
  $('play-again').hidden=s.phase!=='finished';
- $('message').textContent=game.model.status==='unavailable'?'Mesa não desenhada: '+game.model.failure:s.phase==='round-complete'?'Rodada encerrada! Vencedor: '+(s.nextOpeningSeat===0?'Você':`Robô ${s.nextOpeningSeat}`)+'. Pontuação atualizada. Toque em Próxima rodada para continuar.':s.phase==='finished'?'Partida encerrada. Vencedor: '+(s.winner===0?'Você':`Robô ${s.winner}`):s.phase==='blocked-awaiting-rule'?'Rodada bloqueada: regra da V0.21 preservada.':s.turn===0?(game.interaction.selectedTile!==null?(validSides(s,0,game.interaction.selectedTile).length===1?'Uma ponta disponível: toque novamente na pedra para jogar.':'Duas pontas disponíveis: escolha uma ponta iluminada.'):'Sua vez! Selecione uma pedra e uma ponta.'):`Robô ${s.turn} pensando... (3 segundos por jogada)`;
+ $('message').textContent=game.model.status==='unavailable'?'Mesa não desenhada: '+game.model.failure:s.phase==='round-complete'?'Rodada encerrada! Vencedor: '+(s.nextOpeningSeat===0?'Você':PLAYER_NAMES[s.nextOpeningSeat])+'. Pontuação atualizada. Toque em Próxima rodada para continuar.':s.phase==='finished'?'Partida encerrada. Vencedor: '+(s.winner===0?'Você':PLAYER_NAMES[s.winner]):s.phase==='blocked-awaiting-rule'?'Rodada bloqueada: regra da V0.21 preservada.':s.turn===0?(game.interaction.selectedTile!==null?(validSides(s,0,game.interaction.selectedTile).length===1?'Uma ponta disponível: toque novamente na pedra para jogar.':'Duas pontas disponíveis: escolha uma ponta iluminada.'):'Sua vez! Arraste na mão para organizar ou leve uma pedra à mesa.'):`${PLAYER_NAMES[s.turn]} pensando... (3 segundos por jogada)`;
 }
 // Capture phase sees a second pointer even outside the rack/first captured element.
 document.addEventListener('pointerdown',e=>{activePointers.add(e.pointerId);if(activePointers.size>1){gestureBlocked=true;cancelGesture();drawBoard(game.model)}},true);
@@ -141,7 +209,7 @@ $('declare-dialog').addEventListener('keydown',e=>{
  if(e.key==='Escape'){e.preventDefault();$('declare-cancel').onclick()}
  if(e.key==='Tab'){e.preventDefault();const confirm=$('declare-confirm'),cancel=$('declare-cancel');(document.activeElement===cancel?confirm:cancel).focus?.()}
 });
-$('organize').onclick=()=>{if(declarationContext)return;cancelGesture();game.organizeHand();sync()};
+$('organize').onclick=()=>{if(declarationContext)return;cancelGesture();$('message').textContent='Arraste qualquer pedra dentro da mão para organizar. Números iguais se alinham; leve à mesa para jogar.';[...$('hand').children][0]?.focus?.()};
 $('difficulty').onchange=()=>{game.setDifficulty($('difficulty').value);$('entry-difficulty').value=game.difficulty;sync()};
 $('entry-difficulty').onchange=()=>{game.setDifficulty($('entry-difficulty').value);$('difficulty').value=game.difficulty};
 $('next-round').onclick=()=>{if(game.state.phase!=='round-complete')return;stopBotSequence();cancelGesture();if(game.nextRound()){sync();scheduleBots()}};
