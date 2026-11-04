@@ -84,3 +84,6 @@ header{grid-row:1;position:relative}header>span{display:none}
 .app[data-dense="true"] .seat:nth-child(1){bottom:-66px;max-width:160px;z-index:2}
 .app[data-dense="true"] .play-controls{justify-content:flex-end}
 .app[data-dense="true"] .play-controls .message{position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden}
+
+/* M01 drag feedback uses the landscape frame; no game-state mutation while moving. */
+.piece.drag-floating{position:absolute;z-index:100;pointer-events:none;transform:translate(-50%,-50%);opacity:.94;box-shadow:0 6px 16px #0009,0 0 0 2px #ffe28a;outline:none}

@@ -4,7 +4,7 @@ import {validSides,chooseRoute} from '../dist/src/table.js';
 import {legalTiles,secureIndex} from '../dist/src/engine.js';
 const $=id=>document.getElementById(id);
 let game=new LocalSession();let routeStyle=chooseRoute(secureIndex);
-let dragId=null,origin=null,dragMoved=false,ghost=null;const activePointers=new Set();let gestureBlocked=false;
+let dragId=null,origin=null,dragMoved=false,ghost=null,floatingTile=null;const activePointers=new Set();let gestureBlocked=false;
 let rotated=false,zoom=1,pan={x:0,y:0},panStart=null;
 let tableSpace={width:800,height:430,scale:1},viewportSignature='',orientationPending=false;
 let botTimer=null,botEpoch=0;
@@ -27,7 +27,9 @@ async function lockLandscape(gesture=false){
  finally{orientationPending=false;queueViewport()}
 }
 function rect(){const physical={width:$('table').clientWidth,height:$('table').clientHeight};const fitted=fittedTableSpace(physical.width,physical.height);if(!fitted)return null;tableSpace=fitted;return {x:0,y:0,width:fitted.width,height:fitted.height}}
-function cancelGesture(){game.interaction.cancel();dragId=null;origin=null;dragMoved=false;ghost=null;panStart=null}
+function clearDragVisual(){floatingTile?.remove?.();floatingTile=null}
+function followPointer(e,tile,source){if(!floatingTile){floatingTile=tileEl(tile,'drag-floating');floatingTile.setAttribute('aria-hidden','true');floatingTile.style.width=(source.offsetWidth||88)+'px';floatingTile.style.height=(source.offsetHeight||44)+'px';$('app').append(floatingTile)}const p=framePoint({x:e.clientX,y:e.clientY},$('app').getBoundingClientRect(),rotated);floatingTile.style.left=p.x+'px';floatingTile.style.top=p.y+'px'}
+function cancelGesture(){clearDragVisual();game.interaction.cancel();dragId=null;origin=null;dragMoved=false;ghost=null;panStart=null}
 function tileEl(tile,css=''){const b=document.createElement('button');b.className='piece '+css;b.dataset.tileId=tile.id;b.innerHTML=`<span>${tile.a}</span><span class="divider"></span><span>${tile.b}</span>`;b.setAttribute('aria-label',`Pedra ${tile.a} e ${tile.b}`);return b}
 function drawBoard(model,previewId=null){
  const surface=$('table');surface.replaceChildren();const table=document.createElement('div');table.className='board-layer';const scale=zoom*tableSpace.scale;table.style.width=tableSpace.width+'px';table.style.height=tableSpace.height+'px';table.style.transformOrigin='0 0';table.style.transform=`translate(${$('table').clientWidth/2+pan.x-tableSpace.width*scale/2}px,${$('table').clientHeight/2+pan.y-tableSpace.height*scale/2}px) scale(${scale})`;surface.append(table);
@@ -61,11 +63,12 @@ function sync(){
    if(dragId!==e.pointerId)return;
    const pos=coords(e);if(origin&&Math.hypot(pos.x-origin.x,pos.y-origin.y)>=8)dragMoved=true;
    if(!dragMoved)return;
-   const result=game.interaction.move(e.pointerId,pos);
-   if(result.committed){dragId=null;origin=null;ghost=null;afterAction();return}
-   if(result.preview?.model){ghost=result.preview.tileId;drawBoard(result.preview.model,ghost)}else if(ghost!==null){ghost=null;drawBoard(game.model)}
+   followPointer(e,tile,b);
+   // Movement previews only. Release is the sole pointer commit boundary.
+   const preview=game.interaction.preview(tile.id,pos);
+   if(preview?.model){ghost=preview.tileId;drawBoard(preview.model,ghost)}else if(ghost!==null){ghost=null;drawBoard(game.model)}
   });
-  b.addEventListener('pointerup',e=>{if(dragId!==e.pointerId)return;const wasDragging=dragMoved;const result=wasDragging?game.interaction.move(e.pointerId,coords(e)):null;if(result?.committed){dragId=null;origin=null;ghost=null;afterAction();return}game.interaction.end(e.pointerId);if(!wasDragging&&!gestureBlocked&&secondTapCandidate){const sides=validSides(game.state,0,tile.id);if(sides.length===1&&game.interaction.tapEndpoint(sides[0])){dragId=null;origin=null;ghost=null;secondTapCandidate=false;afterAction();return}}if(wasDragging&&!gestureBlocked){game.interaction.select(tile.id)}secondTapCandidate=false;dragId=null;origin=null;dragMoved=false;ghost=null;sync();if(wasDragging&&game.interaction.selectedTile===tile.id)$('message').textContent='Pedra selecionada. Toque em uma das pontas destacadas para encaixar.'});
+  b.addEventListener('pointerup',e=>{if(dragId!==e.pointerId)return;clearDragVisual();const wasDragging=dragMoved;const result=wasDragging?game.interaction.move(e.pointerId,coords(e)):null;if(result?.committed){dragId=null;origin=null;ghost=null;afterAction();return}game.interaction.end(e.pointerId);if(!wasDragging&&!gestureBlocked&&secondTapCandidate){const sides=validSides(game.state,0,tile.id);if(sides.length===1&&game.interaction.tapEndpoint(sides[0])){dragId=null;origin=null;ghost=null;secondTapCandidate=false;afterAction();return}}if(wasDragging&&!gestureBlocked){game.interaction.select(tile.id)}secondTapCandidate=false;dragId=null;origin=null;dragMoved=false;ghost=null;sync();if(wasDragging&&game.interaction.selectedTile===tile.id)$('message').textContent='Pedra selecionada. Toque em uma das pontas destacadas para encaixar.'});
   b.addEventListener('pointercancel',e=>{if(dragId!==e.pointerId)return;cancelGesture();sync()});
   b.addEventListener('lostpointercapture',e=>{if(dragId===e.pointerId){cancelGesture();sync()}});
   b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();const wasSelected=game.interaction.selectedTile===tile.id;const sides=validSides(game.state,0,tile.id);if(wasSelected&&sides.length===1&&game.interaction.tapEndpoint(sides[0])){afterAction();return}game.interaction.select(tile.id);sync()}});
@@ -79,7 +82,7 @@ document.addEventListener('pointerdown',e=>{activePointers.add(e.pointerId);if(a
 for(const type of ['pointerup','pointercancel'])document.addEventListener(type,e=>{activePointers.delete(e.pointerId);if(!activePointers.size)gestureBlocked=false});
 window.addEventListener('blur',()=>{cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(game.model)});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){stopBotSequence();cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(game.model)}else{sync();scheduleBots()}});
-function afterAction(){dragId=null;origin=null;ghost=null;sync();scheduleBots()}
+function afterAction(){clearDragVisual();dragId=null;origin=null;ghost=null;sync();scheduleBots()}
 $('pass').onclick=()=>{if(game.humanPass())afterAction()};
 $('restart').onclick=()=>{stopBotSequence();cancelGesture();game=new LocalSession(Number($('target').value),Number($('deal').value));routeStyle=$('route').value==='random'?chooseRoute(secureIndex):$('route').value;sync();scheduleBots()};
 $('route').onchange=()=>{cancelGesture();routeStyle=$('route').value==='random'?chooseRoute(secureIndex):$('route').value;sync()};
