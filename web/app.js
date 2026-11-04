@@ -6,6 +6,9 @@ const $=id=>document.getElementById(id);
 let game=new LocalSession();let routeStyle=chooseRoute(secureIndex);
 let dragId=null,origin=null,dragMoved=false,ghost=null;const activePointers=new Set();let gestureBlocked=false;
 let rotated=false,zoom=1,pan={x:0,y:0},panStart=null;
+let botTimer=null,botEpoch=0;
+function stopBotSequence(){botEpoch++;if(botTimer!==null){clearTimeout(botTimer);botTimer=null}}
+function scheduleBots(){stopBotSequence();if(document.hidden||game.state.phase!=='playing'||game.state.turn===0)return;const epoch=botEpoch;const step=()=>{if(epoch!==botEpoch)return;botTimer=null;if(document.hidden||game.state.phase!=='playing'||game.state.turn===0)return;game.advanceBots(1);sync();if(game.state.phase==='playing'&&game.state.turn!==0)botTimer=setTimeout(step,3000)};botTimer=setTimeout(step,3000)}
 function coords(e){const r=$('app').getBoundingClientRect(),p=framePoint({x:e.clientX,y:e.clientY},r,rotated);const x=p.x-$('table').offsetLeft-$('table').parentElement.offsetLeft-$('table').clientLeft,y=p.y-$('table').offsetTop-$('table').parentElement.offsetTop-$('table').clientTop;return {x:(x-$('table').clientWidth/2-pan.x)/zoom+$('table').clientWidth/2,y:(y-$('table').clientHeight/2-pan.y)/zoom+$('table').clientHeight/2}}
 function fitViewport(){
  cancelGesture();zoom=1;pan={x:0,y:0};const probe=getComputedStyle($('safe-probe')),insets={top:parseFloat(probe.paddingTop),right:parseFloat(probe.paddingRight),bottom:parseFloat(probe.paddingBottom),left:parseFloat(probe.paddingLeft)};
@@ -33,11 +36,14 @@ function sync(){
  drawBoard(game.model);
  const hand=$('hand');hand.replaceChildren();
  for(const tile of human.hand){
-  const b=tileEl(tile,'inhand'+(game.interaction.selectedTile===tile.id?' selected':''));b.disabled=s.turn!==0||s.phase!=='playing'||game.model.status==='unavailable';
+  const b=tileEl(tile,'inhand'+(game.interaction.selectedTile===tile.id?' selected':'')+(validSides(s,0,tile.id).length?' playable':' unavailable'));b.setAttribute('aria-pressed',String(game.interaction.selectedTile===tile.id));b.disabled=s.turn!==0||s.phase!=='playing'||game.model.status==='unavailable'||validSides(s,0,tile.id).length===0;
+  let secondTapCandidate=false;
   b.addEventListener('pointerdown',e=>{
+   secondTapCandidate=false;
    if(gestureBlocked)return;
    if(dragId!==null){cancelGesture();drawBoard(game.model);return}
    if(e.button!==0||!e.isPrimary)return;
+   secondTapCandidate=game.interaction.selectedTile===tile.id;
    if(!game.interaction.begin(e.pointerId,tile.id,coords(e)))return;
    dragId=e.pointerId;origin=coords(e);dragMoved=false;b.setPointerCapture(e.pointerId);
   });
@@ -47,24 +53,25 @@ function sync(){
    if(!dragMoved)return;
    const result=game.interaction.move(e.pointerId,pos);
    if(result.committed){dragId=null;origin=null;ghost=null;afterAction();return}
-   if(result.preview?.model){ghost=result.preview.tileId;drawBoard(result.preview.model,ghost)}
+   if(result.preview?.model){ghost=result.preview.tileId;drawBoard(result.preview.model,ghost)}else if(ghost!==null){ghost=null;drawBoard(game.model)}
   });
-  b.addEventListener('pointerup',e=>{if(dragId!==e.pointerId)return;game.interaction.end(e.pointerId);if(dragMoved)game.interaction.cancel();dragId=null;origin=null;ghost=null;sync()});
-  b.addEventListener('pointercancel',()=>{cancelGesture();sync()});
-  b.addEventListener('lostpointercapture',()=>{if(dragId!==null){cancelGesture();sync()}});
-  b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();game.interaction.select(tile.id);sync()}});
+  b.addEventListener('pointerup',e=>{if(dragId!==e.pointerId)return;const wasDragging=dragMoved;const result=wasDragging?game.interaction.move(e.pointerId,coords(e)):null;if(result?.committed){dragId=null;origin=null;ghost=null;afterAction();return}game.interaction.end(e.pointerId);if(!wasDragging&&!gestureBlocked&&secondTapCandidate){const sides=validSides(game.state,0,tile.id);if(sides.length===1&&game.interaction.tapEndpoint(sides[0])){dragId=null;origin=null;ghost=null;secondTapCandidate=false;afterAction();return}}if(wasDragging&&!gestureBlocked){game.interaction.select(tile.id)}secondTapCandidate=false;dragId=null;origin=null;dragMoved=false;ghost=null;sync();if(wasDragging&&game.interaction.selectedTile===tile.id)$('message').textContent='Pedra selecionada. Toque em uma das pontas destacadas para encaixar.'});
+  b.addEventListener('pointercancel',e=>{if(dragId!==e.pointerId)return;cancelGesture();sync()});
+  b.addEventListener('lostpointercapture',e=>{if(dragId===e.pointerId){cancelGesture();sync()}});
+  b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();const wasSelected=game.interaction.selectedTile===tile.id;const sides=validSides(game.state,0,tile.id);if(wasSelected&&sides.length===1&&game.interaction.tapEndpoint(sides[0])){afterAction();return}game.interaction.select(tile.id);sync()}});
   hand.append(b);
  }
  $('pass').disabled=s.turn!==0||s.phase!=='playing'||legalTiles(s,0).length>0;
- $('message').textContent=game.model.status==='unavailable'?'Mesa não desenhada: '+game.model.failure:s.phase==='finished'?'Partida encerrada. Vencedor: '+(s.winner===0?'Você':`Robô ${s.winner}`):s.phase==='blocked-awaiting-rule'?'Rodada bloqueada: regra da V0.21 preservada.':s.turn===0?'Sua vez! Selecione uma pedra e uma ponta.':'Robôs jogando';
+ $('message').textContent=game.model.status==='unavailable'?'Mesa não desenhada: '+game.model.failure:s.phase==='finished'?'Partida encerrada. Vencedor: '+(s.winner===0?'Você':`Robô ${s.winner}`):s.phase==='blocked-awaiting-rule'?'Rodada bloqueada: regra da V0.21 preservada.':s.turn===0?(game.interaction.selectedTile!==null?(validSides(s,0,game.interaction.selectedTile).length===1?'Uma ponta disponível: toque novamente na pedra para jogar.':'Duas pontas disponíveis: escolha uma ponta iluminada.'):'Sua vez! Selecione uma pedra e uma ponta.'):`Robô ${s.turn} pensando... (3 segundos por jogada)`;
 }
 // Capture phase sees a second pointer even outside the rack/first captured element.
 document.addEventListener('pointerdown',e=>{activePointers.add(e.pointerId);if(activePointers.size>1){gestureBlocked=true;cancelGesture();drawBoard(game.model)}},true);
 for(const type of ['pointerup','pointercancel'])document.addEventListener(type,e=>{activePointers.delete(e.pointerId);if(!activePointers.size)gestureBlocked=false});
 window.addEventListener('blur',()=>{cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(game.model)});
-function afterAction(){dragId=null;origin=null;ghost=null;game.advanceBots();sync()}
+document.addEventListener('visibilitychange',()=>{if(document.hidden){stopBotSequence();cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(game.model)}else{sync();scheduleBots()}});
+function afterAction(){dragId=null;origin=null;ghost=null;sync();scheduleBots()}
 $('pass').onclick=()=>{if(game.humanPass())afterAction()};
-$('restart').onclick=()=>{cancelGesture();game=new LocalSession(Number($('target').value),Number($('deal').value));routeStyle=$('route').value==='random'?chooseRoute(secureIndex):$('route').value;game.advanceBots();sync()};
+$('restart').onclick=()=>{stopBotSequence();cancelGesture();game=new LocalSession(Number($('target').value),Number($('deal').value));routeStyle=$('route').value==='random'?chooseRoute(secureIndex):$('route').value;sync();scheduleBots()};
 $('route').onchange=()=>{cancelGesture();routeStyle=$('route').value==='random'?chooseRoute(secureIndex):$('route').value;sync()};
 $('zoom').onclick=()=>{cancelGesture();zoom=zoom>=8?1:Math.min(8,zoom*2);pan={x:0,y:0};drawBoard(game.model)};
 $('fit').onclick=()=>{cancelGesture();zoom=1;pan={x:0,y:0};drawBoard(game.model)};
@@ -75,4 +82,4 @@ $('fullscreen').onclick=lockLandscape;
 window.addEventListener('resize',fitViewport);
 document.addEventListener('fullscreenchange',fitViewport);
 new ResizeObserver(()=>{cancelGesture();sync()}).observe($('table'));
-fitViewport();game.advanceBots();sync();
+fitViewport();sync();scheduleBots();
