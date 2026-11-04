@@ -12,8 +12,8 @@ function scheduleBots(){stopBotSequence();if(document.hidden||game.state.phase!=
 function coords(e){const r=$('app').getBoundingClientRect(),p=framePoint({x:e.clientX,y:e.clientY},r,rotated);const x=p.x-$('table').offsetLeft-$('table').parentElement.offsetLeft-$('table').clientLeft,y=p.y-$('table').offsetTop-$('table').parentElement.offsetTop-$('table').clientTop;return {x:(x-$('table').clientWidth/2-pan.x)/zoom+$('table').clientWidth/2,y:(y-$('table').clientHeight/2-pan.y)/zoom+$('table').clientHeight/2}}
 function fitViewport(){
  cancelGesture();zoom=1;pan={x:0,y:0};const probe=getComputedStyle($('safe-probe')),insets={top:parseFloat(probe.paddingTop),right:parseFloat(probe.paddingRight),bottom:parseFloat(probe.paddingBottom),left:parseFloat(probe.paddingLeft)};
- const v=landscapeViewport(document.documentElement.clientWidth,window.innerHeight,insets);rotated=v.rotated;
- const app=$('app');app.style.width=v.width+'px';app.style.height=v.height+'px';app.style.left=v.left+'px';app.style.top=v.top+'px';app.style.transform=rotated?'translateX('+v.height+'px) rotate(90deg)':'none';app.dataset.rotated=String(rotated);
+ const visible=window.visualViewport;const v=landscapeViewport(visible?.width??document.documentElement.clientWidth,visible?.height??window.innerHeight,insets);rotated=v.rotated;
+ const app=$('app');app.style.width=v.width+'px';app.style.height=v.height+'px';app.style.left=v.left+'px';app.style.top=v.top+'px';app.style.transform=rotated?'translateX('+v.height+'px) rotate(90deg)':'none';app.dataset.rotated=String(rotated);app.dataset.compact=String(v.height<500);app.style.setProperty('--gutter',Math.max(6,(v.width-1440)/2)+'px');
 }
 async function lockLandscape(){try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen?.();if(!screen.orientation?.lock)throw new Error('Orientation lock unavailable');await screen.orientation.lock('landscape');$('app').dataset.orientationLock='native'}catch{$('app').dataset.orientationLock='visual-fallback'}fitViewport()}
 function rect(){return {x:0,y:0,width:$('table').clientWidth,height:$('table').clientHeight}}
@@ -79,7 +79,11 @@ $('table').addEventListener('pointerdown',e=>{if(zoom===1||e.target.closest('but
 $('table').addEventListener('pointermove',e=>{if(!panStart||panStart.id!==e.pointerId)return;if(gestureBlocked){panStart=null;return}const p=framePoint({x:e.clientX,y:e.clientY},$('app').getBoundingClientRect(),rotated);pan={x:panStart.pan.x+p.x-panStart.point.x,y:panStart.pan.y+p.y-panStart.point.y};drawBoard(game.model)});
 for(const type of ['pointerup','pointercancel','lostpointercapture'])$('table').addEventListener(type,()=>{panStart=null});
 $('fullscreen').onclick=lockLandscape;
-window.addEventListener('resize',fitViewport);
-document.addEventListener('fullscreenchange',fitViewport);
-new ResizeObserver(()=>{cancelGesture();sync()}).observe($('table'));
+$('settings').onclick=()=>{const panel=$('settings-panel');panel.hidden=!panel.hidden;$('settings').setAttribute('aria-expanded',String(!panel.hidden))};
+let viewportQueued=false;function queueViewport(){if(viewportQueued)return;viewportQueued=true;queueMicrotask(()=>{viewportQueued=false;fitViewport()})}
+window.addEventListener('resize',queueViewport);
+window.visualViewport?.addEventListener('resize',queueViewport);
+new ResizeObserver(queueViewport).observe(document.documentElement);
+document.addEventListener('fullscreenchange',queueViewport);
+let measuredSize='';new ResizeObserver(()=>{const b=rect(),size=b.width+':'+b.height;if(size===measuredSize)return;measuredSize=size;cancelGesture();sync()}).observe($('table'));
 fitViewport();sync();scheduleBots();

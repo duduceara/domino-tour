@@ -10,7 +10,7 @@ import {LocalSession} from '../dist/src/session.js';
 // DOM adapter, not a real browser/device. Executes the unchanged app handlers and timers.
 function app(){
  class Element{
-  constructor(){this.children=[];this.dataset={};this.style={};this.listeners={};this.className='';this.value='100';this.clientWidth=800;this.clientHeight=430;this.offsetLeft=this.offsetTop=this.clientLeft=this.clientTop=0;this.parentElement={offsetLeft:0,offsetTop:0};}
+  constructor(){this.children=[];this.dataset={};this.style={setProperty(k,v){this[k]=v}};this.listeners={};this.className='';this.value='100';this.clientWidth=800;this.clientHeight=430;this.offsetLeft=this.offsetTop=this.clientLeft=this.clientTop=0;this.parentElement={offsetLeft:0,offsetTop:0};}
   replaceChildren(...v){this.children=v} append(v){this.children.push(v)} setAttribute(k,v){this[k]=v} addEventListener(k,v){(this.listeners[k]??=[]).push(v)} setPointerCapture(){} getBoundingClientRect(){return {x:0,y:0,left:0,top:0,width:800,height:430}} closest(){return this}
  }
  const els=new Map();const get=id=>{if(!els.has(id))els.set(id,new Element());return els.get(id)};

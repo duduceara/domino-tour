@@ -48,3 +48,28 @@ header strong{font-weight:850;letter-spacing:.055em}
 /* Clear visual distinction between playable and blocked hand tiles. */
 .piece.inhand.unavailable:not(.selected){filter:saturate(.55);opacity:.72}
 .piece.inhand.playable:not(:disabled){border-color:#d7b36a}
+
+/* M01 bounds repair: allocate physical table space before solving geometry.
+   Compactness follows the logical landscape frame, not the device's portrait width. */
+.app{grid-template-rows:44px minmax(0,1fr) 52px 44px;gap:2px;padding:2px var(--gutter,6px)}
+header{grid-row:1;position:relative}header>span{display:none}
+.arena{grid-row:2;max-width:1360px;width:100%}
+.hand{grid-row:3;gap:6px;align-items:center}
+.play-controls{grid-row:4;display:flex;align-items:center;gap:6px;min-width:0}
+.play-controls .message{flex:1;min-width:0;white-space:nowrap;text-overflow:ellipsis}
+.play-controls button{flex-shrink:0;min-height:44px}
+.table{inset:24px 90px;border-width:8px}
+.toolbar{position:absolute;top:48px;left:var(--gutter,6px);right:var(--gutter,6px);z-index:50;display:flex;flex-wrap:wrap;min-height:60px;padding:8px;background:#082e23;border:1px solid #d3af6a;box-shadow:0 4px 12px #0009}
+.toolbar[hidden]{display:none}
+.piece.inhand{width:88px;max-width:calc((100% - 36px)/7);height:auto;min-height:0;aspect-ratio:2/1;flex-shrink:0;font-size:18px}
+.piece.inhand::after{content:'';position:absolute;left:0;right:0;top:50%;height:max(44px,100%);transform:translateY(-50%)}
+.app[data-compact="true"]{grid-template-rows:44px minmax(0,1fr) 44px 44px}
+.app[data-compact="true"] .table{inset:16px 74px;border-width:6px;border-radius:30px}
+.app[data-compact="true"] .seat{font-size:11px;padding:2px 5px;line-height:1.2;max-width:180px}
+.app[data-compact="true"] .seat:nth-child(2),.app[data-compact="true"] .seat:nth-child(4){width:69px}
+.app[data-compact="false"] .seat{font-size:14px;padding:6px 9px}
+.app[data-compact="false"] .seat:nth-child(2),.app[data-compact="false"] .seat:nth-child(4){width:84px}
+.app[data-compact="false"] .piece.inhand{width:96px;font-size:20px}
+@media(max-width:600px){header strong{font-size:14px}header button{padding-inline:8px}.play-controls button{padding-inline:8px}}
+
+.arena{height:100%;max-height:660px;align-self:center}
