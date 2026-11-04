@@ -36,7 +36,7 @@ function sync(){
  drawBoard(game.model);
  const hand=$('hand');hand.replaceChildren();
  for(const tile of human.hand){
-  const b=tileEl(tile,'inhand'+(game.interaction.selectedTile===tile.id?' selected':'')+(validSides(s,0,tile.id).length?' playable':' unavailable'));b.setAttribute('aria-pressed',String(game.interaction.selectedTile===tile.id));b.disabled=s.turn!==0||s.phase!=='playing'||game.model.status==='unavailable';
+  const b=tileEl(tile,'inhand'+(game.interaction.selectedTile===tile.id?' selected':'')+(validSides(s,0,tile.id).length?' playable':' unavailable'));b.setAttribute('aria-pressed',String(game.interaction.selectedTile===tile.id));b.disabled=s.turn!==0||s.phase!=='playing'||game.model.status==='unavailable'||validSides(s,0,tile.id).length===0;
   b.addEventListener('pointerdown',e=>{
    if(gestureBlocked)return;
    if(dragId!==null){cancelGesture();drawBoard(game.model);return}
@@ -50,16 +50,16 @@ function sync(){
    if(!dragMoved)return;
    const result=game.interaction.move(e.pointerId,pos);
    if(result.committed){dragId=null;origin=null;ghost=null;afterAction();return}
-   if(result.preview?.model){ghost=result.preview.tileId;drawBoard(result.preview.model,ghost)}
+   if(result.preview?.model){ghost=result.preview.tileId;drawBoard(result.preview.model,ghost)}else if(ghost!==null){ghost=null;drawBoard(game.model)}
   });
-  b.addEventListener('pointerup',e=>{if(dragId!==e.pointerId)return;const wasDragging=dragMoved;const result=wasDragging?game.interaction.move(e.pointerId,coords(e)):null;if(result?.committed){dragId=null;origin=null;ghost=null;afterAction();return}game.interaction.end(e.pointerId);if(wasDragging){game.interaction.select(tile.id)}dragId=null;origin=null;dragMoved=false;ghost=null;sync();if(wasDragging&&game.interaction.selectedTile===tile.id)$('message').textContent='Pedra selecionada. Toque em uma das pontas destacadas para encaixar.'});
+  b.addEventListener('pointerup',e=>{if(dragId!==e.pointerId)return;const wasDragging=dragMoved;const result=wasDragging?game.interaction.move(e.pointerId,coords(e)):null;if(result?.committed){dragId=null;origin=null;ghost=null;afterAction();return}game.interaction.end(e.pointerId);if(wasDragging&&!gestureBlocked){game.interaction.select(tile.id)}dragId=null;origin=null;dragMoved=false;ghost=null;sync();if(wasDragging&&game.interaction.selectedTile===tile.id)$('message').textContent='Pedra selecionada. Toque em uma das pontas destacadas para encaixar.'});
   b.addEventListener('pointercancel',()=>{cancelGesture();sync()});
   b.addEventListener('lostpointercapture',()=>{if(dragId!==null){cancelGesture();sync()}});
   b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();game.interaction.select(tile.id);sync()}});
   hand.append(b);
  }
  $('pass').disabled=s.turn!==0||s.phase!=='playing'||legalTiles(s,0).length>0;
- $('message').textContent=game.model.status==='unavailable'?'Mesa não desenhada: '+game.model.failure:s.phase==='finished'?'Partida encerrada. Vencedor: '+(s.winner===0?'Você':`Robô ${s.winner}`):s.phase==='blocked-awaiting-rule'?'Rodada bloqueada: regra da V0.21 preservada.':s.turn===0?'Sua vez! Selecione uma pedra e uma ponta.':'Robôs jogando';
+ $('message').textContent=game.model.status==='unavailable'?'Mesa não desenhada: '+game.model.failure:s.phase==='finished'?'Partida encerrada. Vencedor: '+(s.winner===0?'Você':`Robô ${s.winner}`):s.phase==='blocked-awaiting-rule'?'Rodada bloqueada: regra da V0.21 preservada.':s.turn===0?(game.interaction.selectedTile!==null?'Pedra selecionada. Escolha uma ponta iluminada.':'Sua vez! Selecione uma pedra e uma ponta.'):`Robô ${s.turn} pensando... (3 segundos por jogada)`;
 }
 // Capture phase sees a second pointer even outside the rack/first captured element.
 document.addEventListener('pointerdown',e=>{activePointers.add(e.pointerId);if(activePointers.size>1){gestureBlocked=true;cancelGesture();drawBoard(game.model)}},true);
