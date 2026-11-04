@@ -121,3 +121,13 @@ header strong{color:#ffdb7c;text-shadow:0 2px 3px #000,0 0 9px #ffcc5333}
 .entry-choice small{display:block;font-size:14px;margin-top:6px}
 .entry-seats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:18px auto}
 .entry-seats span{padding:12px 6px;background:#0d4839;border:1px solid #e3b86b;border-radius:16px;font-weight:700}
+
+/* M01 Samsung bounds: compact landscape viewport must reserve positive table height.
+   Previously 44+44+44 rows and 4px inset could collapse the playable surface. */
+.app[data-compact="true"]{grid-template-rows:38px minmax(0,1fr) 42px 38px;gap:2px;padding-block:2px}
+.app[data-dense="true"]{grid-template-rows:34px minmax(0,1fr) 38px 34px;gap:1px;padding-block:1px}
+.app[data-dense="true"] .table{inset:2px 72px;border-width:3px;min-height:0}
+.app[data-dense="true"] .hand{min-height:0}
+.app[data-dense="true"] .piece.inhand{height:34px;aspect-ratio:2/1;font-size:15px}
+.app[data-dense="true"] .play-controls button{min-height:32px;padding-block:2px}
+/* Keep visual fit controlled by the measured table element, never by fake geometry. */
