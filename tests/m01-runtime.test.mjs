@@ -16,7 +16,7 @@ function app(){
  const els=new Map();const get=id=>{if(!els.has(id))els.set(id,new Element());return els.get(id)};
  get('deal').value='6';get('route').value='classic';const events={};let now=0,id=0;const timers=new Map();
  const document={hidden:false,documentElement:{clientWidth:800},getElementById:get,createElement:()=>new Element(),addEventListener:(k,v)=>(events[k]??=[]).push(v)};
- const ctx=vm.createContext({...engine,...table,...viewport,LocalSession,document,window:{innerHeight:600,addEventListener:()=>{}},screen:{},getComputedStyle:()=>({paddingTop:'0',paddingRight:'0',paddingBottom:'0',paddingLeft:'0'}),ResizeObserver:class{observe(){}},setTimeout:(f,ms)=>{timers.set(++id,{f,at:now+ms});return id},clearTimeout:i=>timers.delete(i)});
+ const ctx=vm.createContext({...engine,...table,...viewport,LocalSession,document,window:{innerHeight:600,addEventListener:()=>{}},screen:{},navigator:{},requestAnimationFrame:()=>1,getComputedStyle:()=>({paddingTop:'0',paddingRight:'0',paddingBottom:'0',paddingLeft:'0'}),ResizeObserver:class{observe(){}},setTimeout:(f,ms)=>{timers.set(++id,{f,at:now+ms});return id},clearTimeout:i=>timers.delete(i)});
  const source=readFileSync(new URL('../web/app.js',import.meta.url),'utf8').replace(/^import .*;\n/gm,'');vm.runInContext(source,ctx);
  const run=s=>vm.runInContext(s,ctx);
  const emit=(el,type,extra={})=>{const e={pointerId:1,button:0,isPrimary:true,clientX:150,clientY:150,preventDefault(){},...extra};if(type==='pointerdown')for(const f of events[type]??[])f(e);for(const f of el.listeners[type]??[])f(e);if(type!=='pointerdown')for(const f of events[type]??[])f(e)};

@@ -1,4 +1,4 @@
-import {landscapeViewport,framePoint} from '../dist/src/viewport.js';
+import {landscapeViewport,framePoint,fittedTableSpace,tablePoint} from '../dist/src/viewport.js';
 import {LocalSession} from '../dist/src/session.js';
 import {validSides,chooseRoute} from '../dist/src/table.js';
 import {legalTiles,secureIndex} from '../dist/src/engine.js';
@@ -6,21 +6,31 @@ const $=id=>document.getElementById(id);
 let game=new LocalSession();let routeStyle=chooseRoute(secureIndex);
 let dragId=null,origin=null,dragMoved=false,ghost=null;const activePointers=new Set();let gestureBlocked=false;
 let rotated=false,zoom=1,pan={x:0,y:0},panStart=null;
+let tableSpace={width:800,height:430,scale:1},viewportSignature='',orientationPending=false;
 let botTimer=null,botEpoch=0;
 function stopBotSequence(){botEpoch++;if(botTimer!==null){clearTimeout(botTimer);botTimer=null}}
 function scheduleBots(){stopBotSequence();if(document.hidden||game.state.phase!=='playing'||game.state.turn===0)return;const epoch=botEpoch;const step=()=>{if(epoch!==botEpoch)return;botTimer=null;if(document.hidden||game.state.phase!=='playing'||game.state.turn===0)return;game.advanceBots(1);sync();if(game.state.phase==='playing'&&game.state.turn!==0)botTimer=setTimeout(step,3000)};botTimer=setTimeout(step,3000)}
-function coords(e){const r=$('app').getBoundingClientRect(),p=framePoint({x:e.clientX,y:e.clientY},r,rotated);const x=p.x-$('table').offsetLeft-$('table').parentElement.offsetLeft-$('table').clientLeft,y=p.y-$('table').offsetTop-$('table').parentElement.offsetTop-$('table').clientTop;return {x:(x-$('table').clientWidth/2-pan.x)/zoom+$('table').clientWidth/2,y:(y-$('table').clientHeight/2-pan.y)/zoom+$('table').clientHeight/2}}
+function coords(e){const r=$('app').getBoundingClientRect(),p=framePoint({x:e.clientX,y:e.clientY},r,rotated);const x=p.x-$('table').offsetLeft-$('table').parentElement.offsetLeft-$('table').clientLeft,y=p.y-$('table').offsetTop-$('table').parentElement.offsetTop-$('table').clientTop;return tablePoint({x,y},{width:$('table').clientWidth,height:$('table').clientHeight},tableSpace,zoom,pan)}
 function fitViewport(){
- cancelGesture();zoom=1;pan={x:0,y:0};const probe=getComputedStyle($('safe-probe')),insets={top:parseFloat(probe.paddingTop),right:parseFloat(probe.paddingRight),bottom:parseFloat(probe.paddingBottom),left:parseFloat(probe.paddingLeft)};
- const visible=window.visualViewport;const v=landscapeViewport(visible?.width??document.documentElement.clientWidth,visible?.height??window.innerHeight,insets);rotated=v.rotated;
- const app=$('app');app.style.width=v.width+'px';app.style.height=v.height+'px';app.style.left=v.left+'px';app.style.top=v.top+'px';app.style.transform=rotated?'translateX('+v.height+'px) rotate(90deg)':'none';app.dataset.rotated=String(rotated);app.dataset.compact=String(v.height<500);app.dataset.dense=String(v.height<340);$('fullscreen').textContent=v.height<340?'⛶':'Tela cheia';app.style.setProperty('--gutter',Math.max(6,(v.width-1440)/2)+'px');
+ const probe=getComputedStyle($('safe-probe')),insets={top:parseFloat(probe.paddingTop),right:parseFloat(probe.paddingRight),bottom:parseFloat(probe.paddingBottom),left:parseFloat(probe.paddingLeft)};
+ const visible=window.visualViewport;const v=landscapeViewport(visible?.width??document.documentElement.clientWidth,visible?.height??window.innerHeight,insets);const signature=JSON.stringify([v,visible?.offsetLeft??0,visible?.offsetTop??0]);if(signature===viewportSignature)return false;viewportSignature=signature;cancelGesture();zoom=1;pan={x:0,y:0};rotated=v.rotated;
+ const app=$('app');app.style.width=v.width+'px';app.style.height=v.height+'px';app.style.left=(v.left+(visible?.offsetLeft??0))+'px';app.style.top=(v.top+(visible?.offsetTop??0))+'px';app.style.transform=rotated?'translateX('+v.height+'px) rotate(90deg)':'none';app.dataset.rotated=String(rotated);app.dataset.compact=String(v.height<500);app.dataset.dense=String(v.height<340);$('fullscreen').textContent=v.height<340?'⛶':'Tela cheia';app.style.setProperty('--gutter',Math.max(6,(v.width-1440)/2)+'px');return true;
 }
-async function lockLandscape(){try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen?.();if(!screen.orientation?.lock)throw new Error('Orientation lock unavailable');await screen.orientation.lock('landscape');$('app').dataset.orientationLock='native'}catch{$('app').dataset.orientationLock='visual-fallback'}fitViewport()}
-function rect(){return {x:0,y:0,width:$('table').clientWidth,height:$('table').clientHeight}}
+// Entry attempts orientation immediately; fullscreen is requested only with user activation.
+async function lockLandscape(gesture=false){
+ if(orientationPending)return;orientationPending=true;
+ try{
+  if(gesture&&!document.fullscreenElement&&document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();
+  if(!screen.orientation?.lock)throw new Error('Orientation lock unavailable');
+  await screen.orientation.lock('landscape');$('app').dataset.orientationLock='native';
+ }catch{$('app').dataset.orientationLock='visual-fallback'}
+ finally{orientationPending=false;queueViewport()}
+}
+function rect(){const physical={width:$('table').clientWidth,height:$('table').clientHeight};const fitted=fittedTableSpace(physical.width,physical.height);if(!fitted)return null;tableSpace=fitted;return {x:0,y:0,width:fitted.width,height:fitted.height}}
 function cancelGesture(){game.interaction.cancel();dragId=null;origin=null;dragMoved=false;ghost=null;panStart=null}
 function tileEl(tile,css=''){const b=document.createElement('button');b.className='piece '+css;b.dataset.tileId=tile.id;b.innerHTML=`<span>${tile.a}</span><span class="divider"></span><span>${tile.b}</span>`;b.setAttribute('aria-label',`Pedra ${tile.a} e ${tile.b}`);return b}
 function drawBoard(model,previewId=null){
- const surface=$('table');surface.replaceChildren();const table=document.createElement('div');table.className='board-layer';table.style.transform=`translate(${pan.x}px,${pan.y}px) scale(${zoom})`;surface.append(table);
+ const surface=$('table');surface.replaceChildren();const table=document.createElement('div');table.className='board-layer';const scale=zoom*tableSpace.scale;table.style.width=tableSpace.width+'px';table.style.height=tableSpace.height+'px';table.style.transformOrigin='0 0';table.style.transform=`translate(${$('table').clientWidth/2+pan.x-tableSpace.width*scale/2}px,${$('table').clientHeight/2+pan.y-tableSpace.height*scale/2}px) scale(${scale})`;surface.append(table);
  surface.dataset.geometry=model.status;surface.dataset.nodes=String(model.nodes.length);
  if(!model.geometry){const warning=document.createElement('p');warning.className='geometry-warning';warning.textContent='Geometria indisponível ('+model.failure+'). Tente outro percurso ou orientação. Nenhum encaixe artificial foi desenhado.';table.append(warning);return}
  for(const node of model.nodes){const el=tileEl({...node.official,a:node.printed[0],b:node.printed[1]},node.tileId===previewId?'ghost':'');el.disabled=true;const p=node.shape;el.style.left=p.center.x+'px';el.style.top=p.center.y+'px';el.style.width=p.width+'px';el.style.height=p.height+'px';el.style.transform=`translate(-50%,-50%) rotate(${p.angle}deg)`;el.style.fontSize=Math.min(18,p.height*.6)+'px';el.dataset.order=String(node.order);table.append(el)}
@@ -30,7 +40,7 @@ function drawBoard(model,previewId=null){
  }
 }
 function sync(){
- const prior=rect();game.setRouteStyle(routeStyle);game.resize(prior,'horizontal');
+ const prior=rect();if(!prior){$('table').dataset.layout='waiting';return} $('table').dataset.layout='ready';game.setRouteStyle(routeStyle);game.resize(prior,'horizontal');
  const s=game.state,human=s.players[0];
  $('scores').replaceChildren(...s.players.map(p=>{const e=document.createElement('span');e.className='seat'+(s.turn===p.seat?' active':'');e.textContent=`${p.seat===0?'Você':`Robô ${p.seat}`} · ${p.score} pts · ${p.hand.length} pedras`;return e}));
  drawBoard(game.model);
@@ -78,12 +88,24 @@ $('fit').onclick=()=>{cancelGesture();zoom=1;pan={x:0,y:0};drawBoard(game.model)
 $('table').addEventListener('pointerdown',e=>{if(zoom===1||e.target.closest('button')||!e.isPrimary||gestureBlocked)return;const r=$('app').getBoundingClientRect();panStart={id:e.pointerId,point:framePoint({x:e.clientX,y:e.clientY},r,rotated),pan:{...pan}};$('table').setPointerCapture(e.pointerId)});
 $('table').addEventListener('pointermove',e=>{if(!panStart||panStart.id!==e.pointerId)return;if(gestureBlocked){panStart=null;return}const p=framePoint({x:e.clientX,y:e.clientY},$('app').getBoundingClientRect(),rotated);pan={x:panStart.pan.x+p.x-panStart.point.x,y:panStart.pan.y+p.y-panStart.point.y};drawBoard(game.model)});
 for(const type of ['pointerup','pointercancel','lostpointercapture'])$('table').addEventListener(type,()=>{panStart=null});
-$('fullscreen').onclick=lockLandscape;
+$('fullscreen').onclick=()=>lockLandscape(true);
+document.addEventListener('pointerdown',e=>{if(e.isTrusted&&$('app').dataset.orientationLock!=='native')void lockLandscape(true)},{capture:true,once:true});
 $('settings').onclick=()=>{const panel=$('settings-panel');panel.hidden=!panel.hidden;$('settings').setAttribute('aria-expanded',String(!panel.hidden))};
-let viewportQueued=false;function queueViewport(){if(viewportQueued)return;viewportQueued=true;queueMicrotask(()=>{viewportQueued=false;fitViewport()})}
+// All resize sources share one RAF queue. Writes settle before the next frame's read.
+let viewportFrame=null,viewportDirty=true,measuredSize='';
+function queueViewport(){viewportDirty=true;if(viewportFrame===null)viewportFrame=requestAnimationFrame(flushViewport)}
+function flushViewport(){
+ viewportFrame=null;
+ if(document.hidden)return;
+ if(viewportDirty){viewportDirty=false;if(fitViewport()){measuredSize='';viewportFrame=requestAnimationFrame(flushViewport);return}}
+ const size=$('table').clientWidth+':'+$('table').clientHeight;
+ if(size!==measuredSize){measuredSize=size;cancelGesture();sync()}
+}
 window.addEventListener('resize',queueViewport);
 window.visualViewport?.addEventListener('resize',queueViewport);
-new ResizeObserver(queueViewport).observe(document.documentElement);
+window.visualViewport?.addEventListener('scroll',queueViewport);
 document.addEventListener('fullscreenchange',queueViewport);
-let measuredSize='';new ResizeObserver(()=>{const b=rect(),size=b.width+':'+b.height;if(size===measuredSize)return;measuredSize=size;cancelGesture();sync()}).observe($('table'));
-fitViewport();sync();scheduleBots();
+const layoutObserver=new ResizeObserver(queueViewport);
+layoutObserver.observe(document.documentElement);layoutObserver.observe($('table'));
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)queueViewport()});
+fitViewport();sync();scheduleBots();void lockLandscape(Boolean(navigator.userActivation?.isActive));queueViewport();
