@@ -56,8 +56,8 @@ function sync(){
    if(result.preview?.model){ghost=result.preview.tileId;drawBoard(result.preview.model,ghost)}else if(ghost!==null){ghost=null;drawBoard(game.model)}
   });
   b.addEventListener('pointerup',e=>{if(dragId!==e.pointerId)return;const wasDragging=dragMoved;const result=wasDragging?game.interaction.move(e.pointerId,coords(e)):null;if(result?.committed){dragId=null;origin=null;ghost=null;afterAction();return}game.interaction.end(e.pointerId);if(!wasDragging&&!gestureBlocked&&secondTapCandidate){const sides=validSides(game.state,0,tile.id);if(sides.length===1&&game.interaction.tapEndpoint(sides[0])){dragId=null;origin=null;ghost=null;secondTapCandidate=false;afterAction();return}}if(wasDragging&&!gestureBlocked){game.interaction.select(tile.id)}secondTapCandidate=false;dragId=null;origin=null;dragMoved=false;ghost=null;sync();if(wasDragging&&game.interaction.selectedTile===tile.id)$('message').textContent='Pedra selecionada. Toque em uma das pontas destacadas para encaixar.'});
-  b.addEventListener('pointercancel',()=>{cancelGesture();sync()});
-  b.addEventListener('lostpointercapture',()=>{if(dragId!==null){cancelGesture();sync()}});
+  b.addEventListener('pointercancel',e=>{if(dragId!==e.pointerId)return;cancelGesture();sync()});
+  b.addEventListener('lostpointercapture',e=>{if(dragId===e.pointerId){cancelGesture();sync()}});
   b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();const wasSelected=game.interaction.selectedTile===tile.id;const sides=validSides(game.state,0,tile.id);if(wasSelected&&sides.length===1&&game.interaction.tapEndpoint(sides[0])){afterAction();return}game.interaction.select(tile.id);sync()}});
   hand.append(b);
  }
