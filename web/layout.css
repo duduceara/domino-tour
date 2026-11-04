@@ -38,3 +38,9 @@ header strong{font-weight:850;letter-spacing:.055em}
 .piece.inhand:not(:disabled):active{filter:brightness(1.07)}
 .message{font-weight:700;letter-spacing:.012em}
 @media(prefers-reduced-motion:reduce){.piece.inhand{transition:none}}
+
+/* Mobile touch feedback: preserve all existing dimensions and hit areas. */
+.piece.inhand.selected{outline:3px solid #ffe28a;outline-offset:2px;box-shadow:0 0 0 5px #ffcc4633,0 4px 12px #000a;filter:brightness(1.08)}
+.board-layer>.endpoint:not(:disabled){background:#f4c86155;border:2px solid #ffeaa7;box-shadow:0 0 0 5px #ffdc7540,0 0 18px #ffdd8a88;animation:dt-endpoint-pulse 1.5s ease-in-out infinite}
+@keyframes dt-endpoint-pulse{50%{box-shadow:0 0 0 8px #ffdc751e,0 0 24px #ffdd8a66}}
+@media(prefers-reduced-motion:reduce){.board-layer>.endpoint:not(:disabled){animation:none}}
