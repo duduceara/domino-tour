@@ -6,6 +6,9 @@ const $=id=>document.getElementById(id);
 let game=new LocalSession();let routeStyle=chooseRoute(secureIndex);
 let dragId=null,origin=null,dragMoved=false,ghost=null;const activePointers=new Set();let gestureBlocked=false;
 let rotated=false,zoom=1,pan={x:0,y:0},panStart=null;
+let botTimer=null,botEpoch=0;
+function stopBotSequence(){botEpoch++;if(botTimer!==null){clearTimeout(botTimer);botTimer=null}}
+function scheduleBots(){stopBotSequence();if(game.state.phase!=='playing'||game.state.turn===0)return;const epoch=botEpoch;const step=()=>{if(epoch!==botEpoch)return;botTimer=null;if(game.state.phase!=='playing'||game.state.turn===0)return;game.advanceBots(1);sync();if(game.state.phase==='playing'&&game.state.turn!==0)botTimer=setTimeout(step,420)};botTimer=setTimeout(step,420)}
 function coords(e){const r=$('app').getBoundingClientRect(),p=framePoint({x:e.clientX,y:e.clientY},r,rotated);const x=p.x-$('table').offsetLeft-$('table').parentElement.offsetLeft-$('table').clientLeft,y=p.y-$('table').offsetTop-$('table').parentElement.offsetTop-$('table').clientTop;return {x:(x-$('table').clientWidth/2-pan.x)/zoom+$('table').clientWidth/2,y:(y-$('table').clientHeight/2-pan.y)/zoom+$('table').clientHeight/2}}
 function fitViewport(){
  cancelGesture();zoom=1;pan={x:0,y:0};const probe=getComputedStyle($('safe-probe')),insets={top:parseFloat(probe.paddingTop),right:parseFloat(probe.paddingRight),bottom:parseFloat(probe.paddingBottom),left:parseFloat(probe.paddingLeft)};
@@ -33,7 +36,7 @@ function sync(){
  drawBoard(game.model);
  const hand=$('hand');hand.replaceChildren();
  for(const tile of human.hand){
-  const b=tileEl(tile,'inhand'+(game.interaction.selectedTile===tile.id?' selected':''));b.disabled=s.turn!==0||s.phase!=='playing'||game.model.status==='unavailable';
+  const b=tileEl(tile,'inhand'+(game.interaction.selectedTile===tile.id?' selected':'')+(validSides(s,0,tile.id).length?' playable':' unavailable'));b.setAttribute('aria-pressed',String(game.interaction.selectedTile===tile.id));b.disabled=s.turn!==0||s.phase!=='playing'||game.model.status==='unavailable';
   b.addEventListener('pointerdown',e=>{
    if(gestureBlocked)return;
    if(dragId!==null){cancelGesture();drawBoard(game.model);return}
@@ -62,9 +65,9 @@ function sync(){
 document.addEventListener('pointerdown',e=>{activePointers.add(e.pointerId);if(activePointers.size>1){gestureBlocked=true;cancelGesture();drawBoard(game.model)}},true);
 for(const type of ['pointerup','pointercancel'])document.addEventListener(type,e=>{activePointers.delete(e.pointerId);if(!activePointers.size)gestureBlocked=false});
 window.addEventListener('blur',()=>{cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(game.model)});
-function afterAction(){dragId=null;origin=null;ghost=null;game.advanceBots();sync()}
+function afterAction(){dragId=null;origin=null;ghost=null;sync();scheduleBots()}
 $('pass').onclick=()=>{if(game.humanPass())afterAction()};
-$('restart').onclick=()=>{cancelGesture();game=new LocalSession(Number($('target').value),Number($('deal').value));routeStyle=$('route').value==='random'?chooseRoute(secureIndex):$('route').value;game.advanceBots();sync()};
+$('restart').onclick=()=>{stopBotSequence();cancelGesture();game=new LocalSession(Number($('target').value),Number($('deal').value));routeStyle=$('route').value==='random'?chooseRoute(secureIndex):$('route').value;sync();scheduleBots()};
 $('route').onchange=()=>{cancelGesture();routeStyle=$('route').value==='random'?chooseRoute(secureIndex):$('route').value;sync()};
 $('zoom').onclick=()=>{cancelGesture();zoom=zoom>=8?1:Math.min(8,zoom*2);pan={x:0,y:0};drawBoard(game.model)};
 $('fit').onclick=()=>{cancelGesture();zoom=1;pan={x:0,y:0};drawBoard(game.model)};
@@ -75,4 +78,4 @@ $('fullscreen').onclick=lockLandscape;
 window.addEventListener('resize',fitViewport);
 document.addEventListener('fullscreenchange',fitViewport);
 new ResizeObserver(()=>{cancelGesture();sync()}).observe($('table'));
-fitViewport();game.advanceBots();sync();
+fitViewport();sync();scheduleBots();
