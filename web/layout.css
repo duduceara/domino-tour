@@ -44,3 +44,7 @@ header strong{font-weight:850;letter-spacing:.055em}
 .board-layer>.endpoint:not(:disabled){background:#f4c86155;border:2px solid #ffeaa7;box-shadow:0 0 0 5px #ffdc7540,0 0 18px #ffdd8a88;animation:dt-endpoint-pulse 1.5s ease-in-out infinite}
 @keyframes dt-endpoint-pulse{50%{box-shadow:0 0 0 8px #ffdc751e,0 0 24px #ffdd8a66}}
 @media(prefers-reduced-motion:reduce){.board-layer>.endpoint:not(:disabled){animation:none}}
+
+/* Clear visual distinction between playable and blocked hand tiles. */
+.piece.inhand.unavailable:not(.selected){filter:saturate(.55);opacity:.72}
+.piece.inhand.playable:not(:disabled){border-color:#d7b36a}
