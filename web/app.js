@@ -16,7 +16,7 @@ function showPassNotice(seat){
 }
 function scheduleBots(){
  if(botTimer!==null){clearTimeout(botTimer);botTimer=null}botEpoch++;
- if(document.hidden||game.state.phase!=='playing'||passNoticeTimer!==null)return;
+ if(document.hidden||$('entry-flow')?.hidden===false||game.state.phase!=='playing'||passNoticeTimer!==null)return;
  const epoch=botEpoch,seat=game.state.turn;
  if(seat===0){
   if(game.state.lastPlayed!==null&&legalTiles(game.state,0).length===0){
@@ -135,4 +135,5 @@ document.addEventListener('fullscreenchange',queueViewport);
 const layoutObserver=new ResizeObserver(queueViewport);
 layoutObserver.observe(document.documentElement);layoutObserver.observe($('table'));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)queueViewport()});
+window.addEventListener('domino-tour:enter-game',()=>{sync();scheduleBots();queueViewport()});
 fitViewport();sync();scheduleBots();void lockLandscape(Boolean(navigator.userActivation?.isActive));queueViewport();
