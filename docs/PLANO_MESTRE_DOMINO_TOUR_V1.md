@@ -180,3 +180,18 @@ Fila preservada: concluir controle de arraste -> legibilidade/escala das pedras 
 ## 18. Aceite do arraste — 2026-11-04
 Após receber a prévia privada da correção cd6bc59, com pedra acompanhando o dedo, prévia e confirmação na soltura, o usuário respondeu expressamente “Aprovado.” Aceite limitado ao arraste apresentado para avaliação no Samsung; rotação já aceita na seção 17. Encerrar essas duas frentes, preservando o comportamento aprovado. Não estender aprovação a regras/fechamento, partida completa, escala/legibilidade, avatares ou limpeza de botões.
 Próxima entrega isolada: legibilidade e escala das pedras na mesa, mantendo contato físico, extremos, três percursos, estado, orientação e arraste. M01 permanece em 3/5 critérios (60%) de validação automatizada; critérios compostos de regras e partida completa continuam pendentes. Alteração somente documental, sem necessidade de repetir testes ou atualizar a implantação.
+
+## Prévia premium isolada — 2026-11-04
+
+Base inspecionada: `95982c102256bbcf60192e569998ac259db77993`, exclusivamente `feature/mobile-touch-v1`.
+
+- Fluxo corrigido: identidade/carregamento (2s ou pular), apresentação/Começar, modalidade offline, jogadores/preparação, confirmação, mesa.
+- Avatares SVG originais locais, madeira/feltro/dourado, pontos nas pedras existentes preservados. Robô 3 à esquerda e Robô 1 à direita, sem mudar a ordem lógica dos turnos.
+- Câmera baseada na caixa da cadeia ocupada. Desenho, prévia e conversão inversa de toque compartilham a mesma câmera. Alvos de ponta conservam 44px físicos no zoom.
+- Corrigido corte dos botões do cabeçalho em alturas compactas. Proporção 2:1 das pedras da mão preservada.
+- Não modificados: engine.js, session.js, table.js, IA, pontuação, passagem automática/aviso de 2 segundos, transferência de cinco pontos, Próxima rodada e comportamento de rodada bloqueada.
+- Baseline real disponível: 48/48; após alteração: 49/49, zero falhas. `node --check web/app.js` e `web/entry-flow.js` aprovados. Sem bundler: publicação dos módulos estáticos completos.
+- Navegador Chrome real, viewport móvel por iframe: navegação das seis telas; seleção, segundo toque/escolha de ponta, arraste com prévia sem commit antecipado, commit ao soltar e conservação de estado ao redimensionar. Harness reproduzível: `tests/browser-premium.html`. PointerEvents sintéticos; não equivale a Samsung físico.
+- Ajuste INVALID_BOUNDS da base preservado: espaços físicos positivos são normalizados uniformemente para o mínimo lógico de 120px; dimensão zero aguarda medição, sem inventar área física.
+- M01 permanece **60%**. Aparência premium e touch desta revisão aguardam confirmação física do proprietário. Arte é evolução vetorial inicial, não equivalência final à imagem de referência.
+- Hospedagem: somente prévia privada isolada existente, mantendo o público GitHub Pages e branches protegidas intactos.

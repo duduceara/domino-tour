@@ -55,19 +55,28 @@ const PIP_POSITIONS=[[],[4],[0,8],[0,4,8],[0,2,6,8],[0,2,4,6,8],[0,2,3,5,6,8]];
 function pipFace(value){const occupied=new Set(PIP_POSITIONS[value]??[]);return '<span class="pip-face" aria-hidden="true">'+Array.from({length:9},(_,i)=>'<i class="pip'+(occupied.has(i)?' on':'')+'"></i>').join('')+'</span>'}
 function tileEl(tile,css=''){const b=document.createElement('button');b.className='piece '+css;b.dataset.tileId=tile.id;b.innerHTML=pipFace(tile.a)+'<span class="divider"></span>'+pipFace(tile.b);b.setAttribute('aria-label',`Pedra ${tile.a} e ${tile.b}`);return b}
 function drawBoard(model,previewId=null){
- const surface=$('table');surface.replaceChildren();const table=document.createElement('div');table.className='board-layer';const scale=zoom*tableSpace.scale;table.style.width=tableSpace.width+'px';table.style.height=tableSpace.height+'px';table.style.transformOrigin='0 0';table.style.transform=`translate(${$('table').clientWidth/2+pan.x-tableSpace.width*scale/2}px,${$('table').clientHeight/2+pan.y-tableSpace.height*scale/2}px) scale(${scale})`;surface.append(table);
+ const surface=$('table');surface.replaceChildren();const table=document.createElement('div');table.className='board-layer';// Camera fits the occupied chain, not the solver's mostly empty canvas.
+ let camera=previewId!==null?tableSpace.camera:null;
+ if(!camera&&model.nodes.length&&model.geometry){
+  const bounds=model.nodes.map(n=>{const p=n.shape,a=p.angle*Math.PI/180,w=Math.abs(Math.cos(a))*p.width+Math.abs(Math.sin(a))*p.height,h=Math.abs(Math.sin(a))*p.width+Math.abs(Math.cos(a))*p.height;return {l:p.center.x-w/2,r:p.center.x+w/2,t:p.center.y-h/2,b:p.center.y+h/2}});
+  const ends=Object.values(model.geometry.endpoints);const l=Math.min(...bounds.map(b=>b.l),...ends.map(p=>p.x))-24,r=Math.max(...bounds.map(b=>b.r),...ends.map(p=>p.x))+24,t=Math.min(...bounds.map(b=>b.t),...ends.map(p=>p.y))-24,b=Math.max(...bounds.map(b=>b.b),...ends.map(p=>p.y))+24;
+  const short=Math.min(...model.nodes.map(n=>Math.min(n.shape.width,n.shape.height)));
+  camera={x:(l+r)/2,y:(t+b)/2,scale:Math.min(surface.clientWidth/(r-l),surface.clientHeight/(b-t),32/short)*.88};
+ }
+ tableSpace.camera=camera;
+ const scale=zoom*(camera?.scale??tableSpace.scale);table.style.width=tableSpace.width+'px';table.style.height=tableSpace.height+'px';table.style.transformOrigin='0 0';table.style.transform=`translate(${$('table').clientWidth/2+pan.x-(camera?.x??tableSpace.width/2)*scale}px,${$('table').clientHeight/2+pan.y-(camera?.y??tableSpace.height/2)*scale}px) scale(${scale})`;surface.append(table);
  surface.dataset.geometry=model.status;surface.dataset.nodes=String(model.nodes.length);
  if(!model.geometry){const warning=document.createElement('p');warning.className='geometry-warning';warning.textContent='Geometria indisponível ('+model.failure+'). Tente outro percurso ou orientação. Nenhum encaixe artificial foi desenhado.';table.append(warning);return}
  for(const node of model.nodes){const el=tileEl({...node.official,a:node.printed[0],b:node.printed[1]},node.tileId===previewId?'ghost':'');el.disabled=true;const p=node.shape;el.style.left=p.center.x+'px';el.style.top=p.center.y+'px';el.style.width=p.width+'px';el.style.height=p.height+'px';el.style.transform=`translate(-50%,-50%) rotate(${p.angle}deg)`;el.style.fontSize=Math.min(22,p.height*.72)+'px';el.dataset.order=String(node.order);table.append(el)}
  for(const side of ['left','right']){
-  const point=model.geometry.endpoints[side],b=document.createElement('button');b.className='endpoint';b.dataset.side=side;b.textContent=side==='left'?'←':'→';b.setAttribute('aria-label','Jogar na ponta '+(side==='left'?'esquerda':'direita'));b.style.left=point.x+'px';b.style.top=point.y+'px';b.disabled=previewId!==null||game.state.turn!==0||game.interaction.selectedTile===null||!validSides(game.state,0,game.interaction.selectedTile).includes(side);
+  const point=model.geometry.endpoints[side],b=document.createElement('button');b.className='endpoint';b.dataset.side=side;b.textContent=side==='left'?'←':'→';b.setAttribute('aria-label','Jogar na ponta '+(side==='left'?'esquerda':'direita'));b.style.left=point.x+'px';b.style.top=point.y+'px';b.style.width=b.style.height=b.style.minHeight=(44/scale)+'px';b.style.fontSize=(16/scale)+'px';b.disabled=previewId!==null||game.state.turn!==0||game.interaction.selectedTile===null||!validSides(game.state,0,game.interaction.selectedTile).includes(side);
   b.onclick=()=>{if(game.interaction.tapEndpoint(side))afterAction();else $('message').textContent='Essa pedra não tem encaixe físico validado nessa ponta.'};table.append(b);
  }
 }
 function sync(){
  const prior=rect();if(!prior){$('table').dataset.layout='waiting';return} $('table').dataset.layout='ready';game.setRouteStyle(routeStyle);game.resize(prior,'horizontal');
  const s=game.state,human=s.players[0];
- $('scores').replaceChildren(...s.players.map(p=>{const e=document.createElement('span');e.className='seat'+(s.turn===p.seat?' active':'');e.dataset.seat=String(p.seat);e.setAttribute('aria-label',p.seat===0?'Seu placar':`Placar do robô ${p.seat}`);e.textContent=`${p.seat===0?'Você':`Robô ${p.seat}`} · ${p.score} pts · ${p.hand.length} pedras`;return e}));
+ $('scores').replaceChildren(...s.players.map(p=>{const e=document.createElement('span');e.className='seat'+(s.turn===p.seat?' active':'');e.dataset.seat=String(p.seat);e.setAttribute('aria-label',p.seat===0?'Seu placar':`Placar do robô ${p.seat}`);e.textContent=`${p.seat===0?'Você':`Robô ${p.seat}`} · ${p.score} pts · ${p.hand.length} pedras`;const avatar=document.createElement('img');avatar.src=`./assets/avatar-${p.seat}.svg`;avatar.alt='';avatar.className='avatar';e.append(avatar);return e}));
  drawBoard(game.model);
  const hand=$('hand');hand.replaceChildren();
  for(const tile of human.hand){

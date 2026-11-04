@@ -39,3 +39,12 @@ test('Samsung bounds remain valid with an actual progressing four-seat engine ch
   }
  }
 });
+
+test('occupied-chain camera has an exact inverse for mobile touch',()=>{
+ const logical={width:800,height:430,scale:1,camera:{x:270,y:170,scale:3.2}},physical={width:640,height:180},pan={x:9,y:-4};
+ for(const zoom of [1,2,4])for(const [x,y] of [[270,170],[220,140],[300,180]]){
+  const scale=logical.camera.scale*zoom;
+  const result=tablePoint({x:physical.width/2+pan.x+(x-270)*scale,y:physical.height/2+pan.y+(y-170)*scale},physical,logical,zoom,pan);
+  assert.ok(Math.abs(result.x-x)<1e-9&&Math.abs(result.y-y)<1e-9);
+ }
+});

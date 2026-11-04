@@ -8,6 +8,9 @@ function enterGame(){
  window.dispatchEvent(new Event('domino-tour:enter-game'));
 }
 document.querySelectorAll('[data-entry-next]').forEach(b=>b.addEventListener('click',()=>{step=Math.min(4,step+1);show()}));
-document.querySelectorAll('[data-entry-back]').forEach(b=>b.addEventListener('click',()=>{step=Math.max(0,step-1);show()}));
+document.querySelectorAll('[data-entry-back]').forEach(b=>b.addEventListener('click',()=>{step=Math.max(1,step-1);show()}));
 document.getElementById('entry-play').addEventListener('click',enterGame);
 show();
+
+// Splash is skippable; never advance a screen the player already left.
+setTimeout(()=>{if(step===0){step=1;show()}},2000);

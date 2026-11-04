@@ -16,7 +16,7 @@ export function fittedTableSpace(width, height) {
     return { width: Math.max(120, width / scale), height: Math.max(120, height / scale), scale };
 }
 export function tablePoint(point, physical, logical, zoom = 1, pan = {x:0,y:0}) {
-    const scale = logical.scale * zoom;
-    return {x:(point.x-physical.width/2-pan.x)/scale+logical.width/2,
-            y:(point.y-physical.height/2-pan.y)/scale+logical.height/2};
+    const scale = (logical.camera?.scale ?? logical.scale) * zoom;
+    return {x:(point.x-physical.width/2-pan.x)/scale+(logical.camera?.x ?? logical.width/2),
+            y:(point.y-physical.height/2-pan.y)/scale+(logical.camera?.y ?? logical.height/2)};
 }
