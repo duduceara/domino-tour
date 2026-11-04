@@ -56,3 +56,18 @@ test('bot pass notice identifies seat and pauses subsequent bot action',()=>{
  h.tick(2999);assert.equal(h.run('calls'),1);
  h.tick(1);assert.equal(h.run('calls'),2);
 });
+
+test('new match never performs a robot move before the 3-second scheduler',()=>{
+ const h=app();h.run('stopBotSequence();game.state.turn=1;game.newMatch();game.state.turn=1;globalThis.botCalls=0;game.advanceBots=()=>{botCalls++;game.state.turn=2};scheduleBots()');
+ assert.equal(h.run('botCalls'),0);
+ h.tick(2999);assert.equal(h.run('botCalls'),0);
+ h.tick(1);assert.equal(h.run('botCalls'),1);
+});
+test('entry overlay defers robot scheduler until the player enters the table',()=>{
+ const h=app();h.get('entry-flow').hidden=false;
+ h.run('stopBotSequence();game.state.phase="playing";game.state.turn=1;globalThis.botCalls=0;game.advanceBots=()=>{botCalls++};scheduleBots()');
+ h.tick(5000);assert.equal(h.run('botCalls'),0);
+ h.get('entry-flow').hidden=true;
+ h.run('scheduleBots()');h.tick(2999);assert.equal(h.run('botCalls'),0);
+ h.tick(1);assert.equal(h.run('botCalls'),1);
+});
