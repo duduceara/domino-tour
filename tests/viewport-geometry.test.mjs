@@ -12,3 +12,15 @@ test('zero, hidden and non-finite surfaces defer instead of supplying fake bound
 test('touch is inverse of fit + zoom + pan on actual small surfaces',()=>{
  for(const [w,h] of [[568,79],[396,90],[572,122],[800,430]]){const v=fittedTableSpace(w,h);for(const zoom of [1,2,8])for(const p of [{x:0,y:0},{x:v.width/2,y:v.height/2},{x:v.width,y:v.height}]){const pan={x:23,y:-17},k=v.scale*zoom;const screen={x:w/2+pan.x+(p.x-v.width/2)*k,y:h/2+pan.y+(p.y-v.height/2)*k};const actual=tablePoint(screen,{width:w,height:h},v,zoom,pan);assert.ok(Math.abs(actual.x-p.x)<1e-8);assert.ok(Math.abs(actual.y-p.y)<1e-8)}}
 });
+
+test('Samsung landscape and portrait table bounds never report INVALID_BOUNDS after fit',()=>{
+ const samsungSurfaces=[[568,79],[568,96],[572,102],[740,104],[820,115],[320,78],[79,568],[390,120],[844,190]];
+ for(const [w,h] of samsungSurfaces){
+  const fit=fittedTableSpace(w,h);
+  assert.ok(fit.width>=120&&fit.height>=120,`invalid fitted solver bounds for ${w}x${h}`);
+  for(const style of ['classic','loop','spiral']){
+   const model=buildTableModel([{tileId:27,side:'right',joined:6,exposed:6}],{x:0,y:0,width:fit.width,height:fit.height},'horizontal',style,new Map([[27,{id:27,a:6,b:6}]]));
+   assert.notEqual(model.failure,'INVALID_BOUNDS',`Samsung ${w}x${h} ${style}`);
+  }
+ }
+});
