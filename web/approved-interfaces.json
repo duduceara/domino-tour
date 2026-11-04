@@ -1,0 +1,129 @@
+[
+  {
+    "number": 1,
+    "title": "Carregamento",
+    "status": "recovered",
+    "originalName": "Tela de Carregamento Dominó Tour(1).png",
+    "src": "assets/approved/screen-01.png",
+    "sha256": "d735c9e5c79930692c82bbbadfbfbf8cb8f89b80705beaae1cd9249680610f30"
+  },
+  {
+    "number": 2,
+    "title": "Acesso à conta",
+    "status": "recovered",
+    "originalName": "1000452802(2).png",
+    "src": "assets/approved/screen-02.png",
+    "sha256": "179b81c7304c829b88180e1f4b3efe6dc5d3bb9a332b8bfbdfe92b1ed134e554"
+  },
+  {
+    "number": 3,
+    "title": "Crie sua Identidade",
+    "status": "recovered",
+    "originalName": "1000452801(2).png",
+    "src": "assets/approved/screen-03.png",
+    "sha256": "d30d114e7ecf511b74573450065d820854fdbdd7d546e13efb18f6609da4080a"
+  },
+  {
+    "number": 4,
+    "title": "Sua Jornada / Rumo à Lenda!",
+    "status": "original-unconfirmed",
+    "originalName": null,
+    "src": null
+  },
+  {
+    "number": 5,
+    "title": "Configurar Partida",
+    "status": "recovered",
+    "originalName": "1000452807(1).png",
+    "src": "assets/approved/screen-05.png",
+    "sha256": "d9acf0d993ee6f121ec68350a9a986ae40dc406e9ccd6e766be78561d900947e"
+  },
+  {
+    "number": 6,
+    "title": "Mesa Premium de Dominó",
+    "status": "recovered",
+    "originalName": "1000452811(4).png",
+    "src": "assets/approved/screen-06.png",
+    "sha256": "a4d7e62c0421393d7aa3e535a4abf4eee870736c61fb542b9f09b949a742e76c"
+  },
+  {
+    "number": 7,
+    "title": "Destino e Desafio",
+    "status": "recovered",
+    "originalName": "Desafio em Fortaleza no Dominó Tour.png",
+    "src": "assets/approved/screen-07.png",
+    "sha256": "97db44768a2c28b840e6e90558fbfc6bc67ce119e1c9f1657bd3b925c42b65ac"
+  },
+  {
+    "number": 8,
+    "title": "Mesa de Dominó — referência reutilizada",
+    "status": "recovered",
+    "originalName": "1000452811(4).png",
+    "src": "assets/approved/screen-06.png",
+    "sha256": "a4d7e62c0421393d7aa3e535a4abf4eee870736c61fb542b9f09b949a742e76c"
+  },
+  {
+    "number": 9,
+    "title": "Resultado da Partida",
+    "status": "recovered",
+    "originalName": "Tela de Vitória no Domino Tour.png",
+    "src": "assets/approved/screen-09.png",
+    "sha256": "090271f3ec1b85963011f59c13a4cd256a617e9a6a42a929b8611f04b68da2b9"
+  },
+  {
+    "number": 10,
+    "title": "Torneios e Ligas",
+    "status": "recovered",
+    "originalName": "Tela de Torneios Dominó Tour.png",
+    "src": "assets/approved/screen-10.png",
+    "sha256": "721c8e5c2e89b444a807c0b530f7477458729429c6d602b397f304dd0cf47de7"
+  },
+  {
+    "number": 11,
+    "title": "Detalhes da Competição",
+    "status": "recovered",
+    "originalName": "Torneio Estadual de Dominó no Ceará.png",
+    "src": "assets/approved/screen-11.png",
+    "sha256": "083adb1dbefb01f109c9cad124df93b8157e927ad9f64a5d94dd1f378ad2a957"
+  },
+  {
+    "number": 12,
+    "title": "Ranking",
+    "status": "recovered",
+    "originalName": "Ranking Dominó Tour em Destaque.png",
+    "src": "assets/approved/screen-12.png",
+    "sha256": "2492c1449f00bccf26723f4ca3663e77c85b1d130ed25c4d1088fb0189d115c6"
+  },
+  {
+    "number": 13,
+    "title": "Perfil e Estatísticas",
+    "status": "recovered",
+    "originalName": "Perfil de Jogador Dominó Tour.png",
+    "src": "assets/approved/screen-13.png",
+    "sha256": "ecbedfdeee098f59977f10e13031c8dcfc833203afbf42623ec6bf556a2857db"
+  },
+  {
+    "number": 14,
+    "title": "Conquistas e Passaporte Mundial",
+    "status": "recovered",
+    "originalName": "Tela de Conquistas do Dominó Tour.png",
+    "src": "assets/approved/screen-14.png",
+    "sha256": "a988f5924369a837c48b9d6bc4f13726a6613823aa77d21f468d6fa18ac741ca"
+  },
+  {
+    "number": 15,
+    "title": "Configurações",
+    "status": "recovered",
+    "originalName": "Configurações do Domino Tour.png",
+    "src": "assets/approved/screen-15.png",
+    "sha256": "48bb364531214f4d4e6c8ad8eab3915a4fae03e1f6914fd89566971d4e87d35c"
+  },
+  {
+    "number": 16,
+    "title": "Como Jogar",
+    "status": "recovered",
+    "originalName": "Tela Educativa de Regras de Dominó.png",
+    "src": "assets/approved/screen-16.png",
+    "sha256": "dd8fccfdfceaaffec0b8bb8d25c64ba68b4a2c9ecc1dd2ff7ab51d45b8ac9706"
+  }
+]
