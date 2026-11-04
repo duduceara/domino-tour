@@ -7,9 +7,30 @@ let game=new LocalSession();let routeStyle=chooseRoute(secureIndex);
 let dragId=null,origin=null,dragMoved=false,ghost=null,floatingTile=null;const activePointers=new Set();let gestureBlocked=false;
 let rotated=false,zoom=1,pan={x:0,y:0},panStart=null;
 let tableSpace={width:800,height:430,scale:1},viewportSignature='',orientationPending=false;
-let botTimer=null,botEpoch=0;
-function stopBotSequence(){botEpoch++;if(botTimer!==null){clearTimeout(botTimer);botTimer=null}}
-function scheduleBots(){stopBotSequence();if(document.hidden||game.state.phase!=='playing'||game.state.turn===0)return;const epoch=botEpoch;const step=()=>{if(epoch!==botEpoch)return;botTimer=null;if(document.hidden||game.state.phase!=='playing'||game.state.turn===0)return;game.advanceBots(1);sync();if(game.state.phase==='playing'&&game.state.turn!==0)botTimer=setTimeout(step,3000)};botTimer=setTimeout(step,3000)}
+let botTimer=null,botEpoch=0,passNoticeTimer=null,passNoticeEpoch=0;
+function clearPassNotice(){passNoticeEpoch++;if(passNoticeTimer!==null){clearTimeout(passNoticeTimer);passNoticeTimer=null}$('pass-notice').hidden=true}
+function stopBotSequence(){botEpoch++;if(botTimer!==null){clearTimeout(botTimer);botTimer=null}clearPassNotice()}
+function showPassNotice(seat){
+ clearPassNotice();const notice=$('pass-notice');notice.textContent=seat===0?'VOCÊ PASSOU! −5 pontos':`ROBÔ ${seat} PASSOU! −5 pontos`;notice.hidden=false;
+ const epoch=passNoticeEpoch;passNoticeTimer=setTimeout(()=>{if(epoch!==passNoticeEpoch)return;passNoticeTimer=null;notice.hidden=true;scheduleBots()},2000);
+}
+function scheduleBots(){
+ if(botTimer!==null){clearTimeout(botTimer);botTimer=null}botEpoch++;
+ if(document.hidden||game.state.phase!=='playing'||passNoticeTimer!==null)return;
+ const epoch=botEpoch,seat=game.state.turn;
+ if(seat===0){
+  if(game.state.lastPlayed!==null&&legalTiles(game.state,0).length===0){
+   botTimer=setTimeout(()=>{if(epoch!==botEpoch||document.hidden||game.state.phase!=='playing'||game.state.turn!==0)return;botTimer=null;const before=game.state.events.length;if(game.humanPass()){sync();const ev=game.state.events.slice(before).find(e=>e.type==='pass'&&e.seat===0);if(ev)showPassNotice(0);else scheduleBots()}},0);
+  }
+  return;
+ }
+ botTimer=setTimeout(()=>{
+  if(epoch!==botEpoch||document.hidden||game.state.phase!=='playing'||game.state.turn!==seat)return;
+  botTimer=null;const before=game.state.events.length;game.advanceBots(1);sync();
+  const ev=game.state.events.slice(before).find(e=>e.type==='pass');
+  if(ev)showPassNotice(ev.seat);else scheduleBots();
+ },3000);
+}
 function coords(e){const r=$('app').getBoundingClientRect(),p=framePoint({x:e.clientX,y:e.clientY},r,rotated);const x=p.x-$('table').offsetLeft-$('table').parentElement.offsetLeft-$('table').clientLeft,y=p.y-$('table').offsetTop-$('table').parentElement.offsetTop-$('table').clientTop;return tablePoint({x,y},{width:$('table').clientWidth,height:$('table').clientHeight},tableSpace,zoom,pan)}
 function fitViewport(){
  const probe=getComputedStyle($('safe-probe')),insets={top:parseFloat(probe.paddingTop),right:parseFloat(probe.paddingRight),bottom:parseFloat(probe.paddingBottom),left:parseFloat(probe.paddingLeft)};
@@ -76,8 +97,6 @@ function sync(){
  }
  $('next-round').hidden=s.phase!=='round-complete';
  $('play-again').hidden=s.phase!=='finished';
- $('pass').hidden=s.phase==='round-complete'||s.phase==='finished';
- $('pass').disabled=s.turn!==0||s.phase!=='playing'||legalTiles(s,0).length>0;
  $('message').textContent=game.model.status==='unavailable'?'Mesa não desenhada: '+game.model.failure:s.phase==='round-complete'?'Rodada encerrada! Vencedor: '+(s.nextOpeningSeat===0?'Você':`Robô ${s.nextOpeningSeat}`)+'. Pontuação atualizada. Toque em Próxima rodada para continuar.':s.phase==='finished'?'Partida encerrada. Vencedor: '+(s.winner===0?'Você':`Robô ${s.winner}`):s.phase==='blocked-awaiting-rule'?'Rodada bloqueada: regra da V0.21 preservada.':s.turn===0?(game.interaction.selectedTile!==null?(validSides(s,0,game.interaction.selectedTile).length===1?'Uma ponta disponível: toque novamente na pedra para jogar.':'Duas pontas disponíveis: escolha uma ponta iluminada.'):'Sua vez! Selecione uma pedra e uma ponta.'):`Robô ${s.turn} pensando... (3 segundos por jogada)`;
 }
 // Capture phase sees a second pointer even outside the rack/first captured element.
@@ -86,7 +105,6 @@ for(const type of ['pointerup','pointercancel'])document.addEventListener(type,e
 window.addEventListener('blur',()=>{cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(game.model)});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){stopBotSequence();cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(game.model)}else{sync();scheduleBots()}});
 function afterAction(){clearDragVisual();dragId=null;origin=null;ghost=null;sync();scheduleBots()}
-$('pass').onclick=()=>{if(game.humanPass())afterAction()};
 $('next-round').onclick=()=>{if(game.state.phase!=='round-complete')return;stopBotSequence();cancelGesture();if(game.nextRound()){sync();scheduleBots()}};
 $('play-again').onclick=()=>{if(game.state.phase!=='finished')return;stopBotSequence();cancelGesture();game.newMatch();sync();scheduleBots()};
 $('restart').onclick=()=>{stopBotSequence();cancelGesture();game=new LocalSession(Number($('target').value),Number($('deal').value));routeStyle=$('route').value==='random'?chooseRoute(secureIndex):$('route').value;sync();scheduleBots()};
