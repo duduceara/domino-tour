@@ -106,3 +106,18 @@ body{background:radial-gradient(ellipse at 50% 5%,#3c7da3 0%,#a96072 24%,#643b44
 header strong{color:#ffdb7c;text-shadow:0 2px 3px #000,0 0 9px #ffcc5333}
 .play-controls .message{font-weight:750;color:#fff1bd;text-shadow:0 2px 3px #000}
 @media(prefers-reduced-motion:reduce){.seat,.piece.inhand{transition:none}}
+
+/* Five-screen entry is a temporary premium navigation shell; gameplay remains a separate viewport. */
+.entry-flow:not([hidden]){position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:clamp(12px,3vw,36px);overflow:auto;background:radial-gradient(ellipse at 50% 0%,#336e94 0%,#9d5b79 26%,#183c36 65%,#051c18 100%)}
+.entry-flow[hidden],.entry-card[hidden]{display:none}
+.entry-card{width:min(96vw,570px);max-height:96vh;overflow:auto;text-align:center;padding:clamp(20px,4vw,38px);border:3px solid #f2c15d;border-radius:32px;background:linear-gradient(145deg,#163e36f2,#071e29f8);box-shadow:inset 0 0 0 2px #fff2b82e,0 18px 45px #000a;color:#fff7e7}
+.entry-card h1{font-size:clamp(24px,5vw,40px);line-height:1.1;margin:15px 0;color:#ffe3a0}
+.entry-card p{font-size:clamp(14px,2vw,18px);line-height:1.5}
+.entry-brand{font-weight:900;font-size:clamp(27px,6vw,46px);color:#ffd15f;text-shadow:0 3px 0 #754119,0 5px 12px #000}
+.entry-kicker{font-size:12px;font-weight:800;letter-spacing:.18em;color:#e9c27c;margin-top:10px}
+.entry-card button{margin:8px 5px;min-width:145px;background:linear-gradient(#25754e,#0d4b31);border:2px solid #f2c15d;font-weight:800}
+.entry-card .entry-back{background:#183b45}
+.entry-choice{margin:18px auto;padding:18px;border:2px solid #f2c15d;border-radius:18px;background:#0d533e;font-size:22px;font-weight:800}
+.entry-choice small{display:block;font-size:14px;margin-top:6px}
+.entry-seats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:18px auto}
+.entry-seats span{padding:12px 6px;background:#0d4839;border:1px solid #e3b86b;border-radius:16px;font-weight:700}
