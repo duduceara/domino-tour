@@ -135,5 +135,5 @@ document.addEventListener('fullscreenchange',queueViewport);
 const layoutObserver=new ResizeObserver(queueViewport);
 layoutObserver.observe(document.documentElement);layoutObserver.observe($('table'));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)queueViewport()});
-window.addEventListener('domino-tour:enter-game',()=>{sync();scheduleBots();queueViewport()});
-fitViewport();sync();scheduleBots();void lockLandscape(Boolean(navigator.userActivation?.isActive));queueViewport();
+window.addEventListener('domino-tour:enter-game',()=>{sync();scheduleBots();queueViewport();void lockLandscape(true)});
+fitViewport();sync();scheduleBots();queueViewport();
