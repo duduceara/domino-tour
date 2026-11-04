@@ -14,4 +14,4 @@ jobs:
       - name: Check JavaScript syntax
         run: node --check web/app.js
       - name: Run focused interaction tests
-        run: node --test tests/mobile-touch.test.mjs
+        run: node --test tests/mobile-touch.test.mjs tests/m01-runtime.test.mjs

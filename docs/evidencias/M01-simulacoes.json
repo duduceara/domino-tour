@@ -1,0 +1,486 @@
+{
+  "finished": 1,
+  "blocked": 59,
+  "samples": [
+    {
+      "size": 6,
+      "seed": 1,
+      "phase": "blocked-awaiting-rule",
+      "turns": 158,
+      "rounds": 6,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 2,
+      "phase": "blocked-awaiting-rule",
+      "turns": 31,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 3,
+      "phase": "blocked-awaiting-rule",
+      "turns": 146,
+      "rounds": 5,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 4,
+      "phase": "blocked-awaiting-rule",
+      "turns": 93,
+      "rounds": 3,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 5,
+      "phase": "blocked-awaiting-rule",
+      "turns": 92,
+      "rounds": 3,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 6,
+      "phase": "blocked-awaiting-rule",
+      "turns": 19,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 7,
+      "phase": "blocked-awaiting-rule",
+      "turns": 19,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 8,
+      "phase": "blocked-awaiting-rule",
+      "turns": 20,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 9,
+      "phase": "blocked-awaiting-rule",
+      "turns": 67,
+      "rounds": 2,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 10,
+      "phase": "blocked-awaiting-rule",
+      "turns": 88,
+      "rounds": 3,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 11,
+      "phase": "blocked-awaiting-rule",
+      "turns": 50,
+      "rounds": 1,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 12,
+      "phase": "blocked-awaiting-rule",
+      "turns": 21,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 13,
+      "phase": "blocked-awaiting-rule",
+      "turns": 222,
+      "rounds": 8,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 14,
+      "phase": "blocked-awaiting-rule",
+      "turns": 17,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 15,
+      "phase": "blocked-awaiting-rule",
+      "turns": 28,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 16,
+      "phase": "blocked-awaiting-rule",
+      "turns": 46,
+      "rounds": 1,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 17,
+      "phase": "blocked-awaiting-rule",
+      "turns": 160,
+      "rounds": 6,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 18,
+      "phase": "blocked-awaiting-rule",
+      "turns": 24,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 19,
+      "phase": "blocked-awaiting-rule",
+      "turns": 29,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 20,
+      "phase": "blocked-awaiting-rule",
+      "turns": 70,
+      "rounds": 2,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 21,
+      "phase": "blocked-awaiting-rule",
+      "turns": 24,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 22,
+      "phase": "blocked-awaiting-rule",
+      "turns": 77,
+      "rounds": 2,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 23,
+      "phase": "blocked-awaiting-rule",
+      "turns": 47,
+      "rounds": 1,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 24,
+      "phase": "blocked-awaiting-rule",
+      "turns": 20,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 25,
+      "phase": "blocked-awaiting-rule",
+      "turns": 20,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 26,
+      "phase": "blocked-awaiting-rule",
+      "turns": 175,
+      "rounds": 7,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 27,
+      "phase": "blocked-awaiting-rule",
+      "turns": 176,
+      "rounds": 7,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 28,
+      "phase": "blocked-awaiting-rule",
+      "turns": 79,
+      "rounds": 2,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 29,
+      "phase": "blocked-awaiting-rule",
+      "turns": 29,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 6,
+      "seed": 30,
+      "phase": "blocked-awaiting-rule",
+      "turns": 214,
+      "rounds": 8,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 1,
+      "phase": "blocked-awaiting-rule",
+      "turns": 27,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 2,
+      "phase": "blocked-awaiting-rule",
+      "turns": 22,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 3,
+      "phase": "blocked-awaiting-rule",
+      "turns": 83,
+      "rounds": 2,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 4,
+      "phase": "blocked-awaiting-rule",
+      "turns": 49,
+      "rounds": 1,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 5,
+      "phase": "blocked-awaiting-rule",
+      "turns": 242,
+      "rounds": 8,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 6,
+      "phase": "blocked-awaiting-rule",
+      "turns": 133,
+      "rounds": 4,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 7,
+      "phase": "finished",
+      "turns": 534,
+      "rounds": 20,
+      "winner": 1
+    },
+    {
+      "size": 7,
+      "seed": 8,
+      "phase": "blocked-awaiting-rule",
+      "turns": 118,
+      "rounds": 3,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 9,
+      "phase": "blocked-awaiting-rule",
+      "turns": 124,
+      "rounds": 4,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 10,
+      "phase": "blocked-awaiting-rule",
+      "turns": 23,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 11,
+      "phase": "blocked-awaiting-rule",
+      "turns": 100,
+      "rounds": 3,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 12,
+      "phase": "blocked-awaiting-rule",
+      "turns": 74,
+      "rounds": 2,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 13,
+      "phase": "blocked-awaiting-rule",
+      "turns": 239,
+      "rounds": 8,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 14,
+      "phase": "blocked-awaiting-rule",
+      "turns": 31,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 15,
+      "phase": "blocked-awaiting-rule",
+      "turns": 67,
+      "rounds": 2,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 16,
+      "phase": "blocked-awaiting-rule",
+      "turns": 99,
+      "rounds": 3,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 17,
+      "phase": "blocked-awaiting-rule",
+      "turns": 107,
+      "rounds": 3,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 18,
+      "phase": "blocked-awaiting-rule",
+      "turns": 20,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 19,
+      "phase": "blocked-awaiting-rule",
+      "turns": 43,
+      "rounds": 1,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 20,
+      "phase": "blocked-awaiting-rule",
+      "turns": 153,
+      "rounds": 5,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 21,
+      "phase": "blocked-awaiting-rule",
+      "turns": 73,
+      "rounds": 2,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 22,
+      "phase": "blocked-awaiting-rule",
+      "turns": 90,
+      "rounds": 2,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 23,
+      "phase": "blocked-awaiting-rule",
+      "turns": 46,
+      "rounds": 1,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 24,
+      "phase": "blocked-awaiting-rule",
+      "turns": 21,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 25,
+      "phase": "blocked-awaiting-rule",
+      "turns": 135,
+      "rounds": 4,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 26,
+      "phase": "blocked-awaiting-rule",
+      "turns": 20,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 27,
+      "phase": "blocked-awaiting-rule",
+      "turns": 16,
+      "rounds": 0,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 28,
+      "phase": "blocked-awaiting-rule",
+      "turns": 59,
+      "rounds": 1,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 29,
+      "phase": "blocked-awaiting-rule",
+      "turns": 159,
+      "rounds": 5,
+      "winner": null
+    },
+    {
+      "size": 7,
+      "seed": 30,
+      "phase": "blocked-awaiting-rule",
+      "turns": 24,
+      "rounds": 0,
+      "winner": null
+    }
+  ]
+}

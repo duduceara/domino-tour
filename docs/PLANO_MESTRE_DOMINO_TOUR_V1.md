@@ -99,3 +99,31 @@ Documento Mestre V5 de 2026-11-03: diretrizes aprovadas para turismo sequencial,
 Entregues e verificados: Documento Mestre versionado, inventário de três branches encontradas, arquivos centrais da mesa técnica, teste focal e workflow, catálogo de decisões visuais com aprovação/proposta distinguida, backlog, riscos, critérios e sequência de marcos.
 Limitações documentadas: inventário de diretórios não é exaustivo; não foram localizados/versionados os arquivos finais de arte aprovados; CI real e teste físico continuam sem evidência. Esses pontos **não são aprovações**. A falta das artes originais vira pendência de rastreabilidade para M03, sem bloquear o fechamento documental do M00; a falta de CI e teste físico pertence ao critério de saída do M01.
 **M00: concluído no escopo documental com ressalvas de rastreabilidade.** Próxima entrega principal: M01, obter resultado verificável dos testes e prova de partida offline no navegador móvel. Não iniciar Tela 06 antes dos critérios de saída do M01 e do mapa de telas M03. Sem alteração do motor, main ou prévia pública nesta consolidação.
+
+
+## 11. M01 — execução real em 2026-11-04
+Base verificada: 3973bb3eada0a1d65541ee061b42e58f718b0906, branch feature/mobile-touch-v1. main e preview/github-pages não foram alteradas nesta missão. Nenhuma publicação ou merge.
+
+### CI confirmado
+Execução de push existente: https://github.com/duduceara/domino-tour/actions/runs/41818115619 — success, job 126534022823. Logs completos recuperados pela integração: checkout da base 3973bb3e, Node 22.23.4, node --check web/app.js aprovado, 5 testes focalizados aprovados e zero falhas. Não foi necessário workflow_dispatch; o workflow da branch já recebe push. O aviso de depreciação das actions Node20 não falhou o job e não foi motivo para atualização fora do escopo.
+
+### Cobertura adicional proporcional
+Adicionado tests/m01-runtime.test.mjs: executa os handlers reais de web/app.js em node:vm com adaptador DOM e relógio controlado, usando TableInteraction real. Não é navegador, PointerEvent nativo, Android físico nem homologação de toque no aparelho. Confirma segundo toque com uma ponta, duas pontas sem jogada automática, arraste válido/inválido, cancelamento, ponteiro obsoleto, submissão única e timers de 3000ms sequenciais, cancelados ao ocultar e substituídos no reinício. O teste antigo de segundo toque chama tapEndpoint explicitamente; foi preservado e complementado pela verificação do handler da interface.
+Execução local: sintaxe aprovada; 12 testes executados, 12 aprovados, 0 falhas. Evidência: docs/evidencias/M01-testes.txt. Workflow ampliado para executar também a nova cobertura.
+Simulações: 60 mesas legais, 30 distribuições de seis e 30 de sete, quatro agentes com política de bot em todos os lugares para exercitar o motor. RNG controlado apenas nos testes, inclusive redistribuições. Integridade das 28 pedras e conservação do saldo atual verificadas após cada ação. Resultado: 1 mesa concluída com vencedor e 59 suspensas em jogo fechado. Resultado detalhado em docs/evidencias/M01-simulacoes.json. A asserção dessas simulações valida integridade e término do laço de diagnóstico; NÃO comprova conclusão bem-sucedida da mesa: consultar finished/blocked na evidência.
+
+### Bloqueios reais e decisão de preservação
+- dist/src/engine.js, pass(): jogo fechado muda phase para blocked-awaiting-rule, sem adjudicação, vencedor nem nova distribuição. Isso impede conclusão geral de partidas. Não confundir a suspensão controlada com resultado homologado.
+- highestHeldDouble()/play(): abertura exige jogar a própria maior carroça; diverge da diretriz histórica de escolha livre pelo jogador que abre. Em 6+6+6+6+4 sempre há ao menos três das sete carroças distribuídas, logo ausência de carroças não ocorre nesta configuração.
+- play()/finishIfWon(): a batida atual transfere 5 de cada adversário (+15 ao vencedor), e a mesa termina ao atingir 2*target; não existe condição mínima de quatro rodadas. Não corresponde à tabela histórica fixa 10/20/30/40. As transferências de passe atuais foram preservadas. Estas divergências são bloqueios de conformidade, não novas regras propostas.
+- O usuário exige preservar regras homologadas e não alterar regras nesta missão; a base/documentação de M00 registra explicitamente a preservação do comportamento V0.21. Não foi aplicada silenciosamente uma revisão de economia/abertura/encerramento para fazer testes passarem. Próxima correção requer consolidar qual contrato de regras rege esta branch, confrontando essas divergências com as aprovações.
+- Sem dispositivo físico conectado. A automação de handlers Node não cobre layout, hit-testing nativo, captura real de ponteiro nem rotação em navegador móvel; critério 2 permanece pendente.
+
+### Estado de aceite do M01
+1. Automatizados: TESTADO, CI original confirmado e nova suíte local aprovada; verificar CI do commit desta etapa.
+2. Interação mobile: PARCIAL, handlers testados; navegador móvel/Android físico pendentes.
+3. Motor/regras: BLOQUEADO por divergências descritas; distribuição e integridade testadas.
+4. Robôs 3s: TESTADO por relógio controlado executando código real do app; aceite automatizado, sem homologação física.
+5. Partida completa: BLOQUEADO por jogo fechado sem resolução; não homologado.
+Progresso: 2 de 5 critérios com aceite automatizado (40%); não significa 40% do produto nem homologação física. M01 NÃO homologado integralmente.
+Próxima entrega objetiva: resolver contrato de fechamento/abertura/pontuação da base e implementar a resolução de jogo fechado em alteração isolada, com testes de desempate e partida completa, antes de avançar para M02 ou interfaces.
