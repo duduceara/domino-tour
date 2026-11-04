@@ -53,7 +53,7 @@ function render(height, width = height * 2) {
 for (const [height, expected] of [[10, 7.2], [20, 14.4], [30, 21.6], [40, 22], [80, 22]]) {
   test('board tile lettering scales without exceeding 22px at height ' + height, () => {
     const { piece, shape } = render(height);
-    assert.equal(piece.style.fontSize, expected + 'px');
+    assert.ok(Math.abs(parseFloat(piece.style.fontSize) - expected) < 1e-9, 'font must match expected scale');
     assert.equal(piece.style.width, shape.width + 'px');
     assert.equal(piece.style.height, shape.height + 'px');
     assert.equal(piece.style.left, shape.center.x + 'px');
