@@ -1,0 +1,334 @@
+﻿2026-11-04T13:07:15.3171572Z Current runner version: '2.338.2'
+2026-11-04T13:07:15.3188212Z ##[group]Runner Image Provisioner
+2026-11-04T13:07:15.3188853Z Hosted Compute Agent
+2026-11-04T13:07:15.3189270Z Version: 20261028.624
+2026-11-04T13:07:15.3189773Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-04T13:07:15.3190319Z Build Date: 2026-10-28T21:51:42Z
+2026-11-04T13:07:15.3190858Z Worker ID: {86752303-9a34-4621-a19d-1fed73bce281}
+2026-11-04T13:07:15.3191365Z Region: us-west-2
+2026-11-04T13:07:15.3191753Z Cloud: AWS
+2026-11-04T13:07:15.3192184Z ##[endgroup]
+2026-11-04T13:07:15.3193149Z ##[group]Operating System
+2026-11-04T13:07:15.3193601Z Ubuntu
+2026-11-04T13:07:15.3193986Z 26.04.1
+2026-11-04T13:07:15.3194359Z LTS
+2026-11-04T13:07:15.3194753Z ##[endgroup]
+2026-11-04T13:07:15.3195162Z ##[group]Runner Image
+2026-11-04T13:07:15.3195617Z Image: ubuntu-26.04
+2026-11-04T13:07:15.3196031Z Version: 20261101.64.1
+2026-11-04T13:07:15.3197180Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261101.64/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-04T13:07:15.3198285Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261101.64
+2026-11-04T13:07:15.3199132Z ##[endgroup]
+2026-11-04T13:07:15.3199993Z ##[group]GITHUB_TOKEN Permissions
+2026-11-04T13:07:15.3201572Z Contents: read
+2026-11-04T13:07:15.3202018Z Metadata: read
+2026-11-04T13:07:15.3202417Z Packages: read
+2026-11-04T13:07:15.3203092Z ##[endgroup]
+2026-11-04T13:07:15.3204703Z Secret source: Actions
+2026-11-04T13:07:15.3205405Z Cache mode: write
+2026-11-04T13:07:15.3205907Z Prepare workflow directory
+2026-11-04T13:07:15.3426497Z Prepare all required actions
+2026-11-04T13:07:15.3461575Z Getting action download info
+2026-11-04T13:07:15.7102597Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-04T13:07:17.8209931Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-11-04T13:07:18.2036114Z Complete job name: touch
+2026-11-04T13:07:18.2590308Z ##[group]Run actions/checkout@v4
+2026-11-04T13:07:18.2590818Z with:
+2026-11-04T13:07:18.2591105Z   repository: duduceara/domino-tour
+2026-11-04T13:07:18.2593193Z   token: ***
+2026-11-04T13:07:18.2593462Z   ssh-strict: true
+2026-11-04T13:07:18.2593790Z   ssh-user: git
+2026-11-04T13:07:18.2594077Z   persist-credentials: true
+2026-11-04T13:07:18.2594619Z   clean: true
+2026-11-04T13:07:18.2594947Z   sparse-checkout-cone-mode: true
+2026-11-04T13:07:18.2595247Z   fetch-depth: 1
+2026-11-04T13:07:18.2595497Z   fetch-tags: false
+2026-11-04T13:07:18.2595793Z   show-progress: true
+2026-11-04T13:07:18.2596070Z   lfs: false
+2026-11-04T13:07:18.2596598Z   submodules: false
+2026-11-04T13:07:18.2596887Z   set-safe-directory: true
+2026-11-04T13:07:18.2597208Z   allow-unsafe-pr-checkout: false
+2026-11-04T13:07:18.2597752Z ##[endgroup]
+2026-11-04T13:07:23.0894483Z Syncing repository: duduceara/domino-tour
+2026-11-04T13:07:23.0896608Z ##[group]Getting Git version info
+2026-11-04T13:07:23.0897515Z Working directory is '/home/runner/work/domino-tour/domino-tour'
+2026-11-04T13:07:23.0898575Z [command]/usr/bin/git version
+2026-11-04T13:07:23.0898996Z git version 2.56.0
+2026-11-04T13:07:23.0903501Z ##[endgroup]
+2026-11-04T13:07:23.0912971Z Temporarily overriding HOME='/home/runner/work/_temp/caa2b0d3-a2e0-4e29-94a8-51c94863431d' before making global git config changes
+2026-11-04T13:07:23.0913704Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T13:07:23.0915298Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/domino-tour/domino-tour
+2026-11-04T13:07:23.1306543Z Deleting the contents of '/home/runner/work/domino-tour/domino-tour'
+2026-11-04T13:07:23.1319917Z ##[group]Initializing the repository
+2026-11-04T13:07:23.1322881Z [command]/usr/bin/git init /home/runner/work/domino-tour/domino-tour
+2026-11-04T13:07:23.1753298Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-04T13:07:23.1754042Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-04T13:07:23.1754705Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-04T13:07:23.1755139Z hint: call:
+2026-11-04T13:07:23.1755416Z hint:
+2026-11-04T13:07:23.1755760Z hint: 	git config --global init.defaultBranch <name>
+2026-11-04T13:07:23.1756128Z hint:
+2026-11-04T13:07:23.1756643Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-04T13:07:23.1757135Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-04T13:07:23.1757534Z hint:
+2026-11-04T13:07:23.1757796Z hint: 	git branch -m <name>
+2026-11-04T13:07:23.1758104Z hint:
+2026-11-04T13:07:23.1758461Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-04T13:07:23.1777817Z Initialized empty Git repository in /home/runner/work/domino-tour/domino-tour/.git/
+2026-11-04T13:07:23.1784268Z [command]/usr/bin/git remote add origin https://github.com/duduceara/domino-tour
+2026-11-04T13:07:23.1835171Z ##[endgroup]
+2026-11-04T13:07:23.1835917Z ##[group]Disabling automatic garbage collection
+2026-11-04T13:07:23.1836798Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-04T13:07:23.1855651Z ##[endgroup]
+2026-11-04T13:07:23.1856547Z ##[group]Setting up auth
+2026-11-04T13:07:23.1860427Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T13:07:23.1880436Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T13:07:23.8210789Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T13:07:23.8234752Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T13:07:23.8408793Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T13:07:23.8429481Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-04T13:07:23.8602044Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-04T13:07:23.8626618Z ##[endgroup]
+2026-11-04T13:07:23.8627101Z ##[group]Fetching the repository
+2026-11-04T13:07:23.8631873Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +cd6bc59b06428a42b90992d2422e802635349e3b:refs/remotes/origin/feature/mobile-touch-v1
+2026-11-04T13:07:24.5090955Z From https://github.com/duduceara/domino-tour
+2026-11-04T13:07:24.5091704Z  * [new ref]         cd6bc59b06428a42b90992d2422e802635349e3b -> origin/feature/mobile-touch-v1
+2026-11-04T13:07:24.5096691Z ##[endgroup]
+2026-11-04T13:07:24.5097348Z ##[group]Determining the checkout info
+2026-11-04T13:07:24.5097908Z ##[endgroup]
+2026-11-04T13:07:24.5098828Z [command]/usr/bin/git sparse-checkout disable
+2026-11-04T13:07:24.5167153Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-04T13:07:24.5168456Z ##[group]Checking out the ref
+2026-11-04T13:07:24.5169199Z [command]/usr/bin/git checkout --progress --force -B feature/mobile-touch-v1 refs/remotes/origin/feature/mobile-touch-v1
+2026-11-04T13:07:24.5244888Z Switched to a new branch 'feature/mobile-touch-v1'
+2026-11-04T13:07:24.5253190Z branch 'feature/mobile-touch-v1' set up to track 'origin/feature/mobile-touch-v1'.
+2026-11-04T13:07:24.5262591Z ##[endgroup]
+2026-11-04T13:07:24.5295891Z [command]/usr/bin/git log -1 --format=%H
+2026-11-04T13:07:24.5310975Z cd6bc59b06428a42b90992d2422e802635349e3b
+2026-11-04T13:07:24.5506924Z ##[group]Run actions/setup-node@v4
+2026-11-04T13:07:24.5507214Z with:
+2026-11-04T13:07:24.5507478Z   node-version: 22
+2026-11-04T13:07:24.5507728Z   always-auth: false
+2026-11-04T13:07:24.5507953Z   check-latest: false
+2026-11-04T13:07:24.5509906Z   token: ***
+2026-11-04T13:07:24.5510119Z ##[endgroup]
+2026-11-04T13:07:24.8373850Z Found in cache @ /opt/hostedtoolcache/node/22.23.4/x64
+2026-11-04T13:07:24.8377607Z (node:2259) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-04T13:07:24.8378444Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-04T13:07:24.8379936Z ##[group]Environment details
+2026-11-04T13:07:30.8709956Z node: v22.23.4
+2026-11-04T13:07:30.8710452Z npm: 10.9.9
+2026-11-04T13:07:30.8710760Z yarn: 1.22.22
+2026-11-04T13:07:30.8711630Z ##[endgroup]
+2026-11-04T13:07:30.8807268Z ##[group]Run node --check web/app.js
+2026-11-04T13:07:30.8807652Z [36;1mnode --check web/app.js[0m
+2026-11-04T13:07:30.8841743Z shell: /usr/bin/bash -e {0}
+2026-11-04T13:07:30.8842032Z ##[endgroup]
+2026-11-04T13:07:30.9120284Z ##[group]Run node --test tests/mobile-touch.test.mjs tests/m01-runtime.test.mjs tests/responsive-viewport.test.mjs tests/viewport-geometry.test.mjs
+2026-11-04T13:07:30.9121113Z [36;1mnode --test tests/mobile-touch.test.mjs tests/m01-runtime.test.mjs tests/responsive-viewport.test.mjs tests/viewport-geometry.test.mjs[0m
+2026-11-04T13:07:30.9138979Z shell: /usr/bin/bash -e {0}
+2026-11-04T13:07:30.9139304Z ##[endgroup]
+2026-11-04T13:07:31.0314558Z TAP version 13
+2026-11-04T13:07:31.4070308Z # SIMULATION_RESULTS {"finished":1,"blocked":59,"samples":[{"size":6,"seed":1,"phase":"blocked-awaiting-rule","turns":158,"rounds":6,"winner":null},{"size":6,"seed":2,"phase":"blocked-awaiting-rule","turns":31,"rounds":0,"winner":null},{"size":6,"seed":3,"phase":"blocked-awaiting-rule","turns":146,"rounds":5,"winner":null},{"size":6,"seed":4,"phase":"blocked-awaiting-rule","turns":93,"rounds":3,"winner":null},{"size":6,"seed":5,"phase":"blocked-awaiting-rule","turns":92,"rounds":3,"winner":null},{"size":6,"seed":6,"phase":"blocked-awaiting-rule","turns":19,"rounds":0,"winner":null},{"size":6,"seed":7,"phase":"blocked-awaiting-rule","turns":19,"rounds":0,"winner":null},{"size":6,"seed":8,"phase":"blocked-awaiting-rule","turns":20,"rounds":0,"winner":null},{"size":6,"seed":9,"phase":"blocked-awaiting-rule","turns":67,"rounds":2,"winner":null},{"size":6,"seed":10,"phase":"blocked-awaiting-rule","turns":88,"rounds":3,"winner":null},{"size":6,"seed":11,"phase":"blocked-awaiting-rule","turns":50,"rounds":1,"winner":null},{"size":6,"seed":12,"phase":"blocked-awaiting-rule","turns":21,"rounds":0,"winner":null},{"size":6,"seed":13,"phase":"blocked-awaiting-rule","turns":222,"rounds":8,"winner":null},{"size":6,"seed":14,"phase":"blocked-awaiting-rule","turns":17,"rounds":0,"winner":null},{"size":6,"seed":15,"phase":"blocked-awaiting-rule","turns":28,"rounds":0,"winner":null},{"size":6,"seed":16,"phase":"blocked-awaiting-rule","turns":46,"rounds":1,"winner":null},{"size":6,"seed":17,"phase":"blocked-awaiting-rule","turns":160,"rounds":6,"winner":null},{"size":6,"seed":18,"phase":"blocked-awaiting-rule","turns":24,"rounds":0,"winner":null},{"size":6,"seed":19,"phase":"blocked-awaiting-rule","turns":29,"rounds":0,"winner":null},{"size":6,"seed":20,"phase":"blocked-awaiting-rule","turns":70,"rounds":2,"winner":null},{"size":6,"seed":21,"phase":"blocked-awaiting-rule","turns":24,"rounds":0,"winner":null},{"size":6,"seed":22,"phase":"blocked-awaiting-rule","turns":77,"rounds":2,"winner":null},{"size":6,"seed":23,"phase":"blocked-awaiting-rule","turns":47,"rounds":1,"winner":null},{"size":6,"seed":24,"phase":"blocked-awaiting-rule","turns":20,"rounds":0,"winner":null},{"size":6,"seed":25,"phase":"blocked-awaiting-rule","turns":20,"rounds":0,"winner":null},{"size":6,"seed":26,"phase":"blocked-awaiting-rule","turns":175,"rounds":7,"winner":null},{"size":6,"seed":27,"phase":"blocked-awaiting-rule","turns":176,"rounds":7,"winner":null},{"size":6,"seed":28,"phase":"blocked-awaiting-rule","turns":79,"rounds":2,"winner":null},{"size":6,"seed":29,"phase":"blocked-awaiting-rule","turns":29,"rounds":0,"winner":null},{"size":6,"seed":30,"phase":"blocked-awaiting-rule","turns":214,"rounds":8,"winner":null},{"size":7,"seed":1,"phase":"blocked-awaiting-rule","turns":27,"rounds":0,"winner":null},{"size":7,"seed":2,"phase":"blocked-awaiting-rule","turns":22,"rounds":0,"winner":null},{"size":7,"seed":3,"phase":"blocked-awaiting-rule","turns":83,"rounds":2,"winner":null},{"size":7,"seed":4,"phase":"blocked-awaiting-rule","turns":49,"rounds":1,"winner":null},{"size":7,"seed":5,"phase":"blocked-awaiting-rule","turns":242,"rounds":8,"winner":null},{"size":7,"seed":6,"phase":"blocked-awaiting-rule","turns":133,"rounds":4,"winner":null},{"size":7,"seed":7,"phase":"finished","turns":534,"rounds":20,"winner":1},{"size":7,"seed":8,"phase":"blocked-awaiting-rule","turns":118,"rounds":3,"winner":null},{"size":7,"seed":9,"phase":"blocked-awaiting-rule","turns":124,"rounds":4,"winner":null},{"size":7,"seed":10,"phase":"blocked-awaiting-rule","turns":23,"rounds":0,"winner":null},{"size":7,"seed":11,"phase":"blocked-awaiting-rule","turns":100,"rounds":3,"winner":null},{"size":7,"seed":12,"phase":"blocked-awaiting-rule","turns":74,"rounds":2,"winner":null},{"size":7,"seed":13,"phase":"blocked-awaiting-rule","turns":239,"rounds":8,"winner":null},{"size":7,"seed":14,"phase":"blocked-awaiting-rule","turns":31,"rounds":0,"winner":null},{"size":7,"seed":15,"phase":"blocked-awaiting-rule","turns":67,"rounds":2,"winner":null},{"size":7,"seed":16,"phase":"blocked-awaiting-rule","turns":99,"rounds":3,"winner":null},{"size":7,"seed":17,"phase":"blocked-awaiting-rule","turns":107,"rounds":3,"winner":null},{"size":7,"seed":18,"phase":"blocked-awaiting-rule","turns":20,"rounds":0,"winner":null},{"size":7,"seed":19,"phase":"blocked-awaiting-rule","turns":43,"rounds":1,"winner":null},{"size":7,"seed":20,"phase":"blocked-awaiting-rule","turns":153,"rounds":5,"winner":null},{"size":7,"seed":21,"phase":"blocked-awaiting-rule","turns":73,"rounds":2,"winner":null},{"size":7,"seed":22,"phase":"blocked-awaiting-rule","turns":90,"rounds":2,"winner":null},{"size":7,"seed":23,"phase":"blocked-awaiting-rule","turns":46,"rounds":1,"winner":null},{"size":7,"seed":24,"phase":"blocked-awaiting-rule","turns":21,"rounds":0,"winner":null},{"size":7,"seed":25,"phase":"blocked-awaiting-rule","turns":135,"rounds":4,"winner":null},{"size":7,"seed":26,"phase":"blocked-awaiting-rule","turns":20,"rounds":0,"winner":null},{"size":7,"seed":27,"phase":"blocked-awaiting-rule","turns":16,"rounds":0,"winner":null},{"size":7,"seed":28,"phase":"blocked-awaiting-rule","turns":59,"rounds":1,"winner":null},{"size":7,"seed":29,"phase":"blocked-awaiting-rule","turns":159,"rounds":5,"winner":null},{"size":7,"seed":30,"phase":"blocked-awaiting-rule","turns":24,"rounds":0,"winner":null}]}
+2026-11-04T13:07:31.4086597Z # Subtest: app handlers: second tap with one endpoint commits once
+2026-11-04T13:07:31.4090834Z ok 1 - app handlers: second tap with one endpoint commits once
+2026-11-04T13:07:31.4091615Z   ---
+2026-11-04T13:07:31.4092048Z   duration_ms: 6.393501
+2026-11-04T13:07:31.4092442Z   type: 'test'
+2026-11-04T13:07:31.4092807Z   ...
+2026-11-04T13:07:31.4099127Z # Subtest: app handlers: two endpoints require explicit choice
+2026-11-04T13:07:31.4099929Z ok 2 - app handlers: two endpoints require explicit choice
+2026-11-04T13:07:31.4102581Z   ---
+2026-11-04T13:07:31.4123034Z   duration_ms: 1.389903
+2026-11-04T13:07:31.4123594Z   type: 'test'
+2026-11-04T13:07:31.4124525Z   ...
+2026-11-04T13:07:31.4125090Z # Subtest: app handlers: cancel, foreign pointer, invalid drag and duplicate protection
+2026-11-04T13:07:31.4136593Z ok 3 - app handlers: cancel, foreign pointer, invalid drag and duplicate protection
+2026-11-04T13:07:31.4137362Z   ---
+2026-11-04T13:07:31.4137628Z   duration_ms: 2.192519
+2026-11-04T13:07:31.4137926Z   type: 'test'
+2026-11-04T13:07:31.4138178Z   ...
+2026-11-04T13:07:31.4138693Z # Subtest: app clock: 3000ms, one action, no duplicated timers; hide/resume/restart
+2026-11-04T13:07:31.4139419Z ok 4 - app clock: 3000ms, one action, no duplicated timers; hide/resume/restart
+2026-11-04T13:07:31.4139770Z   ---
+2026-11-04T13:07:31.4139995Z   duration_ms: 1.686228
+2026-11-04T13:07:31.4140471Z   type: 'test'
+2026-11-04T13:07:31.4141041Z   ...
+2026-11-04T13:07:31.4141661Z # Subtest: engine: 6 tiles, four seats, integrity and rejected pass
+2026-11-04T13:07:31.4142297Z ok 5 - engine: 6 tiles, four seats, integrity and rejected pass
+2026-11-04T13:07:31.4142761Z   ---
+2026-11-04T13:07:31.4143051Z   duration_ms: 0.670312
+2026-11-04T13:07:31.4143400Z   type: 'test'
+2026-11-04T13:07:31.4143710Z   ...
+2026-11-04T13:07:31.4144061Z # Subtest: engine: 7 tiles, four seats, integrity and rejected pass
+2026-11-04T13:07:31.4144482Z ok 6 - engine: 7 tiles, four seats, integrity and rejected pass
+2026-11-04T13:07:31.4144947Z   ---
+2026-11-04T13:07:31.4145299Z   duration_ms: 0.14804
+2026-11-04T13:07:31.4145667Z   type: 'test'
+2026-11-04T13:07:31.4145954Z   ...
+2026-11-04T13:07:31.4146922Z # Subtest: engine: seeded four-seat simulations through terminal result or blocked state
+2026-11-04T13:07:31.4147709Z ok 7 - engine: seeded four-seat simulations through terminal result or blocked state
+2026-11-04T13:07:31.4148212Z   ---
+2026-11-04T13:07:31.4148513Z   duration_ms: 336.515306
+2026-11-04T13:07:31.4148812Z   type: 'test'
+2026-11-04T13:07:31.4149136Z   ...
+2026-11-04T13:07:31.4149704Z # Subtest: app drag: preview never commits; cancellation and repeated release are safe
+2026-11-04T13:07:31.4150306Z ok 8 - app drag: preview never commits; cancellation and repeated release are safe
+2026-11-04T13:07:31.4150664Z   ---
+2026-11-04T13:07:31.4150867Z   duration_ms: 2.178658
+2026-11-04T13:07:31.4151158Z   type: 'test'
+2026-11-04T13:07:31.4151393Z   ...
+2026-11-04T13:07:31.4217580Z # Subtest: one legal endpoint: selected tile commits exactly once on second tap
+2026-11-04T13:07:31.4218655Z ok 9 - one legal endpoint: selected tile commits exactly once on second tap
+2026-11-04T13:07:31.4219226Z   ---
+2026-11-04T13:07:31.4220014Z   duration_ms: 1.55478
+2026-11-04T13:07:31.4220481Z   type: 'test'
+2026-11-04T13:07:31.4220881Z   ...
+2026-11-04T13:07:31.4221469Z # Subtest: two legal endpoints: selection alone never commits
+2026-11-04T13:07:31.4222173Z ok 10 - two legal endpoints: selection alone never commits
+2026-11-04T13:07:31.4222685Z   ---
+2026-11-04T13:07:31.4223058Z   duration_ms: 0.195816
+2026-11-04T13:07:31.4223475Z   type: 'test'
+2026-11-04T13:07:31.4223870Z   ...
+2026-11-04T13:07:31.4224314Z # Subtest: illegal endpoint is rejected
+2026-11-04T13:07:31.4224849Z ok 11 - illegal endpoint is rejected
+2026-11-04T13:07:31.4225283Z   ---
+2026-11-04T13:07:31.4225640Z   duration_ms: 0.122326
+2026-11-04T13:07:31.4226034Z   type: 'test'
+2026-11-04T13:07:31.4226666Z   ...
+2026-11-04T13:07:31.4227163Z # Subtest: pointer cancellation clears selection
+2026-11-04T13:07:31.4227748Z ok 12 - pointer cancellation clears selection
+2026-11-04T13:07:31.4228220Z   ---
+2026-11-04T13:07:31.4228647Z   duration_ms: 0.153524
+2026-11-04T13:07:31.4229006Z   type: 'test'
+2026-11-04T13:07:31.4229374Z   ...
+2026-11-04T13:07:31.4229898Z # Subtest: drag toward a legal endpoint can commit; sideways swipe cannot
+2026-11-04T13:07:31.4230662Z ok 13 - drag toward a legal endpoint can commit; sideways swipe cannot
+2026-11-04T13:07:31.4231296Z   ---
+2026-11-04T13:07:31.4231664Z   duration_ms: 0.399523
+2026-11-04T13:07:31.4232070Z   type: 'test'
+2026-11-04T13:07:31.4232428Z   ...
+2026-11-04T13:07:31.4232963Z # Subtest: viewport 568x320: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4233725Z ok 14 - viewport 568x320: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4234192Z   ---
+2026-11-04T13:07:31.4234542Z   duration_ms: 1.590833
+2026-11-04T13:07:31.4234886Z   type: 'test'
+2026-11-04T13:07:31.4235211Z   ...
+2026-11-04T13:07:31.4235942Z # Subtest: viewport 640x360: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4236735Z ok 15 - viewport 640x360: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4237250Z   ---
+2026-11-04T13:07:31.4237536Z   duration_ms: 0.294084
+2026-11-04T13:07:31.4237822Z   type: 'test'
+2026-11-04T13:07:31.4238122Z   ...
+2026-11-04T13:07:31.4238560Z # Subtest: viewport 740x360: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4239634Z ok 16 - viewport 740x360: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4240088Z   ---
+2026-11-04T13:07:31.4240365Z   duration_ms: 0.23872
+2026-11-04T13:07:31.4240716Z   type: 'test'
+2026-11-04T13:07:31.4240997Z   ...
+2026-11-04T13:07:31.4241569Z # Subtest: viewport 844x390: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4242245Z ok 17 - viewport 844x390: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4242687Z   ---
+2026-11-04T13:07:31.4243006Z   duration_ms: 0.167163
+2026-11-04T13:07:31.4243316Z   type: 'test'
+2026-11-04T13:07:31.4243649Z   ...
+2026-11-04T13:07:31.4244041Z # Subtest: viewport 915x412: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4244743Z ok 18 - viewport 915x412: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4245216Z   ---
+2026-11-04T13:07:31.4245477Z   duration_ms: 0.248408
+2026-11-04T13:07:31.4245843Z   type: 'test'
+2026-11-04T13:07:31.4246628Z   ...
+2026-11-04T13:07:31.4247150Z # Subtest: viewport 1024x768: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4247929Z ok 19 - viewport 1024x768: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4248428Z   ---
+2026-11-04T13:07:31.4248863Z   duration_ms: 0.099125
+2026-11-04T13:07:31.4249230Z   type: 'test'
+2026-11-04T13:07:31.4249562Z   ...
+2026-11-04T13:07:31.4250155Z # Subtest: viewport 1280x800: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4250896Z ok 20 - viewport 1280x800: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4251502Z   ---
+2026-11-04T13:07:31.4251849Z   duration_ms: 0.150621
+2026-11-04T13:07:31.4252269Z   type: 'test'
+2026-11-04T13:07:31.4252629Z   ...
+2026-11-04T13:07:31.4253173Z # Subtest: viewport 1366x1024: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4253902Z ok 21 - viewport 1366x1024: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4254381Z   ---
+2026-11-04T13:07:31.4254712Z   duration_ms: 0.062806
+2026-11-04T13:07:31.4255071Z   type: 'test'
+2026-11-04T13:07:31.4255377Z   ...
+2026-11-04T13:07:31.4255919Z # Subtest: viewport 720x540: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4256824Z ok 22 - viewport 720x540: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4257354Z   ---
+2026-11-04T13:07:31.4257724Z   duration_ms: 0.300349
+2026-11-04T13:07:31.4258082Z   type: 'test'
+2026-11-04T13:07:31.4258433Z   ...
+2026-11-04T13:07:31.4258900Z # Subtest: viewport 1440x900: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4259649Z ok 23 - viewport 1440x900: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4260146Z   ---
+2026-11-04T13:07:31.4260464Z   duration_ms: 1.068218
+2026-11-04T13:07:31.4260853Z   type: 'test'
+2026-11-04T13:07:31.4261156Z   ...
+2026-11-04T13:07:31.4261673Z # Subtest: viewport 1920x1080: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4262296Z ok 24 - viewport 1920x1080: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4262768Z   ---
+2026-11-04T13:07:31.4263099Z   duration_ms: 0.121829
+2026-11-04T13:07:31.4263410Z   type: 'test'
+2026-11-04T13:07:31.4263703Z   ...
+2026-11-04T13:07:31.4264128Z # Subtest: viewport 2560x1440: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4264662Z ok 25 - viewport 2560x1440: landscape and safe-area coordinate roundtrip
+2026-11-04T13:07:31.4265040Z   ---
+2026-11-04T13:07:31.4265320Z   duration_ms: 0.043826
+2026-11-04T13:07:31.4265628Z   type: 'test'
+2026-11-04T13:07:31.4265892Z   ...
+2026-11-04T13:07:31.4266530Z # Subtest: resize and orientation preserve match state
+2026-11-04T13:07:31.4267103Z ok 26 - resize and orientation preserve match state
+2026-11-04T13:07:31.4267418Z   ---
+2026-11-04T13:07:31.4267768Z   duration_ms: 7.692456
+2026-11-04T13:07:31.4268072Z   type: 'test'
+2026-11-04T13:07:31.4268353Z   ...
+2026-11-04T13:07:31.4268752Z # Subtest: physical small bounds become uniform solver space >=120 without stretching
+2026-11-04T13:07:31.4269436Z ok 27 - physical small bounds become uniform solver space >=120 without stretching
+2026-11-04T13:07:31.4269792Z   ---
+2026-11-04T13:07:31.4269993Z   duration_ms: 4.207116
+2026-11-04T13:07:31.4270236Z   type: 'test'
+2026-11-04T13:07:31.4270436Z   ...
+2026-11-04T13:07:31.4270788Z # Subtest: zero, hidden and non-finite surfaces defer instead of supplying fake bounds
+2026-11-04T13:07:31.4271356Z ok 28 - zero, hidden and non-finite surfaces defer instead of supplying fake bounds
+2026-11-04T13:07:31.4271692Z   ---
+2026-11-04T13:07:31.4271908Z   duration_ms: 0.15101
+2026-11-04T13:07:31.4272126Z   type: 'test'
+2026-11-04T13:07:31.4272316Z   ...
+2026-11-04T13:07:31.4272711Z # Subtest: touch is inverse of fit + zoom + pan on actual small surfaces
+2026-11-04T13:07:31.4273203Z ok 29 - touch is inverse of fit + zoom + pan on actual small surfaces
+2026-11-04T13:07:31.4273537Z   ---
+2026-11-04T13:07:31.4273742Z   duration_ms: 0.311674
+2026-11-04T13:07:31.4273958Z   type: 'test'
+2026-11-04T13:07:31.4274207Z   ...
+2026-11-04T13:07:31.4274415Z 1..29
+2026-11-04T13:07:31.4274626Z # tests 29
+2026-11-04T13:07:31.4274828Z # suites 0
+2026-11-04T13:07:31.4275023Z # pass 29
+2026-11-04T13:07:31.4275264Z # fail 0
+2026-11-04T13:07:31.4275470Z # cancelled 0
+2026-11-04T13:07:31.4275721Z # skipped 0
+2026-11-04T13:07:31.4275927Z # todo 0
+2026-11-04T13:07:31.4276143Z # duration_ms 480.276401
+2026-11-04T13:07:31.4360141Z Post job cleanup.
+2026-11-04T13:07:31.5226479Z (node:2335) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-04T13:07:31.5227269Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-04T13:07:31.5345180Z Post job cleanup.
+2026-11-04T13:07:31.5967883Z [command]/usr/bin/git version
+2026-11-04T13:07:31.5993663Z git version 2.56.0
+2026-11-04T13:07:31.6018997Z Temporarily overriding HOME='/home/runner/work/_temp/73a01710-c5ce-4455-b50a-462c869233eb' before making global git config changes
+2026-11-04T13:07:31.6020033Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T13:07:31.6022059Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/domino-tour/domino-tour
+2026-11-04T13:07:31.6049237Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T13:07:31.6071861Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T13:07:31.6263760Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T13:07:31.6279022Z http.https://github.com/.extraheader
+2026-11-04T13:07:31.6286515Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-04T13:07:31.6308620Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T13:07:31.6528681Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T13:07:31.6548867Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-04T13:07:31.6848073Z Cleaning up orphan processes
+2026-11-04T13:07:31.7098661Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
