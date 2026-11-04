@@ -65,5 +65,5 @@ export class LocalSession {
         this.refresh();
         return true;
     }
-    newMatch(target = this.state.target, dealSize = this.state.dealSize) { this.state = newGame(target, dealSize); this.model = this.solve(); this.previews.clear(); this.interaction = this.makeInteraction(); this.advanceBots(); }
+    newMatch(target = this.state.target, dealSize = this.state.dealSize) { this.state = newGame(target, dealSize); this.model = this.solve(); this.previews.clear(); this.interaction = this.makeInteraction(); }
 }
