@@ -93,3 +93,16 @@ header{grid-row:1;position:relative}header>span{display:none}
 .pass-notice[hidden]{display:none}
 @keyframes dt-pass-pulse{from{opacity:1;filter:brightness(1)}to{opacity:.62;filter:brightness(1.3)}}
 @media(prefers-reduced-motion:reduce){.pass-notice:not([hidden]){animation:none}}
+
+/* M01 premium reference, first visual foundation. Paint only; preserve all bounds and hitboxes. */
+:root{--dt-premium-gold:#f6c65b;--dt-premium-wood:#8b461e;--dt-premium-felt:#07623e}
+body{background:radial-gradient(ellipse at 50% 5%,#3c7da3 0%,#a96072 24%,#643b44 42%,#1b3b33 67%,#091d19 100%)}
+.table{border-color:#8b451e;background:radial-gradient(ellipse at 45% 42%,#168451 0%,#07613d 62%,#033c2c 100%);box-shadow:inset 0 0 0 3px #f0bd5e,inset 0 0 0 9px #653115,inset 0 0 24px #001a11a6,0 7px 0 #48230e,0 14px 24px #000a}
+.seat{border:2px solid var(--dt-premium-gold);background:linear-gradient(160deg,#172b56,#08142e 68%,#050b19);color:#fff7e1;border-radius:20px;box-shadow:inset 0 1px 0 #ffffff35,0 3px 9px #000b}
+.seat.active{outline:2px solid #ffe68b;box-shadow:0 0 14px #ffc64d99,inset 0 1px 0 #ffffff35}
+.piece.inhand{background:linear-gradient(140deg,#fff9e9,#f2e0b8);border:2px solid #b98b3e;border-radius:7px;box-shadow:0 3px 0 #a06a2a,0 5px 9px #0009}
+.piece.inhand.playable:not(:disabled){border-color:#f9d36d}
+.piece.inhand.selected{outline:3px solid #ffd64b;box-shadow:0 0 12px #ffcd52b3,0 3px 0 #a06a2a}
+header strong{color:#ffdb7c;text-shadow:0 2px 3px #000,0 0 9px #ffcc5333}
+.play-controls .message{font-weight:750;color:#fff1bd;text-shadow:0 2px 3px #000}
+@media(prefers-reduced-motion:reduce){.seat,.piece.inhand{transition:none}}
