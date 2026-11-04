@@ -87,3 +87,9 @@ header{grid-row:1;position:relative}header>span{display:none}
 
 /* M01 drag feedback uses the landscape frame; no game-state mutation while moving. */
 .piece.drag-floating{position:absolute;z-index:100;pointer-events:none;transform:translate(-50%,-50%);opacity:.94;box-shadow:0 6px 16px #0009,0 0 0 2px #ffe28a;outline:none}
+
+/* M01: forced-pass notice, separate from the game board and score controls. */
+.pass-notice:not([hidden]){position:absolute;z-index:70;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;min-width:180px;max-width:85%;padding:14px 24px;text-align:center;border:2px solid #f2d18a;border-radius:16px;background:#082e23;color:#fff1bc;font-size:clamp(15px,2.8vw,24px);font-weight:800;letter-spacing:.03em;box-shadow:0 8px 26px #0009;animation:dt-pass-pulse .5s ease-in-out 4 alternate}
+.pass-notice[hidden]{display:none}
+@keyframes dt-pass-pulse{from{opacity:1;filter:brightness(1)}to{opacity:.62;filter:brightness(1.3)}}
+@media(prefers-reduced-motion:reduce){.pass-notice:not([hidden]){animation:none}}
