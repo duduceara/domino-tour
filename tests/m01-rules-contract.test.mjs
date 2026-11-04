@@ -4,8 +4,8 @@ import {
   newGame, auditedBotTurn, assertStateIntegrity, totalScore, isBlocked
 } from '../dist/src/engine.js';
 
-// No changes to game rules: audit the approved 5-point pass transfer,
-// preservation of 28 tiles and explicit blocked-round behavior.
+// Preserve 5-point pass transfers and 28 tiles; account separately for
+// newly authorized fixed round awards and resolved blocked rounds.
 for (const dealSize of [6, 7]) {
   test('approved pass contract remains conservative with ' + dealSize + ' tiles', () => {
     let passes = 0, blocked = 0;
@@ -30,22 +30,23 @@ for (const dealSize of [6, 7]) {
           assert.equal(passEvent.beneficiary, lastBefore);
           assert.equal(passEvent.delta, -5);
           for (const p of s.players) {
-            const expected = p.seat === passEvent.seat ? -5 : p.seat === lastBefore ? 5 : 0;
+            const award = events.find(e => e.type === 'round-finished');
+            const expected = (p.seat === passEvent.seat ? -5 : p.seat === lastBefore ? 5 : 0) + (award?.seat === p.seat ? award.points : 0);
             assert.equal(p.score - scoresBefore[p.seat], expected,
               'only the passante and last valid player may exchange 5 points');
           }
         }
         assertStateIntegrity(s);
-        assert.equal(totalScore(s), initialTotal, 'competitive score conservation');
+        assert.equal(totalScore(s), initialTotal + s.roundAwards.reduce((sum,a)=>sum+a.points,0), 'passes conserve scores; only fixed round awards add points');
       }
       assert.notEqual(s.phase, 'playing', 'simulation must terminate or explicitly block');
-      if (isBlocked(s)) {
+      if (s.events.some(e => e.type === 'round-blocked')) {
         blocked++;
-        assert.equal(s.winner, null, 'no unapproved tie-break winner');
-        assert.ok(s.events.some(e => e.type === 'round-blocked'));
+        assert.equal(isBlocked(s), false);
+        assert.ok(s.events.some(e => e.type === 'blocked-result'));
       }
     }
     assert.ok(passes > 0, 'simulations must actually exercise forced passes');
-    assert.ok(blocked > 0, 'simulations must exercise the unresolved blocked state');
+    assert.ok(blocked > 0, 'simulations must exercise resolved blocked rounds');
   });
 }

@@ -33,8 +33,14 @@ export function highestHeldDouble(players) {
             if (tile.a === tile.b && (!best || tile.a > best.tile.a))
                 best = { seat: p.seat, tile };
         }
-    if (!best)
-        throw new RuleError('No double available to open');
+    if (!best) {
+        // Highest sum, then highest end, then lowest seat: deterministic fallback.
+        for (const p of players) for (const tile of p.hand) {
+            const rank = t => (t.a + t.b) * 10 + Math.max(t.a, t.b);
+            if (!best || rank(tile) > rank(best.tile) || (rank(tile) === rank(best.tile) && p.seat < best.seat)) best = { seat: p.seat, tile };
+        }
+    }
+    if (!best) throw new RuleError('No opening tile');
     return best;
 }
 const next = (seat) => ((seat + 1) % 4);
@@ -59,18 +65,19 @@ export function newGame(target, dealSize, randomIndex = secureIndex) {
     const players = [0, 1, 2, 3].map(seat => ({ seat, kind: seat === 0 ? 'human' : 'bot', hand: tiles.slice(seat * dealSize, (seat + 1) * dealSize), score: target, connected: true }));
     const sleeping = tiles.slice(dealSize * 4);
     const opening = highestHeldDouble(players);
-    return { placements: [], players, sleeping, chain: [], left: null, right: null, turn: opening.seat, lastPlayed: null, passesInRow: 0, target, dealSize, phase: 'playing', winner: null, events: [], openingRequiredTileId: opening.tile.id, roundsCompleted: 0 };
+    const state = { placements: [], players, sleeping, chain: [], left: null, right: null, turn: opening.seat, lastPlayed: null, passesInRow: 0, target, dealSize, phase: 'playing', winner: null, events: [], openingRequiredTileId: null, roundsCompleted: 0, passedSeats: [], playedSeats: [], declaredFour: [], roundAwards: [] };
+    declareFiveAtDeal(state);
+    return state;
 }
 /** No drawing from sleeping tiles. A play is a tile ID and an explicit endpoint. */
 export function play(s, seat, tileId, side) {
     checkTurn(s, seat);
+    if (!['left', 'right'].includes(side)) throw new RuleError('Invalid endpoint');
     const p = player(s, seat);
     const index = p.hand.findIndex(t => t.id === tileId);
     if (index < 0)
         throw new RuleError('Tile not in hand');
     const tile = p.hand[index];
-    if (s.openingRequiredTileId !== null && tileId !== s.openingRequiredTileId)
-        throw new RuleError('Opening must use highest held double');
     let left = s.left, right = s.right;
     if (left === null) {
         left = tile.a;
@@ -92,6 +99,7 @@ export function play(s, seat, tileId, side) {
         else
             throw new RuleError('Illegal right endpoint');
     }
+    const bothEnds = s.left !== null && s.left !== s.right && tile.a !== tile.b && compatibleEnds(s, tile);
     const joined = s.left === null ? tile.a : (side === 'left' ? s.left : s.right);
     const exposed = s.left === null ? tile.b : (side === 'left' ? left : right);
     s.placements.push({ tileId, side, joined, exposed });
@@ -102,29 +110,24 @@ export function play(s, seat, tileId, side) {
     s.lastPlayed = seat;
     s.openingRequiredTileId = null;
     s.passesInRow = 0;
+    s.playedSeats ??= [];
+    if (!s.playedSeats.includes(seat)) s.playedSeats.push(seat);
     s.events.push({ type: 'play', seat });
     if (p.hand.length === 0) {
-        s.roundsCompleted++;
-        s.events.push({ type: 'round-finished', seat });
-        for (const other of s.players) {
-            if (other.seat !== seat)
-                scoreTransfer(s, other.seat, seat, 5);
-        }
-        finishIfWon(s, seat);
-        if (s.phase !== 'finished') {
-            s.phase = 'round-complete';
-            s.nextOpeningSeat = seat;
-        }
+        const category = bothEnds ? 'la-e-lo' : tile.a === tile.b ? 'double' : !(s.passedSeats ?? []).includes(seat) ? 'without-pass' : 'simple';
+        completeRound(s, seat, category, { 'la-e-lo': 40, double: 30, 'without-pass': 20, simple: 10 }[category]);
         return;
     }
     s.turn = next(seat);
 }
-export function pass(s, seat) {
+export function pass(s, seat, randomIndex = secureIndex) {
     checkTurn(s, seat);
     if (legalTiles(s, seat).length)
         throw new RuleError('Cannot pass with playable tile');
     if (s.lastPlayed === null)
         throw new RuleError('No opening tile yet');
+    s.passedSeats ??= [];
+    if (!s.passedSeats.includes(seat)) s.passedSeats.push(seat);
     scoreTransfer(s, seat, s.lastPlayed, 5);
     s.events.push({ type: 'pass', seat, delta: -5, beneficiary: s.lastPlayed });
     finishIfWon(s, s.lastPlayed);
@@ -133,10 +136,10 @@ export function pass(s, seat) {
     s.passesInRow++;
     if (s.passesInRow >= 3) {
         // Three passes return the turn to the last player. That player may still play.
-        // Only an actual four-seat impasse suspends the round for adjudication.
+        // Only an actual four-seat impasse resolves the round.
         if (legalTiles(s, s.lastPlayed).length === 0) {
             s.events.push({ type: 'round-blocked', seat });
-            s.phase = 'blocked-awaiting-rule';
+            resolveBlockedRound(s, randomIndex);
             return;
         }
         s.passesInRow = 0;
@@ -150,10 +153,9 @@ export function continueRound(s, randomIndex = secureIndex) {
     const seat = s.nextOpeningSeat;
     s.phase = 'playing';
     startNextRound(s, seat, randomIndex);
-    s.nextOpeningSeat = null;
     assertStateIntegrity(s);
 }
-/** Ends a completed round; a blocked round is held for a future adjudication rule. */
+/** Deal the next round for its previous winner; reset only round-local state. */
 export function startNextRound(s, openingSeat, randomIndex = secureIndex) {
     if (s.phase !== 'playing')
         throw new RuleError('Cannot redeal an unresolved or finished match');
@@ -170,6 +172,11 @@ export function startNextRound(s, openingSeat, randomIndex = secureIndex) {
     s.passesInRow = 0;
     s.phase = 'playing';
     s.openingRequiredTileId = null;
+    s.nextOpeningSeat = null;
+    s.passedSeats = [];
+    s.playedSeats = [];
+    s.declaredFour = [];
+    declareFiveAtDeal(s);
 }
 /** Score-only recharge. Wallet authorization must be handled by an external economy service. */
 export function recharge(s, seat, authorized) {
@@ -195,7 +202,7 @@ export function viewFor(s, seat) {
         lastPlayed: s.lastPlayed, target: s.target, phase: s.phase, winner: s.winner, openingRequiredTileId: s.openingRequiredTileId
     };
 }
-/** Audits score conservation; transfers and batidas must never mint competitive points. */
+/** Passes conserve scores; round awards add the approved fixed points. */
 export function totalScore(s) { return s.players.reduce((sum, p) => sum + p.score, 0); }
 /** A recharge is an explicitly authorized exception to score conservation. */
 export function assertTileIntegrity(s) {
@@ -203,7 +210,7 @@ export function assertTileIntegrity(s) {
     if (ids.length !== 28 || new Set(ids).size !== 28 || ids.some(id => !Number.isInteger(id) || id < 0 || id >= 28))
         throw new RuleError('Tile conservation violated');
 }
-/** Resolving a blocked round needs an approved scoring/tie-break rule. No implicit winner. */
+/** Legacy unresolved-state predicate retained for compatibility. */
 export function isBlocked(s) { return s.phase === 'blocked-awaiting-rule'; }
 export function decideBot(view) {
     if (view.phase !== 'playing')
@@ -231,13 +238,13 @@ export function decideBot(view) {
     return { type: 'play', tileId: best.tileId, side: best.side };
 }
 /** Validated bot turn; the engine, not the heuristic, enforces every rule. */
-export function runBotTurn(s) {
+export function runBotTurn(s, randomIndex = secureIndex) {
     checkTurn(s, s.turn);
     if (s.players[s.turn].kind !== 'bot')
         throw new RuleError('Current seat is not a bot');
     const decision = decideBot(viewFor(s, s.turn));
     if (decision.type === 'pass')
-        pass(s, s.turn);
+        pass(s, s.turn, randomIndex);
     else
         play(s, s.turn, decision.tileId, decision.side);
     return decision;
@@ -267,9 +274,56 @@ export function assertStateIntegrity(s) {
         throw new RuleError('Missing table state');
 }
 /** One deterministic AI action, with safety assertions before and after. */
-export function auditedBotTurn(s) {
+export function auditedBotTurn(s, randomIndex = secureIndex) {
     assertStateIntegrity(s);
-    const decision = runBotTurn(s);
+    const decision = runBotTurn(s, randomIndex);
     assertStateIntegrity(s);
     return decision;
+}
+
+const compatibleEnds = (s, t) => (t.a === s.left || t.b === s.left) && (t.a === s.right || t.b === s.right);
+const doubles = p => p.hand.filter(t => t.a === t.b).length;
+function completeRound(s, seat, category, points) {
+    if (s.phase !== 'playing') throw new RuleError('Round already resolved');
+    player(s, seat).score += points;
+    s.roundAwards ??= [];
+    s.roundAwards.push({ seat, category, points });
+    s.roundsCompleted++;
+    s.nextOpeningSeat = seat;
+    s.events.push({ type: 'round-finished', seat, category, points });
+    s.phase = 'round-complete';
+    finishIfWon(s, seat);
+    if (s.phase === 'finished') delete s.nextOpeningSeat;
+}
+/** Mandatory declaration is recorded automatically before any move after a deal. */
+export function declareFiveAtDeal(s) {
+    if (s.phase !== 'playing' || s.chain.length) return false;
+    const p = s.players.find(p => doubles(p) >= 5);
+    if (!p) return false;
+    s.events.push({ type: 'declare-five', seat: p.seat });
+    completeRound(s, p.seat, 'five-doubles', 10);
+    return true;
+}
+/** Optional declaration on the player's first turn; forfeits a turn, not a scored pass. */
+export function canDeclareFour(s, seat) {
+    return s.phase === 'playing' && s.turn === seat && doubles(player(s, seat)) === 4 && !(s.playedSeats ?? []).includes(seat) && !(s.passedSeats ?? []).includes(seat) && !(s.declaredFour ?? []).includes(seat);
+}
+export function declareFour(s, seat) {
+    checkTurn(s, seat);
+    if (!canDeclareFour(s, seat)) throw new RuleError('Four doubles not declarable');
+    s.declaredFour ??= [];
+    s.declaredFour.push(seat);
+    s.events.push({ type: 'declare-four', seat });
+    s.turn = next(seat);
+}
+/** All four hands must actually be blocked; injectable unbiased index for tie tests. */
+export function resolveBlockedRound(s, randomIndex = secureIndex) {
+    if (s.phase !== 'playing' || s.left === null || s.players.some(p => legalTiles(s, p.seat).length)) throw new RuleError('Round is not blocked');
+    const sums = s.players.map(p => p.hand.reduce((sum, t) => sum + t.a + t.b, 0));
+    const candidates = s.players.filter(p => sums[p.seat] === Math.min(...sums)).map(p => p.seat);
+    const index = candidates.length === 1 ? 0 : randomIndex(candidates.length);
+    if (!Number.isInteger(index) || index < 0 || index >= candidates.length) throw new RuleError('Invalid tie RNG');
+    const seat = candidates[index];
+    s.events.push({ type: 'blocked-result', seat, sums, candidates });
+    completeRound(s, seat, 'blocked', 10);
 }

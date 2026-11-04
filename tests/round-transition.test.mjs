@@ -27,8 +27,8 @@ test('batida pauses, preserves final board and score until explicit next-round c
  assert.equal(s.nextOpeningSeat,0);
  assert.equal(s.chain.length,1);
  assert.equal(s.players[0].hand.length,0);
- assert.equal(s.players[0].score,115);
- assert.equal(totalScore(s),total);
+ assert.equal(s.players[0].score,130);
+ assert.equal(totalScore(s),total+30);
  assert.throws(()=>play(s,0,tile.id,'right'));
  assert.throws(()=>continueRound({...s,phase:'blocked-awaiting-rule'}));
  assertStateIntegrity(s);

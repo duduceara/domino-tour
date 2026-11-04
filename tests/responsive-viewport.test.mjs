@@ -16,6 +16,6 @@ for(const [w,h] of cases)test(`viewport ${w}x${h}: landscape and safe-area coord
  }
 });
 test('resize and orientation preserve match state',()=>{
- const s=new LocalSession(100,6);play(s.state,s.state.turn,s.state.openingRequiredTileId,'right');s.refresh();const before=JSON.stringify(s.state);
+ const s=new LocalSession(100,6);play(s.state,s.state.turn,s.state.players[s.state.turn].hand[0].id,'right');s.refresh();const before=JSON.stringify(s.state);
  for(const [width,height] of cases){for(const [w,h] of [[width,height],[height,width]]){const v=landscapeViewport(w,h);s.resize({x:0,y:0,width:Math.min(1160,v.width-180),height:Math.max(120,v.height-180)},'horizontal');assert.equal(JSON.stringify(s.state),before);assert.equal(s.interaction.drag,null);assertStateIntegrity(s.state)}}
 });

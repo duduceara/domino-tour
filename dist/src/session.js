@@ -1,4 +1,4 @@
-import { newGame, runBotTurn, play, pass, legalTiles, continueRound, assertStateIntegrity } from './engine.js';
+import { newGame, runBotTurn, play, pass, legalTiles, continueRound, declareFour, canDeclareFour, assertStateIntegrity } from './engine.js';
 import { TableInteraction, buildTableModel, validSides } from './table.js';
 export class LocalSession {
     state;
@@ -58,6 +58,14 @@ export class LocalSession {
     }
     humanPass() { if (this.state.turn !== 0 || legalTiles(this.state, 0).length || this.state.phase !== 'playing')
         return false; pass(this.state, 0); this.refresh(); return true; }
+    canDeclareFour() { return canDeclareFour(this.state, 0); }
+    declareFour() {
+        if (!this.canDeclareFour()) return false;
+        declareFour(this.state, 0);
+        assertStateIntegrity(this.state);
+        this.refresh();
+        return true;
+    }
     nextRound() {
         if (this.state.phase !== 'round-complete')
             return false;
