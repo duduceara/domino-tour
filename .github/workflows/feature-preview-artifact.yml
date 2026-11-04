@@ -1,0 +1,36 @@
+name: DOMINÓ TOUR private feature preview artifact
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/mobile-touch-v1]
+    paths:
+      - 'web/**'
+      - 'dist/**'
+      - '.github/workflows/feature-preview-artifact.yml'
+permissions:
+  contents: read
+jobs:
+  package-feature-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate entry and game scripts
+        run: |
+          node --check web/app.js
+          node --check web/entry-flow.js
+          node --test tests/entry-flow.test.mjs tests/viewport-geometry.test.mjs
+      - name: Prepare preview folder without publishing
+        run: |
+          mkdir -p preview/dist
+          cp -R web preview/web
+          cp -R dist/src preview/dist/src
+          printf '<!doctype html><meta http-equiv="refresh" content="0;url=web/index.html"><a href="web/index.html">Abrir DOMINÓ TOUR</a>' > preview/index.html
+      - name: Upload private workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: domino-tour-feature-preview
+          path: preview/
+          retention-days: 7
