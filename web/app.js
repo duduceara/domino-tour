@@ -14,7 +14,7 @@ function coords(e){const r=$('app').getBoundingClientRect(),p=framePoint({x:e.cl
 function fitViewport(){
  const probe=getComputedStyle($('safe-probe')),insets={top:parseFloat(probe.paddingTop),right:parseFloat(probe.paddingRight),bottom:parseFloat(probe.paddingBottom),left:parseFloat(probe.paddingLeft)};
  const visible=window.visualViewport;const v=landscapeViewport(visible?.width??document.documentElement.clientWidth,visible?.height??window.innerHeight,insets);const signature=JSON.stringify([v,visible?.offsetLeft??0,visible?.offsetTop??0]);if(signature===viewportSignature)return false;viewportSignature=signature;cancelGesture();zoom=1;pan={x:0,y:0};rotated=v.rotated;
- const app=$('app');app.style.width=v.width+'px';app.style.height=v.height+'px';app.style.left=(v.left+(visible?.offsetLeft??0))+'px';app.style.top=(v.top+(visible?.offsetTop??0))+'px';app.style.transform=rotated?'translateX('+v.height+'px) rotate(90deg)':'none';app.dataset.rotated=String(rotated);app.dataset.compact=String(v.height<500);app.dataset.dense=String(v.height<340);$('fullscreen').textContent=v.height<340?'⛶':'Tela cheia';app.style.setProperty('--gutter',Math.max(6,(v.width-1440)/2)+'px');return true;
+ const app=$('app');app.style.width=v.width+'px';app.style.height=v.height+'px';app.style.left=(v.left+(visible?.offsetLeft??0))+'px';app.style.top=(v.top+(visible?.offsetTop??0))+'px';app.style.transform=rotated?'translateX('+v.height+'px) rotate(90deg)':'none';app.dataset.rotated=String(rotated);app.dataset.compact=String(v.height<500);app.dataset.dense=String(v.height<500);$('fullscreen').textContent=v.height<500?'⛶':'Tela cheia';app.style.setProperty('--gutter',Math.max(6,(v.width-1440)/2)+'px');return true;
 }
 // Entry attempts orientation immediately; fullscreen is requested only with user activation.
 async function lockLandscape(gesture=false){
@@ -89,15 +89,16 @@ $('table').addEventListener('pointerdown',e=>{if(zoom===1||e.target.closest('but
 $('table').addEventListener('pointermove',e=>{if(!panStart||panStart.id!==e.pointerId)return;if(gestureBlocked){panStart=null;return}const p=framePoint({x:e.clientX,y:e.clientY},$('app').getBoundingClientRect(),rotated);pan={x:panStart.pan.x+p.x-panStart.point.x,y:panStart.pan.y+p.y-panStart.point.y};drawBoard(game.model)});
 for(const type of ['pointerup','pointercancel','lostpointercapture'])$('table').addEventListener(type,()=>{panStart=null});
 $('fullscreen').onclick=()=>lockLandscape(true);
-document.addEventListener('pointerdown',e=>{if(e.isTrusted&&$('app').dataset.orientationLock!=='native')void lockLandscape(true)},{capture:true,once:true});
+// Touch transient activation is granted on pointerup, unlike mouse pointerdown.
+document.addEventListener('pointerup',e=>{if(e.isTrusted&&$('app').dataset.orientationLock!=='native')void lockLandscape(true)},{capture:true,once:true});
 $('settings').onclick=()=>{const panel=$('settings-panel');panel.hidden=!panel.hidden;$('settings').setAttribute('aria-expanded',String(!panel.hidden))};
-// All resize sources share one RAF queue. Writes settle before the next frame's read.
+// All resize sources share one RAF queue; frame, geometry and controls commit before paint.
 let viewportFrame=null,viewportDirty=true,measuredSize='';
 function queueViewport(){viewportDirty=true;if(viewportFrame===null)viewportFrame=requestAnimationFrame(flushViewport)}
 function flushViewport(){
  viewportFrame=null;
  if(document.hidden)return;
- if(viewportDirty){viewportDirty=false;if(fitViewport()){measuredSize='';viewportFrame=requestAnimationFrame(flushViewport);return}}
+ if(viewportDirty){viewportDirty=false;if(fitViewport())measuredSize=''}
  const size=$('table').clientWidth+':'+$('table').clientHeight;
  if(size!==measuredSize){measuredSize=size;cancelGesture();sync()}
 }
