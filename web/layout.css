@@ -149,3 +149,26 @@ header strong{font-family:Georgia,serif;line-height:1;font-size:20px}header stro
 @media(max-height:400px){.entry-card{padding:12px 24px;width:min(94vw,660px)}.entry-card h1{font-size:27px;margin:8px 0}.entry-card p{font-size:13px;margin:7px 0;line-height:1.35}.entry-kicker{margin-top:0}.entry-card button{margin:5px;min-height:40px}.entry-choice{padding:10px}.entry-seats{margin:8px 0}}
 .app[data-dense="true"] header button{min-height:32px;height:32px;padding:3px 9px}.app[data-dense="true"] #fullscreen{min-height:32px;height:32px;width:36px;min-width:36px}.app[data-dense="true"] header strong{font-size:13px}
 .scores{z-index:4}.seat{pointer-events:none}.app[data-compact="false"] .seat:nth-child(3){top:0}.app[data-compact="false"] .seat:nth-child(1){bottom:0}
+
+/* WORK 02B: controls stay in existing bars; no table or approved-art redesign. */
+.game-control,.difficulty-choice select,#difficulty{background:linear-gradient(#174963,#0b2b40);color:#fff5df;border:1px solid #d6b368}
+#organize,#declare-four,#next-round,#play-again{min-height:44px;font-size:12px;padding:4px 10px;white-space:nowrap}
+#declare-four{margin-right:auto}
+#declare-four[hidden],.declare-dialog[hidden]{display:none}
+.declare-dialog{position:absolute;inset:0;z-index:150;display:grid;place-items:center;background:#041a2bcc}
+.declare-card{width:min(92%,370px);padding:20px;text-align:center;background:#0b2b40;color:#fff5df;border:1px solid #d6b368;border-radius:18px;box-shadow:0 8px 28px #0008}
+.declare-card p{font-size:17px;line-height:1.4;margin:0 0 16px}
+.declare-card>div{display:flex;justify-content:center;gap:12px}
+.declare-card button{min-height:44px;min-width:104px}
+#declare-confirm{border-color:#f6d889}
+.difficulty-choice{display:flex;align-items:center;justify-content:center;gap:10px}
+/* Keep the existing north/south badge offsets when using a 44px control row. */
+.app[data-dense="true"]{grid-template-rows:44px minmax(0,1fr) 38px 44px}
+.app[data-compact="true"]:not([data-dense="true"]){grid-template-rows:44px minmax(0,1fr) 42px 44px}
+.app[data-dense="true"] header #organize,.app[data-dense="true"] .play-controls>button{height:44px;min-height:44px}
+.toolbar{max-height:calc(100% - 54px);overflow:auto;background:#0b2b40}
+/* Keep compact score badges clear of the rack and the new bar controls. */
+.app[data-dense="true"] .table{top:40px}
+.app[data-dense="true"] .seat:nth-child(3){top:0}
+.app[data-dense="true"] .seat:nth-child(1){bottom:-84px}
+.app[data-dense="true"] #next-round,.app[data-dense="true"] #play-again{margin-right:auto}
