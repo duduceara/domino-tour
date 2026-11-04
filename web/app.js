@@ -8,7 +8,7 @@ let dragId=null,origin=null,dragMoved=false,ghost=null;const activePointers=new 
 let rotated=false,zoom=1,pan={x:0,y:0},panStart=null;
 let botTimer=null,botEpoch=0;
 function stopBotSequence(){botEpoch++;if(botTimer!==null){clearTimeout(botTimer);botTimer=null}}
-function scheduleBots(){stopBotSequence();if(game.state.phase!=='playing'||game.state.turn===0)return;const epoch=botEpoch;const step=()=>{if(epoch!==botEpoch)return;botTimer=null;if(game.state.phase!=='playing'||game.state.turn===0)return;game.advanceBots(1);sync();if(game.state.phase==='playing'&&game.state.turn!==0)botTimer=setTimeout(step,420)};botTimer=setTimeout(step,420)}
+function scheduleBots(){stopBotSequence();if(game.state.phase!=='playing'||game.state.turn===0)return;const epoch=botEpoch;const step=()=>{if(epoch!==botEpoch)return;botTimer=null;if(game.state.phase!=='playing'||game.state.turn===0)return;game.advanceBots(1);sync();if(game.state.phase==='playing'&&game.state.turn!==0)botTimer=setTimeout(step,3000)};botTimer=setTimeout(step,3000)}
 function coords(e){const r=$('app').getBoundingClientRect(),p=framePoint({x:e.clientX,y:e.clientY},r,rotated);const x=p.x-$('table').offsetLeft-$('table').parentElement.offsetLeft-$('table').clientLeft,y=p.y-$('table').offsetTop-$('table').parentElement.offsetTop-$('table').clientTop;return {x:(x-$('table').clientWidth/2-pan.x)/zoom+$('table').clientWidth/2,y:(y-$('table').clientHeight/2-pan.y)/zoom+$('table').clientHeight/2}}
 function fitViewport(){
  cancelGesture();zoom=1;pan={x:0,y:0};const probe=getComputedStyle($('safe-probe')),insets={top:parseFloat(probe.paddingTop),right:parseFloat(probe.paddingRight),bottom:parseFloat(probe.paddingBottom),left:parseFloat(probe.paddingLeft)};
