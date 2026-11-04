@@ -195,3 +195,11 @@ Base inspecionada: `95982c102256bbcf60192e569998ac259db77993`, exclusivamente `f
 - Ajuste INVALID_BOUNDS da base preservado: espaços físicos positivos são normalizados uniformemente para o mínimo lógico de 120px; dimensão zero aguarda medição, sem inventar área física.
 - M01 permanece **60%**. Aparência premium e touch desta revisão aguardam confirmação física do proprietário. Arte é evolução vetorial inicial, não equivalência final à imagem de referência.
 - Hospedagem: somente prévia privada isolada existente, mantendo o público GitHub Pages e branches protegidas intactos.
+
+### Evidências finais desta revisão
+
+- Commit funcional: `9cd959af21c138f779ecd2029629484f27c828e8`.
+- CI confirmado (49/49, zero falhas): https://github.com/duduceara/domino-tour/actions/runs/41853490859 ; job 126655740071. Logs integrais em `docs/evidencias/M01-premium-ci.log`.
+- Chrome/iframe: 14 dimensões de 568×320/740×260 até 1920×1080, incluindo retratos equivalentes. Mesa ocupada com geometry=verified, clipped=[], statePreserved=true em todas. Seleção, segundo toque, preview sem commit e arraste após rotação aprovados pelo harness sintético.
+- Hospedagem privada: implantação `appgdep_6aeb4926ff4481918b71113251cb0cc4` sucedida; fonte `ed0671988adb03b125838911f823482f2857d48c`. Endereço: https://domino-tour-m01-bounds-samsung.cedufac.chatgpt.site . Mantém acesso somente do proprietário.
+- A abertura externa no navegador remoto expirou após 300 segundos; não equivale a confirmação de carregamento no Samsung. Navegação/jogabilidade verificadas no servidor interno usando os mesmos módulos estáticos. Nova confirmação física pendente. M01 permanece 60%.
