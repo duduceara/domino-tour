@@ -118,7 +118,7 @@ $('table').addEventListener('pointermove',e=>{if(!panStart||panStart.id!==e.poin
 for(const type of ['pointerup','pointercancel','lostpointercapture'])$('table').addEventListener(type,()=>{panStart=null});
 $('fullscreen').onclick=()=>lockLandscape(true);
 // Touch transient activation is granted on pointerup, unlike mouse pointerdown.
-document.addEventListener('pointerup',e=>{if(e.isTrusted&&$('app').dataset.orientationLock!=='native')void lockLandscape(true)},{capture:true,once:true});
+document.addEventListener('pointerup',e=>{if(e.isTrusted&&$('entry-flow').hidden&&$('app').dataset.orientationLock!=='native')void lockLandscape(true)},{capture:true});
 $('settings').onclick=()=>{const panel=$('settings-panel');panel.hidden=!panel.hidden;$('settings').setAttribute('aria-expanded',String(!panel.hidden))};
 // All resize sources share one RAF queue; frame, geometry and controls commit before paint.
 let viewportFrame=null,viewportDirty=true,measuredSize='';
