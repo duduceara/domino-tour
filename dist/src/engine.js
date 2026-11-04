@@ -111,8 +111,10 @@ export function play(s, seat, tileId, side) {
                 scoreTransfer(s, other.seat, seat, 5);
         }
         finishIfWon(s, seat);
-        if (s.phase !== 'finished')
-            startNextRound(s, seat);
+        if (s.phase !== 'finished') {
+            s.phase = 'round-complete';
+            s.nextOpeningSeat = seat;
+        }
         return;
     }
     s.turn = next(seat);
@@ -140,6 +142,16 @@ export function pass(s, seat) {
         s.passesInRow = 0;
     }
     s.turn = next(seat);
+}
+/** Explicit user confirmation to begin the next offline round. No implicit redeal. */
+export function continueRound(s, randomIndex = secureIndex) {
+    if (s.phase !== 'round-complete' || !Number.isInteger(s.nextOpeningSeat))
+        throw new RuleError('No completed round awaiting confirmation');
+    const seat = s.nextOpeningSeat;
+    s.phase = 'playing';
+    startNextRound(s, seat, randomIndex);
+    s.nextOpeningSeat = null;
+    assertStateIntegrity(s);
 }
 /** Ends a completed round; a blocked round is held for a future adjudication rule. */
 export function startNextRound(s, openingSeat, randomIndex = secureIndex) {
