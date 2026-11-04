@@ -1,0 +1,17 @@
+name: Mobile touch focused tests
+on:
+  push:
+    branches: [feature/mobile-touch-v1]
+  workflow_dispatch:
+jobs:
+  touch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript syntax
+        run: node --check web/app.js
+      - name: Run focused interaction tests
+        run: node --test tests/mobile-touch.test.mjs
