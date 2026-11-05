@@ -1,0 +1,22 @@
+name: DOMINÓ TOUR M05 approved-art integrity
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/mobile-touch-v1]
+    paths:
+      - 'web/assets/approved/**'
+      - 'web/approved-interfaces.json'
+      - 'tests/m05-approved-art-integrity.test.mjs'
+      - '.github/workflows/m05-art-integrity.yml'
+permissions:
+  contents: read
+jobs:
+  approved-art-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check approved-art SHA-256 and catalog
+        run: node --test tests/m05-approved-art-integrity.test.mjs
