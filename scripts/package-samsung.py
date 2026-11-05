@@ -17,13 +17,13 @@ def build_package(output, ref='HEAD'):
     commit = git('rev-parse', '--verify', ref + '^{commit}').decode().strip()
     paths = git('ls-tree', '-r', '--name-only', commit, '--', 'web', 'dist/src', 'index.html').decode().splitlines()
     payload = {'site/' + path: git('show', commit + ':' + path) for path in paths}
-    required = ['site/web/index.html', 'site/web/avatar-catalog.json', 'site/dist/src/engine.js', 'site/dist/src/hand.js']
+    required = ['site/web/index.html', 'site/web/avatar-catalog.json', 'site/dist/src/engine.js', 'site/dist/src/hand.js', 'site/dist/src/bot-sampling.js']
     if any(path not in payload for path in required):
         raise ValueError('Runtime incomplete')
     manifest = {'application': 'DOMINÓ TOUR', 'source_commit': commit,
                 'runtime_file_count': len(payload),
                 'files': {path: hashlib.sha256(data).hexdigest() for path, data in sorted(payload.items())}}
-    for name in ['iniciar_teste.py', 'INICIAR_WINDOWS.bat', 'LEIA_PRIMEIRO.txt']:
+    for name in ['iniciar_teste.py', 'INICIAR_WINDOWS.bat', 'LEIA_PRIMEIRO.txt', 'ROTEIRO_HOMOLOGACAO.txt']:
         payload[name] = (ROOT / 'tools/samsung' / name).read_bytes()
     payload['PACOTE.json'] = (json.dumps(manifest, ensure_ascii=False, indent=2) + '\n').encode()
     output = Path(output)

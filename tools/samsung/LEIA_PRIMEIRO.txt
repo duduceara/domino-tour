@@ -44,3 +44,9 @@ Homologação Samsung pendente. O pacote não significa publicação ou aprovaç
 A galeria antiga mantém sua falha de integridade conhecida; não foi corrigida nem mascarada.
 A aparência ainda não está homologada contra todas as 16 interfaces premium aprovadas.
 PACOTE.json identifica o commit e os hashes dos arquivos do jogo incluídos.
+
+ÁPICE MOTOR 04
+Use ROTEIRO_HOMOLOGACAO.txt para registrar o teste físico.
+Quatro carroças não têm regra especial. Cinco carroças vencem a rodada
+automaticamente com 10 pontos. A vitória final mantém a condição existente.
+Somente Fácil, Médio e Difícil. Nenhuma nova publicação foi realizada.

@@ -1,0 +1,59 @@
+DOMINÓ TOUR | EDVÓRIA — ÁPICE MOTOR 04
+ROTEIRO DE HOMOLOGAÇÃO FÍSICA — AINDA NÃO EXECUTADO
+
+Este pacote é web para Chrome no Samsung; não é APK/AAB instalável.
+Use LEIA_PRIMEIRO.txt para iniciar o servidor local no computador.
+O celular e o computador precisam estar na mesma rede Wi-Fi.
+Não abrir o HTML diretamente nem esperar que 127.0.0.1 aponte para o computador.
+
+REGISTRO OBRIGATÓRIO
+Data/hora: ________________________  Testador: __________________________
+Samsung/modelo: ___________________  Android/Chrome: ____________________
+Commit do motor (PACOTE.json): _________________________________________
+Rede usada: _______________________  Orientação: horizontal
+Dificuldade: ______________________  Distribuição: 6+4 / 7+0
+Partida concluída? sim / não         Falhas/tempo percebido: ______________
+Não preencher como aprovado antes de realizar os passos.
+
+A. ENTRADA E IDENTIDADE
+[ ] Carregamento visível; entrar como visitante; selecionar avatar.
+[ ] Avatar reaparece ao recarregar no mesmo endereço/IP e porta.
+[ ] Recarregar reinicia a partida (somente perfil/avatar são persistidos).
+[ ] Menu → Offline → Preparação → Mesa, sem imagem quebrada no fluxo.
+[ ] Fácil, Médio e Difícil disponíveis; nenhuma quarta dificuldade.
+
+B. MESA E GESTOS — SAMSUNG NA HORIZONTAL
+[ ] Você embaixo, RobiX à esquerda, AndroX acima, DomiX à direita.
+[ ] Quatro participantes, pontos, pedras, pontas e controles visíveis.
+[ ] Sem rolagem/elementos sobrepostos; tela cheia ou fallback horizontal.
+[ ] Arrastar dentro da mão reorganiza sem jogar ou alterar pontos.
+[ ] Só a pedra movimentada pode girar; as restantes mantêm a orientação.
+[ ] Arrastar à mesa só joga pedra válida; arraste inválido/cancelado não joga.
+[ ] Toque, duplo toque, cancelamento e segundo dedo não duplicam jogadas.
+
+C. PARTIDA COMPLETA — REPETIR NAS DUAS DISTRIBUIÇÕES E NOS TRÊS NÍVEIS
+[ ] Seis pedras por jogador e quatro reservadas; ou sete, sem reservadas.
+[ ] Turnos: você → esquerda → acima → direita, conforme abertura.
+[ ] Robôs agem uma vez por turno após aproximadamente três segundos.
+[ ] Passe obrigatório automático: -5 ao passante e +5 ao último que jogou.
+[ ] Aviso de passe dura aproximadamente dois segundos; não há botão de passe.
+[ ] Mão com quatro carroças não mostra declaração nem perde turno especial.
+[ ] Se houver cinco carroças na distribuição, vitória automática da rodada e +10 uma única vez.
+[ ] Resultado da rodada, pontos e próxima abertura coerentes; Próxima rodada funciona.
+[ ] Continuar até Partida encerrada; Jogar novamente começa outra partida.
+[ ] Trocar de app/ocultar e voltar não executa ações durante a pausa nem duplica a ação na retomada.
+
+D. REGRAS PARA CONFERÊNCIA QUANDO OCORREREM NATURALMENTE
+Batida simples 10; trancado 10; cinco carroças 10; sem passar 20;
+carroça 30; lá e lô 40. Categorias de batida não acumulam bônus.
+Trancado: menor soma; empate sorteado; vencedor abre a próxima rodada.
+Não há compra das reservadas nem transferência por adversário ao bater.
+Não é necessário forçar cinco carroças ou batidas raras na partida física:
+se não ocorrerem, anotar NÃO OBSERVADO; há cobertura automatizada separada.
+
+EVIDÊNCIA E CONCLUSÃO
+Registrar passos, placares antes/depois e resultado. Se houver falha, anotar
+modelo, nível, distribuição, ação e mensagem; vídeo/foto apenas se desejado.
+Galeria de referências tem falha conhecida, separada do motor e sem reparo.
+Homologação física: PENDENTE / APROVADA / REPROVADA (marcar após executar).
+Observações: __________________________________________________________

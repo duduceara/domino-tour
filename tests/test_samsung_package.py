@@ -56,7 +56,7 @@ class SamsungPackageTests(unittest.TestCase):
             self.assertEqual(hashlib.sha256(data).hexdigest(), digest)
             original = subprocess.check_output(['git', 'show', self.manifest['source_commit'] + ':' + path.removeprefix('site/')], cwd=ROOT)
             self.assertEqual(data, original)
-        for name in ['LEIA_PRIMEIRO.txt', 'INICIAR_WINDOWS.bat', 'iniciar_teste.py']:
+        for name in ['LEIA_PRIMEIRO.txt', 'INICIAR_WINDOWS.bat', 'iniciar_teste.py', 'ROTEIRO_HOMOLOGACAO.txt']:
             self.assertIn(name, self.names)
 
     def test_access_token_and_runtime_mime(self):
@@ -83,7 +83,7 @@ class SamsungPackageTests(unittest.TestCase):
                 self.assertEqual(hashlib.sha256(response.read()).hexdigest(), asset['sha256'])
 
     def test_runtime_includes_manual_hand_and_unchanged_rules(self):
-        for path in ['web/avatar-picker.js', 'web/avatar-profile.js', 'web/entry-flow.js', 'dist/src/hand.js', 'dist/src/session.js', 'dist/src/bots.js']:
+        for path in ['web/avatar-picker.js', 'web/avatar-profile.js', 'web/entry-flow.js', 'dist/src/hand.js', 'dist/src/session.js', 'dist/src/bots.js', 'dist/src/bot-sampling.js']:
             with self.request('/test-token/' + path) as response:
                 self.assertGreater(len(response.read()), 0)
         with self.assertRaises(HTTPError) as caught:
