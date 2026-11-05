@@ -1,14 +1,12 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {samplePublicHands,inferPublicConstraints} from '../dist/src/bot-sampling.js';
-import {baselineSamples} from './fixtures/bots-apice01.mjs';
 import {newGame,viewFor,runBotTurn,continueRound,allTiles} from '../dist/src/engine.js';
 const rng=seed=>n=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed%n};
 function verify(view,samples){
  const {constraints}=inferPublicConstraints(view);
  for(const hands of samples){const seen=new Set([...view.ownHand,...view.chain].map(t=>t.id));
   for(const p of view.players){if(p.seat===view.turn)continue;const hand=hands.get(p.seat),c=constraints.get(p.seat);assert.equal(hand.length,p.handCount);
-   if(c.doubles!==null)assert.equal(hand.filter(t=>t.a===t.b).length,c.doubles);
    for(const tile of hand){assert.ok(!seen.has(tile.id));seen.add(tile.id);assert.ok(!c.absent.has(tile.a)&&!c.absent.has(tile.b));}
   }
   assert.equal(28-seen.size,view.sleepingCount);
@@ -45,16 +43,12 @@ test('conditional counting matches exhaustive enumeration and samples only compl
  const impossible=smallView();impossible.history.push({type:'pass',seat:2,left:1,right:2});
  assert.equal(samplePublicHands(impossible).samples.length,0);assert.equal(samplePublicHands(impossible).metrics.inconsistent,true);
 });
-test('four-double declaration is not a pass and subtracts publicly played doubles only',()=>{
- const history=[{type:'declare-four',seat:1},{type:'play',seat:1,tileId:allTiles().find(t=>t.a===2&&t.b===2).id},{type:'play',seat:1,tileId:allTiles().find(t=>t.a===1&&t.b===3).id}];
- const inferred=inferPublicConstraints({players:[0,1,2,3].map(seat=>({seat})),history});
- assert.equal(inferred.constraints.get(1).doubles,3);assert.equal(inferred.constraints.get(1).absent.size,0);assert.equal(inferred.inconsistent,false);
- const all=allTiles(),own=all.filter(t=>t.a!==t.b).slice(0,6),played=all.find(t=>t.a===2&&t.b===2);
- const view={turn:0,ownHand:own,chain:[played,all.find(t=>t.a===1&&t.b===3)],sleepingCount:4,players:[6,4,6,6].map((handCount,seat)=>({seat,handCount})),history};
- // Move the second public tile out of our synthetic own hand, if necessary.
- view.ownHand=all.filter(t=>t.a!==t.b&&!view.chain.some(p=>p.id===t.id)).slice(0,6);
- const result=samplePublicHands(view);assert.equal(result.samples.length,48);verify(view,result.samples);
- assert.ok(baselineSamples(view).some(h=>h.get(1).filter(t=>t.a===t.b).length!==3),'baseline did not enforce the public declaration');
+test('legacy four-double events have no effect on inferred absences, samples or decisions',async()=>{
+ const {chooseBotMove}=await import('../dist/src/bots.js');
+ const state=newGame(100,6,rng(9)),view=viewFor(state,state.turn),before=samplePublicHands(view),inferred=inferPublicConstraints(view);
+ const move=chooseBotMove(view,'hard');view.history.push({type:'declare-four',seat:(view.turn+1)%4});
+ assert.deepEqual(inferPublicConstraints(view),inferred);assert.deepEqual(samplePublicHands(view),before);assert.deepEqual(chooseBotMove(view,'hard'),move);
+ assert.ok([...inferred.constraints.values()].every(c=>!('doubles' in c)));
 });
 test('contradictory public play after a pass never produces fabricated samples',()=>{
  const view=smallView();view.history.push({type:'play',seat:2,tileId:allTiles().find(t=>t.a===0&&t.b===3).id});

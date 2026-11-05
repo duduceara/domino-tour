@@ -2,31 +2,25 @@
 const tiles = [];
 for (let a = 0; a <= 6; a++) for (let b = a; b <= 6; b++) tiles.push({id: tiles.length, a, b});
 export function inferPublicConstraints(view) {
-    const constraints = new Map(view.players.map(p => [p.seat, {absent: new Set(), doubles: null}]));
-    const playedDoubles = new Map();
+    const constraints = new Map(view.players.map(p => [p.seat, {absent: new Set()}]));
     let inconsistent = false;
     for (const event of view.history ?? []) {
+        if (event.type !== 'pass' && event.type !== 'play') continue;
         const constraint = constraints.get(event.seat);
         if (!constraint) { inconsistent = true; continue; }
         if (event.type === 'pass') {
             // With no draws, these absences remain true until the next deal.
             for (const value of [event.left, event.right]) if (Number.isInteger(value) && value >= 0 && value <= 6) constraint.absent.add(value);
-        } else if (event.type === 'declare-four') constraint.doubles = 4;
-        else if (event.type === 'play') {
+        } else if (event.type === 'play') {
             const tile = tiles[event.tileId];
             if (!tile || constraint.absent.has(tile.a) || constraint.absent.has(tile.b)) inconsistent = true;
-            if (tile && tile.a === tile.b) playedDoubles.set(event.seat, (playedDoubles.get(event.seat) ?? 0) + 1);
         }
-    }
-    for (const [seat, constraint] of constraints) if (constraint.doubles !== null) {
-        constraint.doubles -= playedDoubles.get(seat) ?? 0;
-        if (constraint.doubles < 0) inconsistent = true;
     }
     return {constraints, inconsistent};
 }
 function publicRandom(view) {
     let seed = 2166136261;
-    const data = [view.turn, view.ownHand.map(t => t.id).sort((a,b)=>a-b), view.chain.map(t=>t.id), view.players.map(p=>[p.seat,p.handCount]), view.sleepingCount, view.history];
+    const data = [view.turn, view.ownHand.map(t => t.id).sort((a,b)=>a-b), view.chain.map(t=>t.id), view.players.map(p=>[p.seat,p.handCount]), view.sleepingCount, view.history?.filter(e=>e.type==='play'||e.type==='pass')];
     for (const char of JSON.stringify(data)) seed = Math.imul(seed ^ char.charCodeAt(0), 16777619) >>> 0;
     const next = () => { seed = (seed + 0x6D2B79F5) >>> 0; let n = seed; n = Math.imul(n ^ n >>> 15, n | 1); n ^= n + Math.imul(n ^ n >>> 7, n | 61); return (n ^ n >>> 14) >>> 0; };
     return maximum => {
@@ -44,11 +38,10 @@ export function samplePublicHands(view, requested = 48) {
     const samples = [], metrics = {requested, generated: 0, states: 0, exhausted: false, inconsistent, method: 'conditional-counting'};
     const seats = view.players.filter(p=>p.seat !== view.turn).map(p=>p.seat);
     const counts = seats.map(seat=>view.players.find(p=>p.seat===seat).handCount);
-    const doubles = seats.map(seat=>constraints.get(seat).doubles ?? -1);
     const seen = new Set([...view.ownHand,...view.chain].map(t=>t.id));
     const pool = tiles.filter(t=>!seen.has(t.id));
     const sleeping = view.sleepingCount ?? pool.length-counts.reduce((a,b)=>a+b,0);
-    if (inconsistent || seats.length !== 3 || counts.some(n=>!Number.isInteger(n)||n<0||n>7) || !Number.isInteger(sleeping) || sleeping<0 || sleeping>4 || counts.reduce((a,b)=>a+b,0)+sleeping!==pool.length || doubles.some((n,i)=>n>counts[i]||n < -1)) {
+    if (inconsistent || seats.length !== 3 || counts.some(n=>!Number.isInteger(n)||n<0||n>7) || !Number.isInteger(sleeping) || sleeping<0 || sleeping>4 || counts.reduce((a,b)=>a+b,0)+sleeping!==pool.length) {
         metrics.inconsistent = true; return {samples, metrics};
     }
     const random = publicRandom(view);
@@ -56,7 +49,7 @@ export function samplePublicHands(view, requested = 48) {
         const c = constraints.get(seat);
         return mask | (!c.absent.has(tile.a)&&!c.absent.has(tile.b) ? 1<<index : 0);
     },sleeping ? 8 : 0);
-    if (doubles.every(n=>n===-1) && pool.every(tile=>allowed(tile)===(sleeping?15:7))) {
+    if (pool.every(tile=>allowed(tile)===(sleeping?15:7))) {
         metrics.method='unconstrained-shuffle';
         for (let sample=0;sample<requested;sample++) {
             const shuffled=[...pool];
@@ -71,53 +64,43 @@ export function samplePublicHands(view, requested = 48) {
         return bits(a.mask)-bits(b.mask)||a.tile.id-b.tile.id;
     });
     const memo = new Map();
-    function completions(index, capacity, remainingDoubles) {
-        if (remainingDoubles.some((n,i)=>n>=0&&n>capacity[i])) return 0;
+    function completions(index, capacity) {
         const sleepLeft = ordered.length-index-capacity.reduce((a,b)=>a+b,0);
         if (sleepLeft<0 || sleepLeft>sleeping) return 0;
-        if (index===ordered.length) return capacity.every(n=>n===0)&&remainingDoubles.every(n=>n<=0) ? 1 : 0;
-        const key = [index,...capacity,...remainingDoubles].join(',');
+        if (index===ordered.length) return capacity.every(n=>n===0) ? 1 : 0;
+        const key = [index,...capacity].join(',');
         if (memo.has(key)) return memo.get(key);
         if (++metrics.states > 50000) throw new Error('sampling-budget');
-        const {tile,mask} = ordered[index]; let total = 0;
+        const {mask} = ordered[index]; let total = 0;
         for (let bucket=0;bucket<4;bucket++) {
             if (!(mask & 1<<bucket) || (bucket===3 ? !sleepLeft : !capacity[bucket])) continue;
-            const nextCapacity = [...capacity], nextDoubles = [...remainingDoubles];
-            if (bucket<3) {
-                nextCapacity[bucket]--;
-                if (tile.a===tile.b && nextDoubles[bucket]>=0) {
-                    if (!nextDoubles[bucket]) continue;
-                    nextDoubles[bucket]--;
-                }
-            }
-            total += completions(index+1,nextCapacity,nextDoubles);
+            const nextCapacity = [...capacity];
+            if (bucket<3) nextCapacity[bucket]--;
+            total += completions(index+1,nextCapacity);
         }
         memo.set(key,total); return total;
     }
     try {
-        const total = completions(0,counts,doubles);
+        const total = completions(0,counts);
         metrics.validAssignments = total;
         if (!total) {metrics.inconsistent=true;return {samples,metrics};}
         // Every assignment is weighted by its exact number of valid completions.
         // Unlike greedy filling, this does not overrepresent early-seat choices.
         for (let sample=0;sample<requested;sample++) {
             const hands = new Map(seats.map(seat=>[seat,[]]));
-            let capacity=[...counts], remainingDoubles=[...doubles];
+            let capacity=[...counts];
             for (let index=0;index<ordered.length;index++) {
                 const {tile,mask}=ordered[index];
                 const sleepLeft=ordered.length-index-capacity.reduce((a,b)=>a+b,0);
-                let ticket=random(completions(index,capacity,remainingDoubles));
+                let ticket=random(completions(index,capacity));
                 for (let bucket=0;bucket<4;bucket++) {
                     if (!(mask&1<<bucket)||(bucket===3?!sleepLeft:!capacity[bucket])) continue;
-                    const nextCapacity=[...capacity],nextDoubles=[...remainingDoubles];
-                    if (bucket<3) {
-                        nextCapacity[bucket]--;
-                        if (tile.a===tile.b&&nextDoubles[bucket]>=0) {if (!nextDoubles[bucket]) continue;nextDoubles[bucket]--;}
-                    }
-                    const weight=completions(index+1,nextCapacity,nextDoubles);
+                    const nextCapacity=[...capacity];
+                    if (bucket<3) nextCapacity[bucket]--;
+                    const weight=completions(index+1,nextCapacity);
                     if (ticket>=weight) {ticket-=weight;continue;}
                     if (bucket<3) hands.get(seats[bucket]).push({...tile});
-                    capacity=nextCapacity;remainingDoubles=nextDoubles;break;
+                    capacity=nextCapacity;break;
                 }
             }
             samples.push(hands);

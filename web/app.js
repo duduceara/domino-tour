@@ -9,21 +9,20 @@ let handDrag=null,insertionMarker=null;
 let dragId=null,origin=null,dragMoved=false,ghost=null,floatingTile=null;const activePointers=new Set();let gestureBlocked=false;
 let rotated=false,zoom=1,pan={x:0,y:0},panStart=null;
 let tableSpace={width:800,height:430,scale:1},viewportSignature='',orientationPending=false;
-let declarationContext=null;
 let botTimer=null,botEpoch=0,passNoticeTimer=null,passNoticeEpoch=0;
 function clearPassNotice(){passNoticeEpoch++;if(passNoticeTimer!==null){clearTimeout(passNoticeTimer);passNoticeTimer=null}$('pass-notice').hidden=true}
-function stopBotSequence(){closeDeclaration();botEpoch++;if(botTimer!==null){clearTimeout(botTimer);botTimer=null}clearPassNotice()}
+function stopBotSequence(){botEpoch++;if(botTimer!==null){clearTimeout(botTimer);botTimer=null}clearPassNotice()}
 function showPassNotice(seat){
  clearPassNotice();const notice=$('pass-notice');notice.textContent=seat===0?'VOCÊ PASSOU! −5 pontos':`${PLAYER_NAMES[seat]} PASSOU! −5 pontos`;notice.hidden=false;
  const epoch=passNoticeEpoch;passNoticeTimer=setTimeout(()=>{if(epoch!==passNoticeEpoch)return;passNoticeTimer=null;notice.hidden=true;scheduleBots()},2000);
 }
 function scheduleBots(){
  if(botTimer!==null){clearTimeout(botTimer);botTimer=null}botEpoch++;
- if(document.hidden||declarationContext!==null||$('entry-flow')?.hidden===false||game.state.phase!=='playing'||passNoticeTimer!==null)return;
+ if(document.hidden||$('entry-flow')?.hidden===false||game.state.phase!=='playing'||passNoticeTimer!==null)return;
  const epoch=botEpoch,seat=game.state.turn;
  if(seat===0){
   if(game.state.lastPlayed!==null&&legalTiles(game.state,0).length===0){
-   botTimer=setTimeout(()=>{if(epoch!==botEpoch||document.hidden||declarationContext!==null||game.state.phase!=='playing'||game.state.turn!==0)return;botTimer=null;const before=game.state.events.length;if(game.humanPass()){sync();const ev=game.state.events.slice(before).find(e=>e.type==='pass'&&e.seat===0);if(ev)showPassNotice(0);else scheduleBots()}},game.canDeclareFour()?3000:0);
+   botTimer=setTimeout(()=>{if(epoch!==botEpoch||document.hidden||game.state.phase!=='playing'||game.state.turn!==0)return;botTimer=null;const before=game.state.events.length;if(game.humanPass()){sync();const ev=game.state.events.slice(before).find(e=>e.type==='pass'&&e.seat===0);if(ev)showPassNotice(0);else scheduleBots()}},0);
   }
   return;
  }
@@ -117,7 +116,7 @@ function sync(){
   let secondTapCandidate=false;
   b.addEventListener('pointerdown',e=>{
    secondTapCandidate=false;
-   if(gestureBlocked||declarationContext||s.phase!=='playing')return;
+   if(gestureBlocked||s.phase!=='playing')return;
    if(dragId!==null){cancelGesture();drawBoard(game.model);return}
    if(e.button!==0||!e.isPrimary)return;
    secondTapCandidate=game.interaction.selectedTile===tile.id;
@@ -176,8 +175,6 @@ function sync(){
   });
   hand.append(b);
  }
- $('declare-four').hidden=!game.canDeclareFour();
- if(declarationContext && (declarationContext.state!==s || declarationContext.events!==s.events.length || !game.canDeclareFour()))closeDeclaration();
  $('next-round').hidden=s.phase!=='round-complete';
  $('play-again').hidden=s.phase!=='finished';
  $('message').textContent=game.model.status==='unavailable'?'Mesa não desenhada: '+game.model.failure:s.phase==='round-complete'?'Rodada encerrada! Vencedor: '+(s.nextOpeningSeat===0?'Você':PLAYER_NAMES[s.nextOpeningSeat])+'. Pontuação atualizada. Toque em Próxima rodada para continuar.':s.phase==='finished'?'Partida encerrada. Vencedor: '+(s.winner===0?'Você':PLAYER_NAMES[s.winner]):s.phase==='blocked-awaiting-rule'?'Rodada bloqueada: regra da V0.21 preservada.':s.turn===0?(game.interaction.selectedTile!==null?(validSides(s,0,game.interaction.selectedTile).length===1?'Uma ponta disponível: toque novamente na pedra para jogar.':'Duas pontas disponíveis: escolha uma ponta iluminada.'):'Sua vez! Arraste na mão para organizar ou leve uma pedra à mesa.'):`${PLAYER_NAMES[s.turn]} pensando... (3 segundos por jogada)`;
@@ -188,29 +185,7 @@ for(const type of ['pointerup','pointercancel'])document.addEventListener(type,e
 window.addEventListener('blur',()=>{cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(game.model)});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){stopBotSequence();cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(game.model)}else{sync();scheduleBots()}});
 function afterAction(){clearDragVisual();dragId=null;origin=null;ghost=null;sync();scheduleBots()}
-function closeDeclaration(){
- const wasOpen=declarationContext!==null;declarationContext=null;$('declare-dialog').hidden=true;
- if(wasOpen)$('declare-four').focus?.();
-}
-$('declare-four').onclick=()=>{
- if(declarationContext || !game.canDeclareFour() || document.hidden)return;
- cancelGesture();if(botTimer!==null){clearTimeout(botTimer);botTimer=null}botEpoch++;
- declarationContext={state:game.state,events:game.state.events.length};
- $('declare-dialog').hidden=false;$('declare-cancel').focus?.();
-};
-$('declare-cancel').onclick=()=>{closeDeclaration();scheduleBots()};
-$('declare-confirm').onclick=()=>{
- const pending=declarationContext;
- if(!pending)return;
- closeDeclaration();
- if(pending.state!==game.state || pending.events!==game.state.events.length || !game.canDeclareFour()){sync();scheduleBots();return}
- cancelGesture();if(game.declareFour())afterAction();
-};
-$('declare-dialog').addEventListener('keydown',e=>{
- if(e.key==='Escape'){e.preventDefault();$('declare-cancel').onclick()}
- if(e.key==='Tab'){e.preventDefault();const confirm=$('declare-confirm'),cancel=$('declare-cancel');(document.activeElement===cancel?confirm:cancel).focus?.()}
-});
-$('organize').onclick=()=>{if(declarationContext)return;cancelGesture();$('message').textContent='Arraste qualquer pedra dentro da mão para organizar. Números iguais se alinham; leve à mesa para jogar.';[...$('hand').children][0]?.focus?.()};
+$('organize').onclick=()=>{cancelGesture();$('message').textContent='Arraste qualquer pedra dentro da mão para organizar. Números iguais se alinham; leve à mesa para jogar.';[...$('hand').children][0]?.focus?.()};
 $('difficulty').onchange=()=>{game.setDifficulty($('difficulty').value);$('entry-difficulty').value=game.difficulty;sync()};
 $('entry-difficulty').onchange=()=>{game.setDifficulty($('entry-difficulty').value);$('difficulty').value=game.difficulty};
 $('next-round').onclick=()=>{if(game.state.phase!=='round-complete')return;stopBotSequence();cancelGesture();if(game.nextRound()){sync();scheduleBots()}};

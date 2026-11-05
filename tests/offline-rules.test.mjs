@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {allTiles,newGame,highestHeldDouble,play,pass,continueRound,declareFour,canDeclareFour,declareFiveAtDeal,resolveBlockedRound,runBotTurn,assertStateIntegrity,totalScore} from '../dist/src/engine.js';
+import {allTiles,newGame,highestHeldDouble,play,pass,continueRound,migrateGameState,viewFor,declareFiveAtDeal,resolveBlockedRound,runBotTurn,assertStateIntegrity,totalScore} from '../dist/src/engine.js';
 const rng=seed=>n=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed%n};
 const tile=(a,b)=>allTiles().find(t=>t.a===a&&t.b===b);
 function arranged(hands, chain=[]){
@@ -29,10 +29,13 @@ for(const [name,last,left,right,passed,points] of [
  const s=arranged([[last],[tile(4,4)],[tile(5,5)],[tile(6,6)]],left===null?[]:[tile(0,3)]);s.left=left;s.right=right;s.passedSeats=passed?[0]:[];
  const before=s.players.map(p=>p.score);play(s,0,last.id,'left');assert.equal(s.players[0].score,before[0]+points);assert.deepEqual(s.players.slice(1).map(p=>p.score),before.slice(1));assert.equal(s.roundAwards.length,1);assert.equal(s.roundAwards[0].category,name);assert.throws(()=>play(s,0,last.id,'left'));assert.equal(s.roundAwards.length,1);assertStateIntegrity(s);
 });
-test('four doubles optional declaration forfeits turn without pass debit, once only',()=>{
+test('four doubles are an ordinary hand: no declaration, award or lost opening turn',async()=>{
  const hand=[0,1,2,3].map(n=>tile(n,n));const s=arranged([hand,[tile(4,4)],[tile(5,5)],[tile(6,6)]]);
- assert.ok(canDeclareFour(s,0));assert.throws(()=>declareFour(s,1));declareFour(s,0);assert.equal(s.turn,1);assert.equal(totalScore(s),400);s.turn=0;assert.throws(()=>declareFour(s,0));
- const t=arranged([hand,[tile(4,4)],[tile(5,5)],[tile(6,6)]]);play(t,0,hand[0].id,'right');assert.equal(t.chain.length,1);
+ assert.equal(s.turn,0);assert.equal(s.phase,'playing');assert.equal(totalScore(s),400);
+ const api=await import('../dist/src/engine.js');assert.equal(api.declareFour,undefined);assert.equal(api.canDeclareFour,undefined);
+ assert.equal(s.declaredFour,undefined);assert.equal(s.playedSeats,undefined);
+ play(s,0,hand[0].id,'right');assert.equal(s.chain.length,1);assert.equal(s.turn,1);assert.equal(totalScore(s),400);assert.equal(s.roundAwards.length,0);
+ assert.ok(!s.events.some(e=>e.type==='declare-four'));assertStateIntegrity(s);
 });
 test('five doubles declares automatically on distribution, awards 10, preserves hand and next opener',()=>{
  let found;
@@ -58,7 +61,7 @@ test('complete matches with human seat and three existing bots, JSON restore and
    assert.equal(s.players[0].kind,'human');assert.ok(s.players.slice(1).every(p=>p.kind==='bot'));
    if(s.turn===0){const t=s.players[0].hand.find(t=>s.left===null||[t.a,t.b].includes(s.left)||[t.a,t.b].includes(s.right));if(t){const side=s.left===null||[t.a,t.b].includes(s.left)?'left':'right';play(s,0,t.id,side);assert.throws(()=>play(s,0,t.id,side))}else pass(s,0,random)}else runBotTurn(s,random);
    assertStateIntegrity(s);
-   const copy=JSON.parse(JSON.stringify(s));assert.deepEqual(copy,s);assertStateIntegrity(copy);s=copy;
+   const copy=JSON.parse(JSON.stringify(s));assert.deepEqual(copy,s);assertStateIntegrity(copy);s=migrateGameState(copy);assert.deepEqual(s,copy);
    assert.equal(totalScore(s),400+s.roundAwards.reduce((sum,a)=>sum+a.points,0));
   }
   assert.equal(s.phase,'finished');assert.ok(s.players[s.winner].score>=200);assert.equal(s.events.filter(e=>e.type==='finish').length,1);assert.throws(()=>continueRound(s));
@@ -75,4 +78,43 @@ test('invalid tie RNG rejects without resolving or paying; current player cannot
  const s=arranged([[tile(0,3)],[tile(1,2)],[tile(4,4)],[tile(5,5)]],[tile(6,6)]);const before=JSON.stringify(s);
  assert.throws(()=>resolveBlockedRound(s,()=>2));assert.equal(JSON.stringify(s),before);
  const t=arranged([[tile(0,1)],[tile(2,2)],[tile(3,3)],[tile(4,4)]],[tile(0,0)]);assert.throws(()=>pass(t,0));
+});
+
+test('legacy snapshot migration removes obsolete metadata without replaying turns or losing round boundaries',()=>{
+ const state=newGame(100,6,rng(8));
+ state.events=[{type:'declare-four',seat:1},{type:'round-finished',seat:2,category:'simple',points:10},{type:'declare-four',seat:2},{type:'pass',seat:1,left:3,right:4},{type:'declare-four',seat:0}];
+ state.handLayout={order:state.players[0].hand.map(t=>t.id).reverse(),flipped:{}};state.profileData={nickname:'Preservar'};
+ state.roundHistoryStart=3;state.declaredFour=[0,1,2];state.playedSeats=[2];
+ const original=structuredClone(state),migrated=migrateGameState(JSON.parse(JSON.stringify(state)));
+ assert.deepEqual(state,original);assert.equal(migrated.roundHistoryStart,1);assert.deepEqual(migrated.events,state.events.filter(e=>e.type!=='declare-four'));
+ assert.equal(migrated.declaredFour,undefined);assert.equal(migrated.playedSeats,undefined);
+ for(const key of Object.keys(state).filter(k=>!['events','roundHistoryStart','declaredFour','playedSeats'].includes(k)))assert.deepEqual(migrated[key],state[key]);
+ assert.deepEqual(viewFor(migrated,migrated.turn).history,[state.events[3]]);assert.deepEqual(viewFor(state,state.turn).history,[state.events[3]]);
+ assert.deepEqual(migrateGameState(migrated),migrated);assertStateIntegrity(migrated);
+ const invalid=structuredClone(state);invalid.roundHistoryStart=1000;assert.throws(()=>migrateGameState(invalid));assert.equal(invalid.roundHistoryStart,1000);
+});
+test('legacy snapshots continue legally and retain next-round opener, scores and five-double awards',()=>{
+ for(const size of [6,7]){
+  const old=newGame(100,size,rng(34));old.declaredFour=[0];old.playedSeats=[];old.events.push({type:'declare-four',seat:0});
+  const clean=migrateGameState(old),legacy=JSON.parse(JSON.stringify(old));
+  const a=runBotTurn.bind(null,clean),b=runBotTurn.bind(null,legacy);clean.players.forEach(p=>p.kind='bot');legacy.players.forEach(p=>p.kind='bot');
+  a(rng(19),'hard');b(rng(19),'hard');assert.deepEqual(migrateGameState(legacy),clean);assertStateIntegrity(clean);
+ }
+ const finished=arranged([[tile(0,0),tile(1,1),tile(2,2),tile(3,3),tile(4,4)],[tile(0,1)],[tile(0,2)],[tile(0,3)]]);
+ declareFiveAtDeal(finished);finished.declaredFour=[];finished.playedSeats=[];
+ const migrated=migrateGameState(finished);assert.deepEqual(migrated.roundAwards,finished.roundAwards);assert.equal(migrated.nextOpeningSeat,0);assert.equal(migrated.players[0].score,110);assert.equal(declareFiveAtDeal(migrated),false);
+ continueRound(migrated,rng(14));assert.equal(migrated.turn,0);assert.equal(migrated.players[0].score,110);assertStateIntegrity(migrated);
+});
+
+test('four doubles keep the opening turn; five wins automatically for every seat and both deal sizes',()=>{
+ for(const size of [6,7])for(const seat of [0,1,2,3])for(const doubleCount of [4,5]){
+  const all=allTiles(),hand=[...all.filter(t=>t.a===t.b).slice(-doubleCount),...all.filter(t=>t.a!==t.b).slice(0,size-doubleCount)],rest=all.filter(t=>!hand.some(h=>h.id===t.id));
+  const target=[...rest.slice(0,seat*size),...hand,...rest.slice(seat*size)],working=allTiles(),choices=[];
+  for(let i=27;i>0;i--){const j=working.findIndex(t=>t.id===target[i].id);assert.ok(j<=i);choices.push(j);[working[i],working[j]]=[working[j],working[i]];}
+  let index=0;const state=newGame(100,size,()=>choices[index++]);
+  if(doubleCount===4){assert.equal(state.phase,'playing');assert.equal(state.turn,seat);assert.equal(state.events.length,0);assert.equal(state.players[seat].score,100);assertStateIntegrity(state);continue;}
+  assert.equal(state.phase,'round-complete');assert.equal(state.nextOpeningSeat,seat);assert.equal(state.players[seat].score,110);assert.equal(state.events.filter(e=>e.type==='declare-five').length,1);
+  assert.equal(state.roundAwards.length,1);assert.equal(state.roundAwards[0].category,'five-doubles');assert.equal(state.roundAwards[0].points,10);
+  assert.equal(declareFiveAtDeal(state),false);assert.equal(state.players[seat].score,110);assertStateIntegrity(state);
+ }
 });

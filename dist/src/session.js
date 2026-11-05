@@ -1,6 +1,6 @@
 import {reconcileHandLayout, previewHandMove, restoreHandLayout} from './hand.js';
 import {validateDifficulty} from './bots.js';
-import { newGame, runBotTurn, play, pass, legalTiles, continueRound, declareFour, canDeclareFour, assertStateIntegrity } from './engine.js';
+import { newGame, runBotTurn, play, pass, legalTiles, continueRound, assertStateIntegrity } from './engine.js';
 import { TableInteraction, buildTableModel, validSides } from './table.js';
 export class LocalSession {
     state;
@@ -93,14 +93,6 @@ export class LocalSession {
         const layout = restoreHandLayout(snapshot, this.state.players[0].hand, this.state.roundsCompleted);
         this.interaction.cancel();
         this.handLayout = layout;
-    }
-    canDeclareFour() { return canDeclareFour(this.state, 0); }
-    declareFour() {
-        if (!this.canDeclareFour()) return false;
-        declareFour(this.state, 0);
-        assertStateIntegrity(this.state);
-        this.refresh();
-        return true;
     }
     nextRound() {
         if (this.state.phase !== 'round-complete')

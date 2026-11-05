@@ -66,7 +66,7 @@ export function newGame(target, dealSize, randomIndex = secureIndex) {
     const players = [0, 1, 2, 3].map(seat => ({ seat, kind: seat === 0 ? 'human' : 'bot', hand: tiles.slice(seat * dealSize, (seat + 1) * dealSize), score: target, connected: true }));
     const sleeping = tiles.slice(dealSize * 4);
     const opening = highestHeldDouble(players);
-    const state = { placements: [], players, sleeping, chain: [], left: null, right: null, turn: opening.seat, lastPlayed: null, passesInRow: 0, target, dealSize, phase: 'playing', winner: null, events: [], openingRequiredTileId: null, roundsCompleted: 0, passedSeats: [], playedSeats: [], declaredFour: [], roundAwards: [] };
+    const state = { placements: [], players, sleeping, chain: [], left: null, right: null, turn: opening.seat, lastPlayed: null, passesInRow: 0, target, dealSize, phase: 'playing', winner: null, events: [], openingRequiredTileId: null, roundsCompleted: 0, passedSeats: [], roundAwards: [] };
     declareFiveAtDeal(state);
     return state;
 }
@@ -111,8 +111,6 @@ export function play(s, seat, tileId, side) {
     s.lastPlayed = seat;
     s.openingRequiredTileId = null;
     s.passesInRow = 0;
-    s.playedSeats ??= [];
-    if (!s.playedSeats.includes(seat)) s.playedSeats.push(seat);
     s.events.push({ type: 'play', seat, tileId, side });
     if (p.hand.length === 0) {
         const category = bothEnds ? 'la-e-lo' : tile.a === tile.b ? 'double' : !(s.passedSeats ?? []).includes(seat) ? 'without-pass' : 'simple';
@@ -175,8 +173,6 @@ export function startNextRound(s, openingSeat, randomIndex = secureIndex) {
     s.openingRequiredTileId = null;
     s.nextOpeningSeat = null;
     s.passedSeats = [];
-    s.playedSeats = [];
-    s.declaredFour = [];
     s.roundHistoryStart = s.events.length;
     declareFiveAtDeal(s);
 }
@@ -202,7 +198,7 @@ export function viewFor(s, seat) {
         ownHand: s.players[seat].hand.map(t => ({ ...t })), sleepingCount: s.sleeping.length,
         chain: s.chain.map(t => ({ ...t })), placements: s.placements.map(p => ({ ...p })), left: s.left, right: s.right, turn: s.turn,
         lastPlayed: s.lastPlayed, target: s.target, phase: s.phase, winner: s.winner, openingRequiredTileId: s.openingRequiredTileId,
-        history: s.events.slice(s.roundHistoryStart ?? 0).filter(e => ['play', 'pass', 'declare-four'].includes(e.type)).map(e => ({...e}))
+        history: s.events.slice(s.roundHistoryStart ?? 0).filter(e => ['play', 'pass'].includes(e.type)).map(e => ({...e}))
     };
 }
 /** Passes conserve scores; round awards add the approved fixed points. */
@@ -288,18 +284,6 @@ export function declareFiveAtDeal(s) {
     completeRound(s, p.seat, 'five-doubles', 10);
     return true;
 }
-/** Optional declaration on the player's first turn; forfeits a turn, not a scored pass. */
-export function canDeclareFour(s, seat) {
-    return s.phase === 'playing' && s.turn === seat && doubles(player(s, seat)) === 4 && !(s.playedSeats ?? []).includes(seat) && !(s.passedSeats ?? []).includes(seat) && !(s.declaredFour ?? []).includes(seat);
-}
-export function declareFour(s, seat) {
-    checkTurn(s, seat);
-    if (!canDeclareFour(s, seat)) throw new RuleError('Four doubles not declarable');
-    s.declaredFour ??= [];
-    s.declaredFour.push(seat);
-    s.events.push({ type: 'declare-four', seat });
-    s.turn = next(seat);
-}
 /** All four hands must actually be blocked; injectable unbiased index for tie tests. */
 export function resolveBlockedRound(s, randomIndex = secureIndex) {
     if (s.phase !== 'playing' || s.left === null || s.players.some(p => legalTiles(s, p.seat).length)) throw new RuleError('Round is not blocked');
@@ -310,4 +294,21 @@ export function resolveBlockedRound(s, randomIndex = secureIndex) {
     const seat = candidates[index];
     s.events.push({ type: 'blocked-result', seat, sums, candidates });
     completeRound(s, seat, 'blocked', 10);
+}
+
+/** Explicit, non-mutating migration for legacy JSON snapshots; never replays turns. */
+export function migrateGameState(snapshot) {
+    const state = structuredClone(snapshot);
+    assertStateIntegrity(state);
+    if (!Array.isArray(state.events)) throw new RuleError('Invalid event history');
+    const retained = event => event.type !== 'declare-four';
+    if (state.roundHistoryStart !== undefined) {
+        const start = state.roundHistoryStart;
+        if (!Number.isInteger(start) || start < 0 || start > state.events.length) throw new RuleError('Invalid round history boundary');
+        state.roundHistoryStart = state.events.slice(0, start).filter(retained).length;
+    }
+    state.events = state.events.filter(retained);
+    delete state.declaredFour;
+    delete state.playedSeats; // Used exclusively by the retired four-double rule.
+    return state;
 }

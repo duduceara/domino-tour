@@ -88,3 +88,15 @@ test('frozen expert baseline is intact; easy and medium preserve decisions acros
  assert.equal(decisions.length,2326);
  assert.equal(createHash('sha256').update(JSON.stringify(decisions)).digest('hex'),'6464ac53e474a48f883197757be26db197e5c5bf6b7a6690d30dd2cdf1fac934');
 });
+
+test('removing four-double inference preserves hard decisions in 2326 ordinary public positions',async()=>{
+ const {createHash}=await import('node:crypto');const decisions=[];
+ for(const size of [6,7])for(let seed=1;seed<=40;seed++){
+  const random=rng(seed),state=newGame(100,size,random);state.players.forEach(p=>p.kind='bot');
+  for(let turn=0;turn<30&&state.phase!=='finished';turn++){
+   if(state.phase==='round-complete'){continueRound(state,random);continue}
+   decisions.push(chooseBotMove(viewFor(state,state.turn),'hard'));runBotTurn(state,random,'easy');
+  }
+ }
+ assert.equal(decisions.length,2326);assert.equal(createHash('sha256').update(JSON.stringify(decisions)).digest('hex'),'8cf0f8ad9baff28887229692ee02b7d6e56b84eb1b80c638ae1f547a5516b6c1');
+});

@@ -82,23 +82,30 @@ test('domino pip faces display exact 0-6 values without changing tile identity',
   assert.equal(h.run(`tileEl({id:19,a:${value},b:0}).dataset.tileId`),19);
  }
 });
-function fourFixture(h){h.run(`stopBotSequence();game=new LocalSession(100,6);const all=allTiles();const hand=[...all.filter(t=>t.a===t.b).slice(0,4),...all.filter(t=>t.a!==t.b).slice(0,2)];const rest=all.filter(t=>!hand.some(h=>h.id===t.id));game.state.players[0].hand=hand;for(let i=1;i<4;i++)game.state.players[i].hand=rest.slice((i-1)*6,i*6);game.state.sleeping=rest.slice(18);game.state.turn=0;game.refresh();sync();`)}
-test('four-double control: visible only when legal, cancel preserves state and confirm acts once',()=>{
- const h=app();fourFixture(h);assert.equal(h.get('declare-four').hidden,false);const before=h.run('JSON.stringify(game.state)');h.get('declare-four').onclick();assert.equal(h.get('declare-dialog').hidden,false);h.get('declare-cancel').onclick();assert.equal(h.run('JSON.stringify(game.state)'),before);
- h.get('declare-four').onclick();h.get('declare-confirm').onclick();h.get('declare-confirm').onclick();assert.equal(h.run("game.state.events.filter(e=>e.type==='declare-four').length"),1);assert.equal(h.run('game.state.turn'),1);assert.equal(h.run('totalScore(game.state)'),400);assert.equal(h.get('declare-four').hidden,true);assert.equal(h.get('declare-dialog').hidden,true);assert.equal(h.timers.size,1);h.tick(2999);assert.equal(h.run('game.state.chain.length'),0);h.tick(1);assert.equal(h.run('game.state.chain.length'),1);
+function handFixture(h,doubleCount=4){h.run(`stopBotSequence();game=new LocalSession(100,6);game.state=newGame(100,6,n=>n-1);const all=allTiles();const hand=[...all.filter(t=>t.a===t.b).slice(0,${doubleCount}),...all.filter(t=>t.a!==t.b).slice(0,${6-doubleCount})];const rest=all.filter(t=>!hand.some(h=>h.id===t.id));game.state.players[0].hand=hand;for(let i=1;i<4;i++)game.state.players[i].hand=rest.slice((i-1)*6,i*6);game.state.sleeping=rest.slice(18);game.state.turn=0;game.refresh();sync();`)}
+test('four doubles: obsolete control and dialog are absent, normal play remains available',()=>{
+ const h=app();handFixture(h);const html=readFileSync(new URL('../web/index.html',import.meta.url),'utf8');
+ assert.doesNotMatch(html,/declare-(four|dialog|confirm|cancel)/);assert.equal(h.run('typeof game.declareFour'),'undefined');
+ assert.equal(h.run('game.state.turn'),0);assert.equal(h.run('game.state.events.length'),0);
+ assert.equal(h.run("game.humanPlay(game.state.players[0].hand[0].id,'right')"),true);
+ assert.equal(h.run('game.state.chain.length'),1);assert.equal(h.run('totalScore(game.state)'),400);
 });
-test('five doubles never exposes four-double control; stale confirmation cannot affect a restarted match',()=>{
- const h=app();fourFixture(h);h.get('declare-four').onclick();h.get('restart').onclick();const before=h.run('JSON.stringify(game.state)');h.get('declare-confirm').onclick();assert.equal(h.run('JSON.stringify(game.state)'),before);
- h.run(`stopBotSequence();game.state.players[0].hand=allTiles().filter(t=>t.a===t.b).slice(0,5);declareFiveAtDeal(game.state);sync()`);assert.equal(h.get('declare-four').hidden,true);assert.equal(h.run('game.state.phase'),'round-complete');assert.equal(h.get('next-round').hidden,false);
+test('five doubles still ends the round automatically, awards exactly 10 and allows next round',()=>{
+ const h=app();handFixture(h,5);h.run('declareFiveAtDeal(game.state);sync();scheduleBots()');
+ assert.equal(h.run('game.state.phase'),'round-complete');assert.equal(h.run('game.state.players[0].score'),110);assert.equal(h.get('next-round').hidden,false);assert.equal(h.timers.size,0);
+ assert.equal(h.run('declareFiveAtDeal(game.state)'),false);assert.equal(h.run('game.state.roundAwards.length'),1);
+ h.run('game.nextRound=()=>{continueRound(game.state,n=>n-1);game.refresh();return true}');h.get('next-round').onclick();assert.equal(h.run('game.state.players[0].score'),110);assert.equal(h.run('game.state.roundAwards.length'),1);
 });
 test('difficulty control and organize preserve pending bot timer and do not perform an extra action',()=>{
  const h=app();h.run(`stopBotSequence();game.state.turn=1;scheduleBots()`);const before=h.run('game.state.events.length');h.get('difficulty').value='hard';h.get('difficulty').onchange();h.get('organize').onclick();assert.equal(h.run('game.difficulty'),'hard');assert.equal(h.get('entry-difficulty').value,'hard');assert.equal(h.run('game.state.events.length'),before);assert.equal(h.timers.size,1);h.tick(2999);assert.equal(h.run('game.state.events.length'),before);
 });
-test('four-double decision pauses a pending automatic pass; Escape cancels without declaring',()=>{
- const h=app();fourFixture(h);h.run(`const last=allTiles().find(t=>t.a===6&&t.b===6);for(const p of game.state.players)p.hand=p.hand.filter(t=>t.id!==last.id);game.state.sleeping=game.state.sleeping.filter(t=>t.id!==last.id);game.state.chain=[last];game.state.placements=[{tileId:last.id,side:'right',joined:6,exposed:6}];game.state.left=6;game.state.right=6;game.state.lastPlayed=3;game.refresh();sync();scheduleBots()`);
- h.tick(2999);assert.equal(h.run('game.state.events.length'),0);h.get('declare-four').onclick();h.tick(10000);assert.equal(h.run('game.state.events.length'),0);h.emit(h.get('declare-dialog'),'keydown',{key:'Escape'});assert.equal(h.get('declare-dialog').hidden,true);assert.equal(h.run('game.state.events.length'),0);h.get('declare-four').onclick();h.get('declare-confirm').onclick();assert.equal(h.run('game.state.events[0].type'),'declare-four');assert.equal(h.run('totalScore(game.state)'),400);
+test('four doubles with no legal play passes automatically without a special declaration delay',()=>{
+ const h=app();handFixture(h);h.run(`const last=allTiles().find(t=>t.a===6&&t.b===6);for(const p of game.state.players)p.hand=p.hand.filter(t=>t.id!==last.id);game.state.sleeping=game.state.sleeping.filter(t=>t.id!==last.id);game.state.chain=[last];game.state.placements=[{tileId:last.id,side:'right',joined:6,exposed:6}];game.state.left=6;game.state.right=6;game.state.lastPlayed=3;game.refresh();sync();scheduleBots()`);
+ h.tick(0);assert.equal(h.run("game.state.events.filter(e=>e.type==='pass').length"),1);assert.equal(h.run('game.state.players[0].score'),95);assert.equal(h.run('game.state.players[3].score'),105);
+ assert.equal(h.get('pass-notice').hidden,false);h.tick(1999);assert.equal(h.get('pass-notice').hidden,false);h.tick(1);assert.equal(h.get('pass-notice').hidden,true);
+ assert.equal(h.run("game.state.events.filter(e=>e.type==='declare-four').length"),0);
 });
-function rackFixture(h){fourFixture(h);h.get('hand').children.forEach((el,i)=>el.rect={left:50+i*44,top:500,width:34,height:68});}
+function rackFixture(h){handFixture(h);h.get('hand').children.forEach((el,i)=>el.rect={left:50+i*44,top:500,width:34,height:68});}
 test('manual rack drag shows insertion preview, commits once and never plays',()=>{
  const h=app();rackFixture(h);const before=h.run('JSON.stringify(game.state)'),order=JSON.parse(h.run('JSON.stringify(game.orderedHand().map(t=>t.id))')),first=h.get('hand').children[0];
  h.emit(first,'pointerdown',{clientX:67,clientY:534});h.emit(first,'pointermove',{clientX:320,clientY:534});assert.notEqual(h.run('insertionMarker'),null);assert.equal(h.run('JSON.stringify(game.state)'),before);

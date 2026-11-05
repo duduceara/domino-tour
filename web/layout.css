@@ -152,15 +152,7 @@ header strong{font-family:Georgia,serif;line-height:1;font-size:20px}header stro
 
 /* WORK 02B: controls stay in existing bars; no table or approved-art redesign. */
 .game-control,.difficulty-choice select,#difficulty{background:linear-gradient(#174963,#0b2b40);color:#fff5df;border:1px solid #d6b368}
-#organize,#declare-four,#next-round,#play-again{min-height:44px;font-size:12px;padding:4px 10px;white-space:nowrap}
-#declare-four{margin-right:auto}
-#declare-four[hidden],.declare-dialog[hidden]{display:none}
-.declare-dialog{position:absolute;inset:0;z-index:150;display:grid;place-items:center;background:#041a2bcc}
-.declare-card{width:min(92%,370px);padding:20px;text-align:center;background:#0b2b40;color:#fff5df;border:1px solid #d6b368;border-radius:18px;box-shadow:0 8px 28px #0008}
-.declare-card p{font-size:17px;line-height:1.4;margin:0 0 16px}
-.declare-card>div{display:flex;justify-content:center;gap:12px}
-.declare-card button{min-height:44px;min-width:104px}
-#declare-confirm{border-color:#f6d889}
+#organize,#next-round,#play-again{min-height:44px;font-size:12px;padding:4px 10px;white-space:nowrap}
 .difficulty-choice{display:flex;align-items:center;justify-content:center;gap:10px}
 /* Keep the existing north/south badge offsets when using a 44px control row. */
 .app[data-dense="true"]{grid-template-rows:44px minmax(0,1fr) 38px 44px}

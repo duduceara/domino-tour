@@ -14,7 +14,6 @@ const outcomes=[],decisions=[],byDealSize={6:{before:0,after:0},7:{before:0,afte
 function valid(view,sample){
  const {constraints}=inferPublicConstraints(view),seen=new Set([...view.ownHand,...view.chain].map(t=>t.id));
  for(const p of view.players){if(p.seat===view.turn)continue;const hand=sample.get(p.seat),c=constraints.get(p.seat);if(!hand||hand.length!==p.handCount)return false;
-  if(c.doubles!==null&&hand.filter(t=>t.a===t.b).length!==c.doubles)return false;
   for(const tile of hand){if(seen.has(tile.id)||c.absent.has(tile.a)||c.absent.has(tile.b))return false;seen.add(tile.id)}
  }
  return 28-seen.size===view.sleepingCount;
