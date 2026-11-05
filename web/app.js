@@ -108,7 +108,8 @@ function sync(){
  if(handDrag)cancelGesture();
  const prior=rect();if(!prior){$('table').dataset.layout='waiting';return} $('table').dataset.layout='ready';game.setRouteStyle(routeStyle);game.resize(prior,'horizontal');
  const s=game.state,human=s.players[0];
- $('scores').replaceChildren(...s.players.map(p=>{const e=document.createElement('span');e.className='seat'+(s.turn===p.seat?' active':'');e.dataset.seat=String(p.seat);e.setAttribute('aria-label',p.seat===0?'Seu placar':`Placar de ${PLAYER_NAMES[p.seat]}`);e.textContent=`${p.seat===0?'Você':PLAYER_NAMES[p.seat]} · ${p.score} pts · ${p.hand.length} pedras`;const avatar=document.createElement('img');avatar.src=`./assets/avatar-${p.seat}.svg`;avatar.alt='';avatar.className='avatar';e.append(avatar);return e}));
+ $('scores').replaceChildren(...s.players.map(p=>{const e=document.createElement('span');e.className='seat'+(s.turn===p.seat?' active':'');e.dataset.seat=String(p.seat);e.setAttribute('aria-label',p.seat===0?'Seu placar':`Placar de ${PLAYER_NAMES[p.seat]}`);e.textContent=`${p.seat===0?'Você':PLAYER_NAMES[p.seat]} · ${p.score} pts · ${p.hand.length} pedras`;const avatar=document.createElement('span');avatar.className='avatar-slot';avatar.dataset.avatarSeat=String(p.seat);avatar.textContent=p.seat===0?'Você':PLAYER_NAMES[p.seat][0];e.append(avatar);return e}));
+ window.dispatchEvent?.(new Event('domino-tour:participants-rendered'));
  drawBoard(game.model);
  const hand=$('hand');hand.replaceChildren();
  for(const tile of game.orderedHand()){
