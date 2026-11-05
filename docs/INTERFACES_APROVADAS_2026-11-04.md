@@ -38,3 +38,7 @@ O proprietário confirmou visualmente as 16 interfaces, uma por vez, na conversa
 
 ## Próxima etapa técnica
 Reunir os arquivos originais das artes aprovadas, conferir sua correspondência, montar galeria de revisão isolada do jogo, testar navegação no Samsung e disponibilizar URL de prévia separada. Só depois solicitar aprovação da integração e conectar funcionalidades.
+
+## Atualização editorial autorizada — carroças
+
+Por decisão posterior do proprietário, o controle “Declarar 4 carroças”, seu diálogo e a perda de turno foram removidos. Quatro carroças não têm regra especial. Cinco carroças mantêm a vitória automática obrigatória de 10 pontos. Esta remoção pontual foi autorizada sem redesenho das 16 interfaces ou substituição de artes. Detalhes e compatibilidade de snapshots em [Atualização oficial das carroças](ATUALIZACAO_CARROCAS_2026-11-04.md).
