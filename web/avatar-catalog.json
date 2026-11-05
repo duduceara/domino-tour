@@ -1,0 +1,974 @@
+{
+  "version": 1,
+  "plannedInitial": 120,
+  "plannedFuture": [
+    500,
+    1000
+  ],
+  "sources": [
+    {
+      "file": "Robôs do Dominó Tour.png",
+      "libraryFileId": "libfile_7497fcb274388191849368cf7a6ad41d",
+      "sha256": "678d5419b8a4ee70ee39ff16adc8be80276daae02a4ad4072b98eccd47b2aaa3"
+    },
+    {
+      "file": "Biblioteca Mundial de Avatares(1).png",
+      "libraryFileId": "libfile_08f1695987348191812b57797c1a6ef6",
+      "sha256": "f2630171c78dfd47ec4f630d02aa3c5d46a3537e8f9644d4d902413adfd5b77c"
+    }
+  ],
+  "opponents": [
+    {
+      "id": "robix",
+      "name": "RobiX",
+      "seat": 1,
+      "position": "left",
+      "personality": "Estratégico e persistente",
+      "colors": [
+        "azul",
+        "prateado"
+      ],
+      "src": "assets/avatars/robix.webp",
+      "sourceFile": "Robôs do Dominó Tour.png",
+      "sourceBounds": [
+        130,
+        215,
+        414,
+        414
+      ],
+      "bytes": 9044,
+      "sha256": "0b4ce7d9de2fec0f17c647fab852c433f4aa80ee3808ab8e633d8418bf8f5706"
+    },
+    {
+      "id": "androx",
+      "name": "AndroX",
+      "seat": 2,
+      "position": "top",
+      "personality": "Analítico e preciso",
+      "colors": [
+        "branco",
+        "dourado"
+      ],
+      "src": "assets/avatars/androx.webp",
+      "sourceFile": "Robôs do Dominó Tour.png",
+      "sourceBounds": [
+        632,
+        278,
+        370,
+        370
+      ],
+      "bytes": 8502,
+      "sha256": "3af565ad220f20918a904b730b44e85282107e6d516612f038725f7149f918a5"
+    },
+    {
+      "id": "domix",
+      "name": "DomiX",
+      "seat": 3,
+      "position": "right",
+      "personality": "Criativo e ousado",
+      "colors": [
+        "azul",
+        "dourado"
+      ],
+      "src": "assets/avatars/domix.webp",
+      "sourceFile": "Robôs do Dominó Tour.png",
+      "sourceBounds": [
+        1172,
+        194,
+        440,
+        440
+      ],
+      "bytes": 9610,
+      "sha256": "2a4b07f49ff291f9fd6e364c2d87b4870d419aca138a6a273e4c11d5ccb1e43d"
+    }
+  ],
+  "items": [
+    {
+      "id": "world-001",
+      "label": "Amazônia",
+      "country": "Brasil",
+      "regions": [
+        "Brasil",
+        "Américas"
+      ],
+      "src": "assets/avatars/world-001.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        327,
+        155,
+        135,
+        142
+      ],
+      "bytes": 6768,
+      "sha256": "500b27776685fb9bbef667ccb35dc4b6ca5a880565131490e6d3a8adfc4f5fcc"
+    },
+    {
+      "id": "world-031",
+      "label": "Tucano Viajante",
+      "country": "Brasil",
+      "regions": [
+        "Brasil",
+        "Américas"
+      ],
+      "src": "assets/avatars/world-031.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        327,
+        564,
+        135,
+        129
+      ],
+      "bytes": 5180,
+      "sha256": "9184d08e3c3a734f3129e4f8a5d5a2b47c129e305f474629ce23072236030991"
+    },
+    {
+      "id": "world-041",
+      "label": "Unicórnio",
+      "country": "",
+      "regions": [],
+      "src": "assets/avatars/world-041.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        327,
+        693,
+        135,
+        137
+      ],
+      "bytes": 5674,
+      "sha256": "96ac55d1be76bccf7650f0168a45af75e6aa41b6290c4d296711e29269ee7d75"
+    },
+    {
+      "id": "world-011",
+      "label": "Pirata",
+      "country": "",
+      "regions": [],
+      "src": "assets/avatars/world-011.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        327,
+        297,
+        135,
+        138
+      ],
+      "bytes": 5678,
+      "sha256": "43915f20967f12a89902297b3b063ebbb5e5f178a0a376f8dc0071943263f1ac"
+    },
+    {
+      "id": "world-021",
+      "label": "Astronauta",
+      "country": "",
+      "regions": [],
+      "src": "assets/avatars/world-021.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        327,
+        435,
+        135,
+        129
+      ],
+      "bytes": 5398,
+      "sha256": "0ff187ba6094a1435edb919425cc987a8c7f2811ace7de0a9b81e9600f1986e8"
+    },
+    {
+      "id": "world-002",
+      "label": "Viking",
+      "country": "Noruega",
+      "regions": [
+        "Europa"
+      ],
+      "src": "assets/avatars/world-002.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        462,
+        155,
+        133,
+        142
+      ],
+      "bytes": 6594,
+      "sha256": "aced3cfabad89e2363d5cbe1a559d542161feaa2b77ae7520b073808a53e4a85"
+    },
+    {
+      "id": "world-032",
+      "label": "Lobo Aviador",
+      "country": "",
+      "regions": [],
+      "src": "assets/avatars/world-032.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        462,
+        564,
+        133,
+        129
+      ],
+      "bytes": 5208,
+      "sha256": "6cb9a11691a5732b342c45002fae4392e37d46ce20a17b46ff0ad4bfa5c7fdb1"
+    },
+    {
+      "id": "world-042",
+      "label": "Robô Espacial",
+      "country": "",
+      "regions": [],
+      "src": "assets/avatars/world-042.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        462,
+        693,
+        133,
+        137
+      ],
+      "bytes": 5230,
+      "sha256": "b9abe8f4b17236f465140e44ac94578957d8b2a1a1f940c47e027418a27544a8"
+    },
+    {
+      "id": "world-012",
+      "label": "Festa Brasileira",
+      "country": "Brasil",
+      "regions": [
+        "Brasil",
+        "Américas"
+      ],
+      "src": "assets/avatars/world-012.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        462,
+        297,
+        133,
+        138
+      ],
+      "bytes": 6864,
+      "sha256": "3986867c6b69f2dabfdcba0e9fcc8dc84c65998f948be400afdac0b14810d299"
+    },
+    {
+      "id": "world-022",
+      "label": "Magia",
+      "country": "",
+      "regions": [],
+      "src": "assets/avatars/world-022.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        462,
+        435,
+        133,
+        129
+      ],
+      "bytes": 4964,
+      "sha256": "85523c646694730dba29de4dc46af862cbe674e5ded2949e3adf4fa248bd91ad"
+    },
+    {
+      "id": "world-003",
+      "label": "Flores do Japão",
+      "country": "Japão",
+      "regions": [
+        "Ásia"
+      ],
+      "src": "assets/avatars/world-003.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        595,
+        155,
+        132,
+        142
+      ],
+      "bytes": 5490,
+      "sha256": "08c07756f0a46ef3146ea10dd07e293b6fbe55c7942d61442111d7f6084f7a8d"
+    },
+    {
+      "id": "world-033",
+      "label": "Coruja Viajante",
+      "country": "",
+      "regions": [],
+      "src": "assets/avatars/world-033.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        595,
+        564,
+        132,
+        129
+      ],
+      "bytes": 6184,
+      "sha256": "59ff9397a54af607e90c93721f6037d868f07e4499e1819e5a244728c8f437f3"
+    },
+    {
+      "id": "world-043",
+      "label": "Cacto Mexicano",
+      "country": "México",
+      "regions": [
+        "Américas"
+      ],
+      "src": "assets/avatars/world-043.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        595,
+        693,
+        132,
+        137
+      ],
+      "bytes": 5912,
+      "sha256": "2b587a54cc4c8d5a0ceaa550fdd8ba923b396782465df5b9dcf953b18dd5ba0c"
+    },
+    {
+      "id": "world-013",
+      "label": "Patrulha Canadense",
+      "country": "Canadá",
+      "regions": [
+        "Américas"
+      ],
+      "src": "assets/avatars/world-013.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        595,
+        297,
+        132,
+        138
+      ],
+      "bytes": 5086,
+      "sha256": "da9fe181c2faba25467f3727877f7d578b7d799a2a04090cee301680e94b1b0a"
+    },
+    {
+      "id": "world-023",
+      "label": "Trevo",
+      "country": "Irlanda",
+      "regions": [
+        "Europa"
+      ],
+      "src": "assets/avatars/world-023.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        595,
+        435,
+        132,
+        129
+      ],
+      "bytes": 5174,
+      "sha256": "e72e90bd2a9377dd6589dd25342ae642864a1f5f5b0eed5634606db6da19985c"
+    },
+    {
+      "id": "world-004",
+      "label": "Exploração do Oeste",
+      "country": "Estados Unidos",
+      "regions": [
+        "Américas"
+      ],
+      "src": "assets/avatars/world-004.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        727,
+        155,
+        132,
+        142
+      ],
+      "bytes": 5062,
+      "sha256": "d203e8b5ca27ed8e49678e2e90feab96284013c93bff22e822df67ca81b13198"
+    },
+    {
+      "id": "world-034",
+      "label": "Leão Real",
+      "country": "",
+      "regions": [
+        "África"
+      ],
+      "src": "assets/avatars/world-034.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        727,
+        564,
+        132,
+        129
+      ],
+      "bytes": 6210,
+      "sha256": "7d9afe99693df345cad535d4cfc9b4e10e9e1f0ba7da17e9b33eabd24de7f559"
+    },
+    {
+      "id": "world-044",
+      "label": "Mago",
+      "country": "",
+      "regions": [],
+      "src": "assets/avatars/world-044.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        727,
+        693,
+        132,
+        137
+      ],
+      "bytes": 5386,
+      "sha256": "0d755aac1c347f4d887c395dd4374f831243eb1f3b7a09c4c60f1ad6e8515f6c"
+    },
+    {
+      "id": "world-014",
+      "label": "Faraó",
+      "country": "Egito",
+      "regions": [
+        "África"
+      ],
+      "src": "assets/avatars/world-014.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        727,
+        297,
+        132,
+        138
+      ],
+      "bytes": 6274,
+      "sha256": "01bbf7b4b8363e4bb2b861254cadee73518ffcefb38a9b43c9a1081fe669f4dd"
+    },
+    {
+      "id": "world-024",
+      "label": "Chapéu de Palha",
+      "country": "Vietnã",
+      "regions": [
+        "Ásia"
+      ],
+      "src": "assets/avatars/world-024.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        727,
+        435,
+        132,
+        129
+      ],
+      "bytes": 4964,
+      "sha256": "301f0f5de90582f7cebededf39d616809b4c96e2a285da209cc1f1bd1dd33fc6"
+    },
+    {
+      "id": "world-005",
+      "label": "Deserto",
+      "country": "Emirados Árabes Unidos",
+      "regions": [
+        "Oriente Médio"
+      ],
+      "src": "assets/avatars/world-005.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        859,
+        155,
+        133,
+        142
+      ],
+      "bytes": 5110,
+      "sha256": "5d695105cc1393952a88e62b4b173458be7dce040235210bfe8f9075107e3220"
+    },
+    {
+      "id": "world-035",
+      "label": "Panda Explorador",
+      "country": "China",
+      "regions": [
+        "Ásia"
+      ],
+      "src": "assets/avatars/world-035.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        859,
+        564,
+        133,
+        129
+      ],
+      "bytes": 5322,
+      "sha256": "d0e0cf1ed53b2b6549a841313e997a3f755a065aa7eadb7574d707d68ca6565a"
+    },
+    {
+      "id": "world-045",
+      "label": "Rainha dos Mares",
+      "country": "",
+      "regions": [],
+      "src": "assets/avatars/world-045.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        859,
+        693,
+        133,
+        137
+      ],
+      "bytes": 5998,
+      "sha256": "afe40616735f52f2b3257a659720d7bb8901ad81519f73dbae18e3bc33a46b10"
+    },
+    {
+      "id": "world-015",
+      "label": "Andes",
+      "country": "Peru",
+      "regions": [
+        "Américas"
+      ],
+      "src": "assets/avatars/world-015.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        859,
+        297,
+        133,
+        138
+      ],
+      "bytes": 6500,
+      "sha256": "88a506dc5a666d20f2dfb5b4ac6e45f32f6391ed5f544fd25e95d44bb6faf97e"
+    },
+    {
+      "id": "world-025",
+      "label": "Lenço Floral",
+      "country": "Rússia",
+      "regions": [
+        "Europa",
+        "Ásia"
+      ],
+      "src": "assets/avatars/world-025.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        859,
+        435,
+        133,
+        129
+      ],
+      "bytes": 6084,
+      "sha256": "0ba6ecce421ecaff5c2fb1448d27a7bc63e781da195a6e45abe32a1cb8efe710"
+    },
+    {
+      "id": "world-006",
+      "label": "Cores da África",
+      "country": "",
+      "regions": [
+        "África"
+      ],
+      "src": "assets/avatars/world-006.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        992,
+        155,
+        132,
+        142
+      ],
+      "bytes": 6306,
+      "sha256": "44fe2b77bc4a06a89fe600ba256c4c247ded986c249a1f00f2fac4ec957910a1"
+    },
+    {
+      "id": "world-036",
+      "label": "Pinguim Viajante",
+      "country": "",
+      "regions": [],
+      "src": "assets/avatars/world-036.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        992,
+        564,
+        132,
+        129
+      ],
+      "bytes": 5036,
+      "sha256": "00a81270fe68361074cd58afd51d238b0418ecd1cd8038a975b24b6416d57b53"
+    },
+    {
+      "id": "world-046",
+      "label": "Guardião do Egito",
+      "country": "Egito",
+      "regions": [
+        "África"
+      ],
+      "src": "assets/avatars/world-046.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        992,
+        693,
+        132,
+        137
+      ],
+      "bytes": 5494,
+      "sha256": "493c0bd776bc36a8cf7807b89a8f622e6494dc825a1234624d38503f104ade73"
+    },
+    {
+      "id": "world-016",
+      "label": "Chef",
+      "country": "França",
+      "regions": [
+        "Europa"
+      ],
+      "src": "assets/avatars/world-016.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        992,
+        297,
+        132,
+        138
+      ],
+      "bytes": 4732,
+      "sha256": "a94471da4415248086049e6f89049b53cdafa21ad7ca078a9657bf75fef8f703"
+    },
+    {
+      "id": "world-026",
+      "label": "Cangaço",
+      "country": "Brasil",
+      "regions": [
+        "Brasil",
+        "Américas",
+        "Nordeste"
+      ],
+      "src": "assets/avatars/world-026.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        992,
+        435,
+        132,
+        129
+      ],
+      "bytes": 5884,
+      "sha256": "192b71b2ea2cf67330954c386f8d2a67bb770cad4a57d4f18c476338565ee1e2"
+    },
+    {
+      "id": "world-007",
+      "label": "Samurai",
+      "country": "Japão",
+      "regions": [
+        "Ásia"
+      ],
+      "src": "assets/avatars/world-007.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        1124,
+        155,
+        132,
+        142
+      ],
+      "bytes": 6004,
+      "sha256": "369f2d1fe17c1f163fbd5dface4723ce36f3267984360fabbd7113e1c22e5fdd"
+    },
+    {
+      "id": "world-037",
+      "label": "Raposa Viajante",
+      "country": "",
+      "regions": [],
+      "src": "assets/avatars/world-037.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        1124,
+        564,
+        132,
+        129
+      ],
+      "bytes": 5242,
+      "sha256": "aec6de2934217d079474b0bccbb2ef9d2c2778c42ad20cbf1272355878e757a6"
+    },
+    {
+      "id": "world-047",
+      "label": "Raposa das Lendas",
+      "country": "Japão",
+      "regions": [
+        "Ásia"
+      ],
+      "src": "assets/avatars/world-047.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        1124,
+        693,
+        132,
+        137
+      ],
+      "bytes": 5980,
+      "sha256": "53bbdf2653525478b57286c3c64c3c17568c4c9a83302cb30f89a972489235e9"
+    },
+    {
+      "id": "world-017",
+      "label": "Flamenco",
+      "country": "Espanha",
+      "regions": [
+        "Europa"
+      ],
+      "src": "assets/avatars/world-017.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        1124,
+        297,
+        132,
+        138
+      ],
+      "bytes": 5544,
+      "sha256": "ee34e98fe7e3249184980ddec1247bf80d79c925dd17613fa91b586be3254999"
+    },
+    {
+      "id": "world-027",
+      "label": "Verão",
+      "country": "Brasil",
+      "regions": [
+        "Brasil",
+        "Américas"
+      ],
+      "src": "assets/avatars/world-027.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        1124,
+        435,
+        132,
+        129
+      ],
+      "bytes": 5448,
+      "sha256": "378759460376f40c4d7ba2bc854a84f44173fcbe55de7dc3b46bb0e3354f7971"
+    },
+    {
+      "id": "world-008",
+      "label": "Mariachi",
+      "country": "México",
+      "regions": [
+        "Américas"
+      ],
+      "src": "assets/avatars/world-008.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        1256,
+        155,
+        133,
+        142
+      ],
+      "bytes": 6154,
+      "sha256": "89dcc6e4bc5c3341c3716973add2d164eeb31162a5bacd5a7368a12256e91932"
+    },
+    {
+      "id": "world-038",
+      "label": "Arara Pirata",
+      "country": "Brasil",
+      "regions": [
+        "Brasil",
+        "Américas"
+      ],
+      "src": "assets/avatars/world-038.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        1256,
+        564,
+        133,
+        129
+      ],
+      "bytes": 5704,
+      "sha256": "21fa2f38ba5eb27a8535513fbbb4afce3985cc673b3daad756fd7f3ce010c216"
+    },
+    {
+      "id": "world-048",
+      "label": "Dragão",
+      "country": "China",
+      "regions": [
+        "Ásia"
+      ],
+      "src": "assets/avatars/world-048.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        1256,
+        693,
+        133,
+        137
+      ],
+      "bytes": 6502,
+      "sha256": "f05fe4127b66cb9ef3f2e390261849aae1b3bcbf147c3bf2e99300a038adb974"
+    },
+    {
+      "id": "world-018",
+      "label": "Gaita Escocesa",
+      "country": "Reino Unido",
+      "regions": [
+        "Europa"
+      ],
+      "src": "assets/avatars/world-018.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        1256,
+        297,
+        133,
+        138
+      ],
+      "bytes": 6326,
+      "sha256": "bbe7dae6da1fd945b5c58aedacd219d963bfa569a459f0c5399d2e336c2b72c8"
+    },
+    {
+      "id": "world-028",
+      "label": "Alegria da Bahia",
+      "country": "Brasil",
+      "regions": [
+        "Brasil",
+        "Américas",
+        "Nordeste"
+      ],
+      "src": "assets/avatars/world-028.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        1256,
+        435,
+        133,
+        129
+      ],
+      "bytes": 5732,
+      "sha256": "9ab3830adce02170e94364f33b7180939eaafbbeb3d4fb4056dc9668551b01f4"
+    },
+    {
+      "id": "world-009",
+      "label": "Boina de Paris",
+      "country": "França",
+      "regions": [
+        "Europa"
+      ],
+      "src": "assets/avatars/world-009.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        1389,
+        155,
+        133,
+        142
+      ],
+      "bytes": 5550,
+      "sha256": "e91ce12e0f66546a62a17d485a69867935d10cb9084f811989c63d20a3e1c497"
+    },
+    {
+      "id": "world-039",
+      "label": "Capivara Viajante",
+      "country": "Brasil",
+      "regions": [
+        "Brasil",
+        "Américas"
+      ],
+      "src": "assets/avatars/world-039.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        1389,
+        564,
+        133,
+        129
+      ],
+      "bytes": 4488,
+      "sha256": "489a32aba511681b06f444f00ff1438806ef2021f61408b8a01073d00cd2228c"
+    },
+    {
+      "id": "world-049",
+      "label": "Máscara Tropical",
+      "country": "",
+      "regions": [],
+      "src": "assets/avatars/world-049.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        1389,
+        693,
+        133,
+        137
+      ],
+      "bytes": 6488,
+      "sha256": "e5c8bb546fa7e45cb6abcbbb24e5807f1200f6121b8222dc7907060d96563eda"
+    },
+    {
+      "id": "world-019",
+      "label": "Inverno",
+      "country": "Rússia",
+      "regions": [
+        "Europa",
+        "Ásia"
+      ],
+      "src": "assets/avatars/world-019.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        1389,
+        297,
+        133,
+        138
+      ],
+      "bytes": 5852,
+      "sha256": "e1608e547dd06bec6020b9d0a918faad0cb94bf97eb185424603fa6b32c479f0"
+    },
+    {
+      "id": "world-029",
+      "label": "Coroa Dourada",
+      "country": "",
+      "regions": [],
+      "src": "assets/avatars/world-029.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        1389,
+        435,
+        133,
+        129
+      ],
+      "bytes": 6200,
+      "sha256": "eea48900792296418eb8b4720fd5d993e3f31e0c54e5f67ff4f2b6ef3426832d"
+    },
+    {
+      "id": "world-010",
+      "label": "Aviação",
+      "country": "",
+      "regions": [],
+      "src": "assets/avatars/world-010.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        1522,
+        155,
+        142,
+        142
+      ],
+      "bytes": 5882,
+      "sha256": "20c4d8103577b8370b3261268d5a9debcdaf5fe673ec10901698c9067042a284"
+    },
+    {
+      "id": "world-040",
+      "label": "Tatu do Sertão",
+      "country": "Brasil",
+      "regions": [
+        "Brasil",
+        "Américas",
+        "Nordeste"
+      ],
+      "src": "assets/avatars/world-040.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        1522,
+        564,
+        142,
+        129
+      ],
+      "bytes": 5406,
+      "sha256": "fe68e0cb5473479ec5658ddad0a370e3a97831743457e8afbc3377bbbf5a4da7"
+    },
+    {
+      "id": "world-050",
+      "label": "Lenda Dourada",
+      "country": "",
+      "regions": [
+        "Américas"
+      ],
+      "src": "assets/avatars/world-050.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        1522,
+        693,
+        142,
+        137
+      ],
+      "bytes": 6712,
+      "sha256": "1f166874a70b756562ad66ebecd02a7389620f7de4d7113e773a5f880b1880c7"
+    },
+    {
+      "id": "world-020",
+      "label": "Ilhas Floridas",
+      "country": "",
+      "regions": [
+        "Oceania"
+      ],
+      "src": "assets/avatars/world-020.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        1522,
+        297,
+        142,
+        138
+      ],
+      "bytes": 6030,
+      "sha256": "fdb669ea404f153a0d71ead2db48cc5f1c7dbcdbdba808d967590bc1e01528f7"
+    },
+    {
+      "id": "world-030",
+      "label": "Aventura no Campo",
+      "country": "Brasil",
+      "regions": [
+        "Brasil",
+        "Américas"
+      ],
+      "src": "assets/avatars/world-030.webp",
+      "sourceFile": "Biblioteca Mundial de Avatares(1).png",
+      "sourceBounds": [
+        1522,
+        435,
+        142,
+        129
+      ],
+      "bytes": 4844,
+      "sha256": "bb5b124102d77aa09a91e836d867a055ba0ceae700810dcda62a6e51b0df69dd"
+    }
+  ]
+}
