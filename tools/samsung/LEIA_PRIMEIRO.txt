@@ -1,0 +1,46 @@
+DOMINÓ TOUR | EDVÓRIA — PRIMEIRA PARTIDA NO SAMSUNG
+
+Este pacote é web, não é APK. Use um computador com Python 3.9 ou superior.
+Não precisa instalar dependências Python nem contratar hospedagem.
+
+1. Baixe e extraia TODO o ZIP no computador.
+2. Conecte o computador e o Samsung à mesma rede Wi-Fi.
+3. Windows: abra INICIAR_WINDOWS.bat.
+   macOS/Linux: no terminal desta pasta, execute python3 iniciar_teste.py
+4. Mantenha a janela aberta. Abra no Chrome do Samsung o endereço indicado
+   por NO SAMSUNG. Use o IP do computador; 127.0.0.1 no celular não é o computador.
+   Se o Windows perguntar pelo acesso à rede, autorize apenas a rede privada
+   usada no teste. Se houver isolamento entre os aparelhos no Wi-Fi, use uma
+   rede local em que eles possam se comunicar.
+5. Vire o celular para horizontal. O botão Tela cheia pode ajudar, se permitido
+   pelo navegador. O jogo mantém seu fallback visual horizontal.
+6. Aguarde o carregamento; entre como visitante; escolha um avatar e continue.
+   Toque em Novo jogo, Continuar offline, escolha a dificuldade e Entrar e jogar.
+7. Você fica embaixo; RobiX à esquerda, AndroX acima, DomiX à direita.
+   Arraste dentro da mão para organizar. Só a pedra movimentada pode girar para
+   alinhar números iguais. Leve uma pedra válida à mesa para jogar; também é
+   possível tocar na pedra e depois numa ponta. Passes obrigatórios são automáticos.
+8. Ao terminar a rodada, toque em Próxima rodada. Continue até Partida encerrada.
+   Use Jogar novamente somente depois do resultado final.
+
+COMO CONFERIR
+- O avatar escolhido reaparece após recarregar, usando o mesmo endereço/IP e porta.
+- Recarregar reinicia a partida: somente avatar/favoritos são salvos nesta versão.
+- Os robôs esperam aproximadamente 3 segundos por ação.
+- Reorganizar a mão não pode jogar, mudar pontos ou alterar a orientação de outra pedra.
+- Observe se placares, quatro retratos, pedras e pontas estão visíveis e sem sobreposição.
+- Anote dificuldade, número de pedras, mensagem exibida e o problema encontrado.
+
+SE NÃO ABRIR
+- Não abra site/web/index.html diretamente pelo gerenciador de arquivos: os módulos
+  precisam ser servidos por HTTP. Use o iniciador e o endereço fornecido.
+- Computador e Samsung precisam permanecer na mesma rede. O servidor não usa internet.
+- Se a porta estiver ocupada: python3 iniciar_teste.py --port 8766
+- Pare com Ctrl+C. Ao reiniciar, o trecho de acesso do endereço muda.
+- O servidor usa HTTP local com um trecho de acesso aleatório; não é uma prévia HTTPS.
+
+LIMITES
+Homologação Samsung pendente. O pacote não significa publicação ou aprovação física.
+A galeria antiga mantém sua falha de integridade conhecida; não foi corrigida nem mascarada.
+A aparência ainda não está homologada contra todas as 16 interfaces premium aprovadas.
+PACOTE.json identifica o commit e os hashes dos arquivos do jogo incluídos.
