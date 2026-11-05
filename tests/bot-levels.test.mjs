@@ -45,16 +45,43 @@ test('levels make distinct choices, difficult uses public pass history; public h
 });
 test('manual arrangement never sorts engine hand; difficulty survives rounds and new matches',()=>{
  const session=new LocalSession(100,6,'expert');const before=structuredClone(session.state),order=session.orderedHand().map(t=>t.id);
- session.moveHandTile(order.at(-1),order[0],order[0]);assert.deepEqual(session.state,before);assert.equal(session.orderedHand()[0].id,order.at(-1));assert.equal(session.difficulty,'expert');
- session.newMatch();assert.equal(session.difficulty,'expert');session.setDifficulty('hard');assert.equal(session.difficulty,'hard');assert.throws(()=>session.setDifficulty('invalid'));assert.equal(session.difficulty,'hard');
+ session.moveHandTile(order.at(-1),order[0],order[0]);assert.deepEqual(session.state,before);assert.equal(session.orderedHand()[0].id,order.at(-1));assert.equal(session.difficulty,'hard');
+ session.newMatch();assert.equal(session.difficulty,'hard');session.setDifficulty('hard');assert.equal(session.difficulty,'hard');assert.throws(()=>session.setDifficulty('invalid'));assert.equal(session.difficulty,'hard');
 });
-test('comparison: balanced seats and same seeded deals, bounded expert evaluations',()=>{
- const wins=Object.fromEntries(BOT_LEVELS.map(l=>[l,0])),times=Object.fromEntries(BOT_LEVELS.map(l=>[l,[]]));let matches=0;
- for(const size of [6,7])for(let seed=1;seed<=40;seed++){
-  const random=rng(seed+size*1000),s=newGame(100,size,random),levels=Array.from({length:4},(_,seat)=>BOT_LEVELS[(seat+seed)%4]);s.players.forEach(p=>p.kind='bot');let n=0;
-  while(s.phase!=='finished'&&n++<10000){if(s.phase==='round-complete'){continueRound(s,random);continue}const level=levels[s.turn],start=performance.now();runBotTurn(s,random,level);times[level].push(performance.now()-start)}
+test('exactly three levels; legacy expert migrates to hard and UI exposes only these levels',async()=>{
+ assert.deepEqual(BOT_LEVELS,['easy','medium','hard']);
+ const {readFile}=await import('node:fs/promises');
+ const html=await readFile(new URL('../web/index.html',import.meta.url),'utf8');
+ for(const id of ['difficulty','entry-difficulty']){
+  const select=html.match(new RegExp('<select[^>]*id="'+id+'"[^>]*>([\\s\\S]*?)</select>'));
+  assert.ok(select,id);assert.deepEqual([...select[1].matchAll(/value="([^"]+)"/g)].map(m=>m[1]),BOT_LEVELS);
+ }
+ const s=newGame(100,6,rng(17));s.players.forEach(p=>p.kind='bot');const view=viewFor(s,s.turn);
+ assert.deepEqual(chooseBotMove(view,'expert'),chooseBotMove(view,'hard'));
+});
+test('comparison: paired seeded deals, all seat rotations, balanced duplicate levels',()=>{
+ const wins=Object.fromEntries(BOT_LEVELS.map(l=>[l,0])),exposures={...wins},times=Object.fromEntries(BOT_LEVELS.map(l=>[l,[]]));let matches=0;
+ // Each deal is replayed for every duplicate strategy and all four seat rotations.
+ for(const size of [6,7])for(let seed=1;seed<=12;seed++)for(const duplicate of BOT_LEVELS)for(let rotation=0;rotation<4;rotation++){
+  const random=rng(seed+size*1000),s=newGame(100,size,random),lineup=[...BOT_LEVELS,duplicate],levels=Array.from({length:4},(_,seat)=>lineup[(seat+rotation)%4]);s.players.forEach(p=>p.kind='bot');let n=0;
+  for(const level of levels)exposures[level]++;
+  while(s.phase!=='finished'&&n++<10000){if(s.phase==='round-complete'){continueRound(s,random);continue}const level=levels[s.turn],start=performance.now();runBotTurn(s,random,level);times[level].push(performance.now()-start);assertStateIntegrity(s)}
   assert.equal(s.phase,'finished');wins[levels[s.winner]]++;matches++;
  }
- const results=BOT_LEVELS.map(level=>{const values=times[level].sort((a,b)=>a-b);return {level,wins:wins[level],decisions:values.length,p95ms:+values[Math.floor(values.length*.95)].toFixed(3),maxMs:+values.at(-1).toFixed(3)}});
- console.log('BOT_COMPARISON',JSON.stringify({matches,results}));assert.equal(matches,80);assert.ok(results.every(r=>r.p95ms<50),'95th-percentile host guard; maxima include process preemption, not physical Android measurements');
+ const results=BOT_LEVELS.map(level=>{const values=times[level].sort((a,b)=>a-b);return {level,wins:wins[level],seatExposures:exposures[level],winRatePct:+(100*wins[level]/exposures[level]).toFixed(2),decisions:values.length,p95ms:+values[Math.floor(values.length*.95)].toFixed(3),maxMs:+values.at(-1).toFixed(3)}});
+ console.log('BOT_COMPARISON',JSON.stringify({matches,results}));assert.equal(matches,288);assert.ok(wins.hard>wins.medium&&wins.medium>wins.easy,'strength separation in this fixed benchmark');assert.deepEqual(Object.values(exposures),[384,384,384]);assert.ok(results.every(r=>r.p95ms<50),'host p95 guard; not a physical Android benchmark');
+});
+
+// Golden digest captured from the previous HEAD's expert, before migration.
+test('hard preserves former expert decisions across 2326 public positions',async()=>{
+ const {createHash}=await import('node:crypto');const decisions=[];
+ for(const size of [6,7])for(let seed=1;seed<=40;seed++){
+  const random=rng(seed),s=newGame(100,size,random);s.players.forEach(p=>p.kind='bot');
+  for(let turn=0;turn<30&&s.phase!=='finished';turn++){
+   if(s.phase==='round-complete'){continueRound(s,random);continue}
+   decisions.push(chooseBotMove(viewFor(s,s.turn),'hard'));runBotTurn(s,random,'easy');
+  }
+ }
+ assert.equal(decisions.length,2326);
+ assert.equal(createHash('sha256').update(JSON.stringify(decisions)).digest('hex'),'6464ac53e474a48f883197757be26db197e5c5bf6b7a6690d30dd2cdf1fac934');
 });

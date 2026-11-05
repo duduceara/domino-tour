@@ -1,6 +1,8 @@
 // Pure strategy module: receives only viewFor's own hand and public table/history.
-export const BOT_LEVELS = Object.freeze(['easy', 'medium', 'hard', 'expert']);
+export const BOT_LEVELS = Object.freeze(['easy', 'medium', 'hard']);
 export function validateDifficulty(level) {
+    // Compatibility for previously stored settings; not a fourth difficulty.
+    if (level === 'expert') level = 'hard';
     if (!BOT_LEVELS.includes(level)) throw new Error('Invalid bot difficulty');
     return level;
 }
@@ -75,14 +77,14 @@ function sampledHands(v, absent) {
     return samples;
 }
 export function chooseBotMove(view, difficulty = 'easy') {
-    validateDifficulty(difficulty);
+    difficulty = validateDifficulty(difficulty);
     const options = optionsFor(view);
     if (!options.length) return {type: 'pass'};
-    const absent = difficulty === 'hard' || difficulty === 'expert' ? publicAbsences(view) : new Map();
-    const samples = difficulty === 'expert' ? sampledHands(view, absent) : [];
+    const absent = difficulty === 'hard' ? publicAbsences(view) : new Map();
+    const samples = difficulty === 'hard' ? sampledHands(view, absent) : [];
     const ranked = options.map(option => {
         let score = difficulty === 'easy' ? option.tile.a + option.tile.b : difficulty === 'medium' ? mediumScore(view, option) : hardScore(view, option, absent);
-        if (difficulty === 'expert' && samples.length) {
+        if (difficulty === 'hard' && samples.length) {
             const ends = endsAfter(view, option.tile, option.side), next = (view.turn + 1) % 4;
             let evaluation = 0;
             for (const hands of samples) {
