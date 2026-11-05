@@ -1,0 +1,198 @@
+{
+  "baseHead": "88f78836729acaed838175c8bad2d79bdebe10b3",
+  "implementationCommit": "e643264caf5e783f330107504087be2cdb0451be",
+  "node": "v24.22.1",
+  "commands": {
+    "discovery": "node scripts/compare-hard.mjs 8 1",
+    "holdoutAndRepeat": "node scripts/compare-hard.mjs 32 1001",
+    "regression": "node --test tests/*.test.mjs"
+  },
+  "discovery": {
+    "seedCount": 8,
+    "firstSeed": 1,
+    "matches": 96,
+    "seatExposuresPerVersion": 192,
+    "quality": {
+      "positions": 3129,
+      "withPasses": 1854
+    },
+    "results": {
+      "before": {
+        "wins": 44,
+        "samples": 92765,
+        "zeroSamples": 182,
+        "invalidSamples": 0,
+        "decisions": 11019,
+        "p50ms": 0.04459699999995337,
+        "p95ms": 0.10513799999989715,
+        "maxMs": 7.012646000000004
+      },
+      "after": {
+        "wins": 52,
+        "samples": 150192,
+        "zeroSamples": 0,
+        "invalidSamples": 0,
+        "budgetExhaustions": 0,
+        "decisions": 11043,
+        "p50ms": 0.07379100000071048,
+        "p95ms": 1.160174999999981,
+        "maxMs": 6.945936000000017
+      }
+    },
+    "outcomeHash": "6f5a1458afdf2f0e14bd18972420ea20f50599e15161a0ddbf6b5bc1e5941f72",
+    "decisionHash": "f932d13d4c5d3531404553903770d0644e3421f385197ec12aff975d268aa214"
+  },
+  "holdout": {
+    "seedCount": 32,
+    "firstSeed": 1001,
+    "matches": 384,
+    "seatExposuresPerVersion": 768,
+    "quality": {
+      "positions": 12903,
+      "withPasses": 7915
+    },
+    "results": {
+      "before": {
+        "wins": 169,
+        "samples": 377622,
+        "zeroSamples": 723,
+        "invalidSamples": 0,
+        "decisions": 45454,
+        "p50ms": 0.04459699999961231,
+        "p95ms": 0.09405100000003586,
+        "maxMs": 8.129763999999994
+      },
+      "after": {
+        "wins": 215,
+        "samples": 619344,
+        "zeroSamples": 0,
+        "invalidSamples": 0,
+        "budgetExhaustions": 0,
+        "decisions": 45521,
+        "p50ms": 0.0715280000003986,
+        "p95ms": 1.1705299999994168,
+        "maxMs": 9.231099
+      }
+    },
+    "outcomeHash": "f9e37e5a722b02bc009333fdfa4be2b7698ea27bb688cee093e15eb5ed1a2d41",
+    "decisionHash": "2485014a2d5c48e5ad78085a8a9d9b6175e6687bcb2f3e074705277223a871e6"
+  },
+  "repeat": {
+    "seedCount": 32,
+    "firstSeed": 1001,
+    "matches": 384,
+    "seatExposuresPerVersion": 768,
+    "quality": {
+      "positions": 12903,
+      "withPasses": 7915
+    },
+    "byDealSize": {
+      "6": {
+        "before": 89,
+        "after": 103
+      },
+      "7": {
+        "before": 80,
+        "after": 112
+      }
+    },
+    "results": {
+      "before": {
+        "wins": 169,
+        "samples": 377622,
+        "zeroSamples": 723,
+        "invalidSamples": 0,
+        "decisions": 45454,
+        "p50ms": 0.04422600000179955,
+        "p95ms": 0.08516800000006697,
+        "maxMs": 9.677830999999998
+      },
+      "after": {
+        "wins": 215,
+        "samples": 619344,
+        "zeroSamples": 0,
+        "invalidSamples": 0,
+        "budgetExhaustions": 0,
+        "decisions": 45521,
+        "p50ms": 0.07052699999985634,
+        "p95ms": 1.09394599999996,
+        "maxMs": 11.001652000000831
+      }
+    },
+    "outcomeHash": "f9e37e5a722b02bc009333fdfa4be2b7698ea27bb688cee093e15eb5ed1a2d41",
+    "decisionHash": "2485014a2d5c48e5ad78085a8a9d9b6175e6687bcb2f3e074705277223a871e6"
+  },
+  "threeLevelRegression": {
+    "before": {
+      "matches": 288,
+      "results": [
+        {
+          "level": "easy",
+          "wins": 36,
+          "seatExposures": 384,
+          "winRatePct": 9.38,
+          "decisions": 21167,
+          "p95ms": 0.004,
+          "maxMs": 1.505
+        },
+        {
+          "level": "medium",
+          "wins": 82,
+          "seatExposures": 384,
+          "winRatePct": 21.35,
+          "decisions": 21271,
+          "p95ms": 0.004,
+          "maxMs": 1.579
+        },
+        {
+          "level": "hard",
+          "wins": 170,
+          "seatExposures": 384,
+          "winRatePct": 44.27,
+          "decisions": 21077,
+          "p95ms": 0.15,
+          "maxMs": 7.6
+        }
+      ]
+    },
+    "after": {
+      "matches": 288,
+      "results": [
+        {
+          "level": "easy",
+          "wins": 27,
+          "seatExposures": 384,
+          "winRatePct": 7.03,
+          "decisions": 20972,
+          "p95ms": 0.004,
+          "maxMs": 0.413
+        },
+        {
+          "level": "medium",
+          "wins": 98,
+          "seatExposures": 384,
+          "winRatePct": 25.52,
+          "decisions": 21322,
+          "p95ms": 0.004,
+          "maxMs": 0.411
+        },
+        {
+          "level": "hard",
+          "wins": 163,
+          "seatExposures": 384,
+          "winRatePct": 42.45,
+          "decisions": 20943,
+          "p95ms": 1.033,
+          "maxMs": 4.386
+        }
+      ]
+    }
+  },
+  "notes": [
+    "Two old and two new bots play individually, without collaboration; all six assignments of two seats are used for each seed and deal size.",
+    "Initial deals paired; later draws and tiebreak random calls may diverge with decisions.",
+    "48 draws with replacement from compatible hypothetical allocations; not necessarily 48 distinct hands.",
+    "Timing is a Node host measurement, not Samsung validation.",
+    "Mixed three-level benchmark has 170 -> 163 hard wins; improvement is demonstrated in direct comparison and sample coverage, not universally."
+  ]
+}
