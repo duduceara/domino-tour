@@ -1,0 +1,442 @@
+{
+  "initial_head": "f428d45aeec37796845875e9baf3fc53fbefd644",
+  "technical_commit": "55f4441f8ec0fa9f9234d19acaab2be4c6ff43e7",
+  "matrix": {
+    "seedCount": 4,
+    "matches": 480,
+    "actions": 104817,
+    "passes": 20182,
+    "rounds": 4178,
+    "fiveDoubleWins": 56,
+    "duplicateRejections": 960,
+    "awards": {
+      "simple": 573,
+      "blocked": 1214,
+      "five-doubles": 56,
+      "without-pass": 1511,
+      "double": 569,
+      "la-e-lo": 255
+    },
+    "focal": {
+      "easy": {
+        "matches": 160,
+        "wins": 26,
+        "seats": [
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      "medium": {
+        "matches": 160,
+        "wins": 47,
+        "seats": [
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      "hard": {
+        "matches": 160,
+        "wins": 78,
+        "seats": [
+          40,
+          40,
+          40,
+          40
+        ]
+      }
+    },
+    "profiles": {
+      "6:easy": {
+        "matches": 48,
+        "focalWins": 16
+      },
+      "6:medium": {
+        "matches": 48,
+        "focalWins": 13
+      },
+      "6:hard": {
+        "matches": 48,
+        "focalWins": 8
+      },
+      "6:mixed": {
+        "matches": 48,
+        "focalWins": 11
+      },
+      "6:random": {
+        "matches": 48,
+        "focalWins": 21
+      },
+      "7:easy": {
+        "matches": 48,
+        "focalWins": 25
+      },
+      "7:medium": {
+        "matches": 48,
+        "focalWins": 13
+      },
+      "7:hard": {
+        "matches": 48,
+        "focalWins": 6
+      },
+      "7:mixed": {
+        "matches": 48,
+        "focalWins": 15
+      },
+      "7:random": {
+        "matches": 48,
+        "focalWins": 23
+      }
+    },
+    "traceHash": "a9d7933a914d8a4e900a0405fc9edfaffc027daa55e101edb021891cd67859d1"
+  },
+  "matrix_repeat_identical": true,
+  "total_match_executions": 960,
+  "gallery": {
+    "positions": 16,
+    "missing_screens": [
+      4
+    ],
+    "unique_assets": 14,
+    "hash_matches": 4,
+    "hash_mismatches": 10,
+    "assets": [
+      {
+        "path": "assets/approved/screen-01.png",
+        "screens": [
+          1
+        ],
+        "bytes": 786446,
+        "expected_sha256": "d735c9e5c79930692c82bbbadfbfbf8cb8f89b80705beaae1cd9249680610f30",
+        "actual_sha256": "7fd12ff720441eec51d1571e43c34ff3fa2792891054e8d77888f2d4c6c3e0fd",
+        "hash_matches": false,
+        "detected_format": "PNG",
+        "structure": {
+          "valid": false,
+          "error": "incomplete_chunk",
+          "chunk": "IDAT",
+          "offset": 23699,
+          "declared_payload_bytes": 1928896,
+          "minimum_file_bytes": 1952607,
+          "actual_file_bytes": 786446,
+          "complete_chunks": [
+            "IHDR",
+            "caBX"
+          ]
+        }
+      },
+      {
+        "path": "assets/approved/screen-02.png",
+        "screens": [
+          2
+        ],
+        "bytes": 333914,
+        "expected_sha256": "179b81c7304c829b88180e1f4b3efe6dc5d3bb9a332b8bfbdfe92b1ed134e554",
+        "actual_sha256": "179b81c7304c829b88180e1f4b3efe6dc5d3bb9a332b8bfbdfe92b1ed134e554",
+        "hash_matches": true,
+        "detected_format": "JPEG",
+        "structure": {
+          "jpeg_eoi_present": true
+        }
+      },
+      {
+        "path": "assets/approved/screen-03.png",
+        "screens": [
+          3
+        ],
+        "bytes": 359724,
+        "expected_sha256": "d30d114e7ecf511b74573450065d820854fdbdd7d546e13efb18f6609da4080a",
+        "actual_sha256": "d30d114e7ecf511b74573450065d820854fdbdd7d546e13efb18f6609da4080a",
+        "hash_matches": true,
+        "detected_format": "JPEG",
+        "structure": {
+          "jpeg_eoi_present": true
+        }
+      },
+      {
+        "path": "assets/approved/screen-05.png",
+        "screens": [
+          5
+        ],
+        "bytes": 526790,
+        "expected_sha256": "d9acf0d993ee6f121ec68350a9a986ae40dc406e9ccd6e766be78561d900947e",
+        "actual_sha256": "d9acf0d993ee6f121ec68350a9a986ae40dc406e9ccd6e766be78561d900947e",
+        "hash_matches": true,
+        "detected_format": "JPEG",
+        "structure": {
+          "jpeg_eoi_present": true
+        }
+      },
+      {
+        "path": "assets/approved/screen-06.png",
+        "screens": [
+          6,
+          8
+        ],
+        "bytes": 390627,
+        "expected_sha256": "a4d7e62c0421393d7aa3e535a4abf4eee870736c61fb542b9f09b949a742e76c",
+        "actual_sha256": "a4d7e62c0421393d7aa3e535a4abf4eee870736c61fb542b9f09b949a742e76c",
+        "hash_matches": true,
+        "detected_format": "JPEG",
+        "structure": {
+          "jpeg_eoi_present": true
+        }
+      },
+      {
+        "path": "assets/approved/screen-07.png",
+        "screens": [
+          7
+        ],
+        "bytes": 786445,
+        "expected_sha256": "97db44768a2c28b840e6e90558fbfc6bc67ce119e1c9f1657bd3b925c42b65ac",
+        "actual_sha256": "86ac6c95c5663eced1e7f58d50c9f6eddf313e47dfc415d4bcf4d6c54e75d6c3",
+        "hash_matches": false,
+        "detected_format": "PNG",
+        "structure": {
+          "valid": false,
+          "error": "incomplete_chunk",
+          "chunk": "IDAT",
+          "offset": 23699,
+          "declared_payload_bytes": 2231334,
+          "minimum_file_bytes": 2255045,
+          "actual_file_bytes": 786445,
+          "complete_chunks": [
+            "IHDR",
+            "caBX"
+          ]
+        }
+      },
+      {
+        "path": "assets/approved/screen-09.png",
+        "screens": [
+          9
+        ],
+        "bytes": 786445,
+        "expected_sha256": "090271f3ec1b85963011f59c13a4cd256a617e9a6a42a929b8611f04b68da2b9",
+        "actual_sha256": "d367010c8bf2c2fca05e7ee8f5a2c9b219e4fe4d7834e1b43f53234c9afe94f8",
+        "hash_matches": false,
+        "detected_format": "PNG",
+        "structure": {
+          "valid": false,
+          "error": "incomplete_chunk",
+          "chunk": "IDAT",
+          "offset": 23699,
+          "declared_payload_bytes": 1985529,
+          "minimum_file_bytes": 2009240,
+          "actual_file_bytes": 786445,
+          "complete_chunks": [
+            "IHDR",
+            "caBX"
+          ]
+        }
+      },
+      {
+        "path": "assets/approved/screen-10.png",
+        "screens": [
+          10
+        ],
+        "bytes": 786444,
+        "expected_sha256": "721c8e5c2e89b444a807c0b530f7477458729429c6d602b397f304dd0cf47de7",
+        "actual_sha256": "41015491a69f53fce4262d881468c929306cf75a232ecec2fb53b63fae6e7932",
+        "hash_matches": false,
+        "detected_format": "PNG",
+        "structure": {
+          "valid": false,
+          "error": "incomplete_chunk",
+          "chunk": "IDAT",
+          "offset": 21926,
+          "declared_payload_bytes": 2166101,
+          "minimum_file_bytes": 2188039,
+          "actual_file_bytes": 786444,
+          "complete_chunks": [
+            "IHDR",
+            "caBX"
+          ]
+        }
+      },
+      {
+        "path": "assets/approved/screen-11.png",
+        "screens": [
+          11
+        ],
+        "bytes": 786445,
+        "expected_sha256": "083adb1dbefb01f109c9cad124df93b8157e927ad9f64a5d94dd1f378ad2a957",
+        "actual_sha256": "d75186a9a2aa05f7fa9532d18df04862255321d06c1a917de8e458591bd7ed33",
+        "hash_matches": false,
+        "detected_format": "PNG",
+        "structure": {
+          "valid": false,
+          "error": "incomplete_chunk",
+          "chunk": "IDAT",
+          "offset": 23699,
+          "declared_payload_bytes": 2120160,
+          "minimum_file_bytes": 2143871,
+          "actual_file_bytes": 786445,
+          "complete_chunks": [
+            "IHDR",
+            "caBX"
+          ]
+        }
+      },
+      {
+        "path": "assets/approved/screen-12.png",
+        "screens": [
+          12
+        ],
+        "bytes": 786444,
+        "expected_sha256": "2492c1449f00bccf26723f4ca3663e77c85b1d130ed25c4d1088fb0189d115c6",
+        "actual_sha256": "f09e661efc693dcfdbd1eb7d7f9cdb24f862d4214efab3c438c5037c5a17722d",
+        "hash_matches": false,
+        "detected_format": "PNG",
+        "structure": {
+          "valid": false,
+          "error": "incomplete_chunk",
+          "chunk": "IDAT",
+          "offset": 23699,
+          "declared_payload_bytes": 2095739,
+          "minimum_file_bytes": 2119450,
+          "actual_file_bytes": 786444,
+          "complete_chunks": [
+            "IHDR",
+            "caBX"
+          ]
+        }
+      },
+      {
+        "path": "assets/approved/screen-13.png",
+        "screens": [
+          13
+        ],
+        "bytes": 786445,
+        "expected_sha256": "ecbedfdeee098f59977f10e13031c8dcfc833203afbf42623ec6bf556a2857db",
+        "actual_sha256": "1c0f0748901794e4575b8397a71c8f0a0a69bd8d722ac8058e9b476dc701b896",
+        "hash_matches": false,
+        "detected_format": "PNG",
+        "structure": {
+          "valid": false,
+          "error": "incomplete_chunk",
+          "chunk": "IDAT",
+          "offset": 23699,
+          "declared_payload_bytes": 2049054,
+          "minimum_file_bytes": 2072765,
+          "actual_file_bytes": 786445,
+          "complete_chunks": [
+            "IHDR",
+            "caBX"
+          ]
+        }
+      },
+      {
+        "path": "assets/approved/screen-14.png",
+        "screens": [
+          14
+        ],
+        "bytes": 786445,
+        "expected_sha256": "a988f5924369a837c48b9d6bc4f13726a6613823aa77d21f468d6fa18ac741ca",
+        "actual_sha256": "f25ec3799dba28a5f42b3c495da33502f0df8ea29daea82f48c9d9d8775dbaa2",
+        "hash_matches": false,
+        "detected_format": "PNG",
+        "structure": {
+          "valid": false,
+          "error": "incomplete_chunk",
+          "chunk": "IDAT",
+          "offset": 23699,
+          "declared_payload_bytes": 2271111,
+          "minimum_file_bytes": 2294822,
+          "actual_file_bytes": 786445,
+          "complete_chunks": [
+            "IHDR",
+            "caBX"
+          ]
+        }
+      },
+      {
+        "path": "assets/approved/screen-15.png",
+        "screens": [
+          15
+        ],
+        "bytes": 786444,
+        "expected_sha256": "48bb364531214f4d4e6c8ad8eab3915a4fae03e1f6914fd89566971d4e87d35c",
+        "actual_sha256": "a9366d4d5edc8a2ab917ffda75bcf913fda155c094f7c6b03202e523da7a6007",
+        "hash_matches": false,
+        "detected_format": "PNG",
+        "structure": {
+          "valid": false,
+          "error": "incomplete_chunk",
+          "chunk": "IDAT",
+          "offset": 21926,
+          "declared_payload_bytes": 2151062,
+          "minimum_file_bytes": 2173000,
+          "actual_file_bytes": 786444,
+          "complete_chunks": [
+            "IHDR",
+            "caBX"
+          ]
+        }
+      },
+      {
+        "path": "assets/approved/screen-16.png",
+        "screens": [
+          16
+        ],
+        "bytes": 786446,
+        "expected_sha256": "dd8fccfdfceaaffec0b8bb8d25c64ba68b4a2c9ecc1dd2ff7ab51d45b8ac9706",
+        "actual_sha256": "71aff87b1bd3414341f03283575d717c8513cd897d3a5493d986727298ee01f1",
+        "hash_matches": false,
+        "detected_format": "PNG",
+        "structure": {
+          "valid": false,
+          "error": "incomplete_chunk",
+          "chunk": "IDAT",
+          "offset": 23699,
+          "declared_payload_bytes": 2194042,
+          "minimum_file_bytes": 2217753,
+          "actual_file_bytes": 786446,
+          "complete_chunks": [
+            "IHDR",
+            "caBX"
+          ]
+        }
+      }
+    ]
+  },
+  "package": {
+    "filename": "DOMINO_TOUR_APICE_04_SAMSUNG.zip",
+    "source_commit": "55f4441f8ec0fa9f9234d19acaab2be4c6ff43e7",
+    "files": 100,
+    "runtime_files": 95,
+    "http_resources_verified": 95,
+    "zip_crc": "pass",
+    "sha256": "c4eee27f22daaf1b36f41b31081877cef82abddc46e0730990ab9f4a3830dc38",
+    "bytes": 9558233,
+    "checklist_included": true,
+    "physical_test": "pending"
+  },
+  "test_results": {
+    "node_total": 114,
+    "node_pass": 113,
+    "node_fail": 1,
+    "failure": "preexisting approved gallery integrity",
+    "python_pass": 4,
+    "python_fail": 0
+  },
+  "physical_samsung_test": "not_performed",
+  "package_library_file_id": "libfile_71e9a15b1b848191812751c93619e330",
+  "github_actions": {
+    "runId": 41955749825,
+    "jobId": 127010107038,
+    "head": "55f4441f8ec0fa9f9234d19acaab2be4c6ff43e7",
+    "conclusion": "failure",
+    "failures": [
+      "not ok 1 - original gallery preserves bytes, all 16 positions, missing journey and reused table"
+    ],
+    "totals": [
+      "# tests 114",
+      "# pass 113",
+      "# fail 1"
+    ]
+  }
+}
