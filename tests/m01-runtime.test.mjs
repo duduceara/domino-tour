@@ -137,3 +137,13 @@ test('logical rack hit test remains correct under the portrait visual rotation',
 test('a bot action during a rack preview cancels that preview and preserves the committed layout',()=>{
  const h=app();rackFixture(h);h.run('game.state.turn=1;scheduleBots()');const before=h.run('JSON.stringify(game.snapshotHandLayout())'),el=h.get('hand').children[0];h.emit(el,'pointerdown',{clientX:67,clientY:534});h.emit(el,'pointermove',{clientX:320,clientY:534});h.tick(3000);assert.equal(h.run('dragId'),null);h.emit(el,'pointerup',{clientX:320,clientY:534});assert.equal(h.run('JSON.stringify(game.snapshotHandLayout())'),before);assert.equal(h.run("game.state.events.filter(e=>e.seat===0).length"),0);
 });
+
+test('scheduler stress: 100 hide/resume cycles reject stale callbacks and execute once after 3000ms',()=>{
+ const h=app();h.run("stopBotSequence();game.state.phase='playing';game.state.turn=1;globalThis.botCalls=0;sync=()=>{};game.advanceBots=()=>{botCalls++;game.state.turn=game.state.turn===3?1:game.state.turn+1}");
+ for(let cycle=0;cycle<100;cycle++){
+  h.run('scheduleBots()');const stale=[...h.timers.values()][0].f;h.run('scheduleBots();scheduleBots()');stale();assert.equal(h.run('botCalls'),cycle);assert.equal(h.timers.size,1);
+  h.tick(2999);assert.equal(h.run('botCalls'),cycle);h.hide(true);assert.equal(h.timers.size,0);h.tick(10000);assert.equal(h.run('botCalls'),cycle);
+  h.hide(false);h.tick(2999);assert.equal(h.run('botCalls'),cycle);h.tick(1);assert.equal(h.run('botCalls'),cycle+1);assert.equal(h.timers.size,1);
+ }
+ h.run('stopBotSequence()');assert.equal(h.timers.size,0);
+});

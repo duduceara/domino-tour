@@ -63,44 +63,46 @@ export function samplePublicHands(view, requested = 48) {
         const bits = n => Number(!!(n&1))+Number(!!(n&2))+Number(!!(n&4))+Number(!!(n&8));
         return bits(a.mask)-bits(b.mask)||a.tile.id-b.tile.id;
     });
-    const memo = new Map();
-    function completions(index, capacity) {
-        const sleepLeft = ordered.length-index-capacity.reduce((a,b)=>a+b,0);
+    // Each count is 0..7. A flat numeric cache replaces string keys and
+    // per-branch capacity arrays, preserving traversal and random-call order.
+    const d0=counts[0]+1,d1=counts[1]+1,d2=counts[2]+1,stride=d0*d1*d2;
+    const memo=new Array((ordered.length+1)*stride).fill(-1);
+    function completions(index,c0,c1,c2) {
+        const sleepLeft=ordered.length-index-c0-c1-c2;
         if (sleepLeft<0 || sleepLeft>sleeping) return 0;
-        if (index===ordered.length) return capacity.every(n=>n===0) ? 1 : 0;
-        const key = [index,...capacity].join(',');
-        if (memo.has(key)) return memo.get(key);
-        if (++metrics.states > 50000) throw new Error('sampling-budget');
-        const {mask} = ordered[index]; let total = 0;
-        for (let bucket=0;bucket<4;bucket++) {
-            if (!(mask & 1<<bucket) || (bucket===3 ? !sleepLeft : !capacity[bucket])) continue;
-            const nextCapacity = [...capacity];
-            if (bucket<3) nextCapacity[bucket]--;
-            total += completions(index+1,nextCapacity);
+        if (index===ordered.length) return c0===0&&c1===0&&c2===0 ? 1 : 0;
+        const key=index*stride+(c0*d1+c1)*d2+c2;
+        if (memo[key]>=0) return memo[key];
+        if (++metrics.states>50000) throw new Error('sampling-budget');
+        const {mask}=ordered[index];let total=0;
+        for(let bucket=0;bucket<4;bucket++) {
+            const capacity=bucket===0?c0:bucket===1?c1:bucket===2?c2:sleepLeft;
+            if (!(mask&1<<bucket)||!capacity) continue;
+            total+=completions(index+1,c0-(bucket===0),c1-(bucket===1),c2-(bucket===2));
         }
-        memo.set(key,total); return total;
+        memo[key]=total;return total;
     }
     try {
-        const total = completions(0,counts);
+        const total = completions(0,...counts);
         metrics.validAssignments = total;
         if (!total) {metrics.inconsistent=true;return {samples,metrics};}
         // Every assignment is weighted by its exact number of valid completions.
         // Unlike greedy filling, this does not overrepresent early-seat choices.
         for (let sample=0;sample<requested;sample++) {
             const hands = new Map(seats.map(seat=>[seat,[]]));
-            let capacity=[...counts];
+            let [c0,c1,c2]=counts;
             for (let index=0;index<ordered.length;index++) {
                 const {tile,mask}=ordered[index];
-                const sleepLeft=ordered.length-index-capacity.reduce((a,b)=>a+b,0);
-                let ticket=random(completions(index,capacity));
+                const sleepLeft=ordered.length-index-c0-c1-c2;
+                let ticket=random(completions(index,c0,c1,c2));
                 for (let bucket=0;bucket<4;bucket++) {
-                    if (!(mask&1<<bucket)||(bucket===3?!sleepLeft:!capacity[bucket])) continue;
-                    const nextCapacity=[...capacity];
-                    if (bucket<3) nextCapacity[bucket]--;
-                    const weight=completions(index+1,nextCapacity);
+                    const capacity=bucket===0?c0:bucket===1?c1:bucket===2?c2:sleepLeft;
+                    if (!(mask&1<<bucket)||!capacity) continue;
+                    const n0=c0-(bucket===0),n1=c1-(bucket===1),n2=c2-(bucket===2);
+                    const weight=completions(index+1,n0,n1,n2);
                     if (ticket>=weight) {ticket-=weight;continue;}
                     if (bucket<3) hands.get(seats[bucket]).push({...tile});
-                    capacity=nextCapacity;break;
+                    c0=n0;c1=n1;c2=n2;break;
                 }
             }
             samples.push(hands);
