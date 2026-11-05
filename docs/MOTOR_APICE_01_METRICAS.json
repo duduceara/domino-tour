@@ -1,0 +1,111 @@
+{
+  "baselineHead": "e9aaf98f54807e4970b32dd7919d83632f0fd0d0",
+  "method": "6 and 7 tiles; seeds 1..12 + dealSize*1000; duplicate each of three strategies; rotate four seats; target 100, existing victory condition unchanged",
+  "runs": [
+    {
+      "matches": 288,
+      "results": [
+        {
+          "level": "easy",
+          "wins": 36,
+          "seatExposures": 384,
+          "winRatePct": 9.38,
+          "decisions": 21167,
+          "p95ms": 0.003,
+          "maxMs": 1.404
+        },
+        {
+          "level": "medium",
+          "wins": 82,
+          "seatExposures": 384,
+          "winRatePct": 21.35,
+          "decisions": 21271,
+          "p95ms": 0.003,
+          "maxMs": 0.446
+        },
+        {
+          "level": "hard",
+          "wins": 170,
+          "seatExposures": 384,
+          "winRatePct": 44.27,
+          "decisions": 21077,
+          "p95ms": 0.124,
+          "maxMs": 4.358
+        }
+      ]
+    },
+    {
+      "matches": 288,
+      "results": [
+        {
+          "level": "easy",
+          "wins": 36,
+          "seatExposures": 384,
+          "winRatePct": 9.38,
+          "decisions": 21167,
+          "p95ms": 0.003,
+          "maxMs": 2.591
+        },
+        {
+          "level": "medium",
+          "wins": 82,
+          "seatExposures": 384,
+          "winRatePct": 21.35,
+          "decisions": 21271,
+          "p95ms": 0.004,
+          "maxMs": 0.253
+        },
+        {
+          "level": "hard",
+          "wins": 170,
+          "seatExposures": 384,
+          "winRatePct": 44.27,
+          "decisions": 21077,
+          "p95ms": 0.131,
+          "maxMs": 2.684
+        }
+      ]
+    },
+    {
+      "matches": 288,
+      "results": [
+        {
+          "level": "easy",
+          "wins": 36,
+          "seatExposures": 384,
+          "winRatePct": 9.38,
+          "decisions": 21167,
+          "p95ms": 0.003,
+          "maxMs": 0.637
+        },
+        {
+          "level": "medium",
+          "wins": 82,
+          "seatExposures": 384,
+          "winRatePct": 21.35,
+          "decisions": 21271,
+          "p95ms": 0.004,
+          "maxMs": 0.854
+        },
+        {
+          "level": "hard",
+          "wins": 170,
+          "seatExposures": 384,
+          "winRatePct": 44.27,
+          "decisions": 21077,
+          "p95ms": 0.137,
+          "maxMs": 3.016
+        }
+      ]
+    }
+  ],
+  "expertInheritance": {
+    "positions": 2326,
+    "sha256": "6464ac53e474a48f883197757be26db197e5c5bf6b7a6690d30dd2cdf1fac934"
+  },
+  "limitations": [
+    "Fixed-seed benchmark is not a population skill rating",
+    "Timings are host Node measurements, not Samsung physical measurements",
+    "Gallery integrity failure preexists and remains visible"
+  ]
+}
