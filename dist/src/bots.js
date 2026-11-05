@@ -1,3 +1,4 @@
+import {samplePublicHands} from './bot-sampling.js';
 // Pure strategy module: receives only viewFor's own hand and public table/history.
 export const BOT_LEVELS = Object.freeze(['easy', 'medium', 'hard']);
 export function validateDifficulty(level) {
@@ -50,38 +51,12 @@ function hardScore(v, option, absent) {
     }
     return score;
 }
-// Local reproducible PRNG seeded only by public data and own hand; never global state.
-function publicRandom(v) {
-    let seed = 2166136261;
-    for (const ch of JSON.stringify([v.turn, v.left, v.right, v.ownHand.map(t => t.id), v.chain.map(t => t.id), v.history])) seed = Math.imul(seed ^ ch.charCodeAt(0), 16777619) >>> 0;
-    return n => {seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed % n;};
-}
-function sampledHands(v, absent) {
-    const seen = new Set([...v.ownHand, ...v.chain].map(t => t.id));
-    const pool = [];let id = 0;
-    for (let a = 0; a <= 6; a++) for (let b = a; b <= 6; b++, id++) if (!seen.has(id)) pool.push({id, a, b});
-    const random = publicRandom(v), samples = [];
-    // At most 48 attempts. Reject public-history-inconsistent samples, never peek.
-    for (let attempt = 0; attempt < 48; attempt++) {
-        const shuffled = [...pool];
-        for (let i = shuffled.length - 1; i > 0; i--) {const j = random(i + 1);[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];}
-        const hands = new Map();let offset = 0, consistent = true;
-        for (const p of v.players) {
-            if (p.seat === v.turn) continue;
-            const hand = shuffled.slice(offset, offset + p.handCount);offset += p.handCount;
-            if (hand.some(t => absent.get(p.seat)?.has(t.a) || absent.get(p.seat)?.has(t.b))) consistent = false;
-            hands.set(p.seat, hand);
-        }
-        if (consistent) samples.push(hands);
-    }
-    return samples;
-}
 export function chooseBotMove(view, difficulty = 'easy') {
     difficulty = validateDifficulty(difficulty);
     const options = optionsFor(view);
     if (!options.length) return {type: 'pass'};
     const absent = difficulty === 'hard' ? publicAbsences(view) : new Map();
-    const samples = difficulty === 'hard' ? sampledHands(view, absent) : [];
+    const samples = difficulty === 'hard' ? samplePublicHands(view).samples : [];
     const ranked = options.map(option => {
         let score = difficulty === 'easy' ? option.tile.a + option.tile.b : difficulty === 'medium' ? mediumScore(view, option) : hardScore(view, option, absent);
         if (difficulty === 'hard' && samples.length) {

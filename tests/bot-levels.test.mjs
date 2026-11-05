@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {performance} from 'node:perf_hooks';
 import {BOT_LEVELS,chooseBotMove} from '../dist/src/bots.js';
 import {newGame,viewFor,decideBot,runBotTurn,play,pass,continueRound,assertStateIntegrity,allTiles} from '../dist/src/engine.js';
+import {chooseBotMove as baselineMove} from './fixtures/bots-apice01.mjs';
 import {LocalSession} from '../dist/src/session.js';
 const rng=seed=>n=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed%n};
 function humanTurn(s,random){const tile=s.players[0].hand.find(t=>s.left===null||[t.a,t.b].includes(s.left)||[t.a,t.b].includes(s.right));if(!tile)return pass(s,0,random);play(s,0,tile.id,s.left===null||[tile.a,tile.b].includes(s.left)?'left':'right')}
@@ -73,13 +74,15 @@ test('comparison: paired seeded deals, all seat rotations, balanced duplicate le
 });
 
 // Golden digest captured from the previous HEAD's expert, before migration.
-test('hard preserves former expert decisions across 2326 public positions',async()=>{
+test('frozen expert baseline is intact; easy and medium preserve decisions across 2326 public positions',async()=>{
  const {createHash}=await import('node:crypto');const decisions=[];
  for(const size of [6,7])for(let seed=1;seed<=40;seed++){
   const random=rng(seed),s=newGame(100,size,random);s.players.forEach(p=>p.kind='bot');
   for(let turn=0;turn<30&&s.phase!=='finished';turn++){
    if(s.phase==='round-complete'){continueRound(s,random);continue}
-   decisions.push(chooseBotMove(viewFor(s,s.turn),'hard'));runBotTurn(s,random,'easy');
+   const view=viewFor(s,s.turn);
+   for(const level of ['easy','medium'])assert.deepEqual(chooseBotMove(view,level),baselineMove(view,level));
+   decisions.push(baselineMove(view,'hard'));runBotTurn(s,random,'easy');
   }
  }
  assert.equal(decisions.length,2326);
