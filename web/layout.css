@@ -231,3 +231,17 @@ header strong{font-family:Georgia,serif;line-height:1;font-size:20px}header stro
 #entry-flow [data-entry-step]:first-child .entry-kicker{
   text-shadow:0 2px 5px rgba(0,0,0,.9);
 }
+
+/* M06: approved original access artwork, isolated to entry step 02.
+   All navigation, buttons and the avatar gate remain unchanged. */
+#entry-flow [data-entry-step]:nth-child(2){
+  background-image:linear-gradient(145deg,rgba(3,18,30,.88),rgba(3,18,30,.78)),url('./assets/approved/screen-02.png');
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:cover;
+}
+#entry-flow [data-entry-step]:nth-child(2) h1,
+#entry-flow [data-entry-step]:nth-child(2) p,
+#entry-flow [data-entry-step]:nth-child(2) .entry-kicker{
+  text-shadow:0 2px 5px rgba(0,0,0,.9);
+}
