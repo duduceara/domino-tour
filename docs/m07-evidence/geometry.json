@@ -1,0 +1,1055 @@
+[
+  {
+    "width": 320,
+    "height": 568,
+    "stage": {
+      "x": 0,
+      "y": 44,
+      "width": 320,
+      "height": 480
+    },
+    "image": {
+      "x": 0,
+      "y": 44,
+      "width": 320,
+      "height": 480
+    },
+    "host": {
+      "x": 0,
+      "y": 0,
+      "width": 320,
+      "height": 568
+    },
+    "natural": [
+      1024,
+      1536
+    ],
+    "scroll": false,
+    "buttons": [
+      {
+        "action": "settings",
+        "x": 284.375,
+        "y": 50.875,
+        "width": 28.75,
+        "height": 26.875,
+        "hit": true
+      },
+      {
+        "action": "coins",
+        "x": 235.3125,
+        "y": 82.125,
+        "width": 78.125,
+        "height": 25,
+        "hit": true
+      },
+      {
+        "action": "rewards",
+        "x": 234.375,
+        "y": 109,
+        "width": 79.6875,
+        "height": 32.8125,
+        "hit": true
+      },
+      {
+        "action": "quick",
+        "x": 77.5,
+        "y": 287.75,
+        "width": 165.625,
+        "height": 38.125,
+        "hit": true
+      },
+      {
+        "action": "journey",
+        "x": 6.25,
+        "y": 330.25,
+        "width": 151.875,
+        "height": 76.875,
+        "hit": true
+      },
+      {
+        "action": "tournaments",
+        "x": 162.5,
+        "y": 330.25,
+        "width": 151.25,
+        "height": 76.875,
+        "hit": true
+      },
+      {
+        "action": "goals",
+        "x": 5,
+        "y": 413.6875,
+        "width": 310,
+        "height": 50,
+        "hit": true
+      },
+      {
+        "action": "profile",
+        "x": 3.75,
+        "y": 470.5625,
+        "width": 75,
+        "height": 45.3125,
+        "hit": true
+      },
+      {
+        "action": "ranking",
+        "x": 79.375,
+        "y": 470.5625,
+        "width": 77.1875,
+        "height": 45.3125,
+        "hit": true
+      },
+      {
+        "action": "achievements",
+        "x": 157.5,
+        "y": 470.5625,
+        "width": 79.6875,
+        "height": 45.3125,
+        "hit": true
+      },
+      {
+        "action": "rules",
+        "x": 239.0625,
+        "y": 470.5625,
+        "width": 77.5,
+        "height": 45.3125,
+        "hit": true
+      }
+    ]
+  },
+  {
+    "width": 360,
+    "height": 640,
+    "stage": {
+      "x": 0,
+      "y": 50,
+      "width": 360,
+      "height": 540
+    },
+    "image": {
+      "x": 0,
+      "y": 50,
+      "width": 360,
+      "height": 540
+    },
+    "host": {
+      "x": 0,
+      "y": 0,
+      "width": 360,
+      "height": 640
+    },
+    "natural": [
+      1024,
+      1536
+    ],
+    "scroll": false,
+    "buttons": [
+      {
+        "action": "settings",
+        "x": 319.921875,
+        "y": 57.734375,
+        "width": 32.34375,
+        "height": 30.234375,
+        "hit": true
+      },
+      {
+        "action": "coins",
+        "x": 264.71875,
+        "y": 92.890625,
+        "width": 87.890625,
+        "height": 28.125,
+        "hit": true
+      },
+      {
+        "action": "rewards",
+        "x": 263.671875,
+        "y": 123.125,
+        "width": 89.640625,
+        "height": 36.90625,
+        "hit": true
+      },
+      {
+        "action": "quick",
+        "x": 87.1875,
+        "y": 324.21875,
+        "width": 186.328125,
+        "height": 42.890625,
+        "hit": true
+      },
+      {
+        "action": "journey",
+        "x": 7.03125,
+        "y": 372.03125,
+        "width": 170.859375,
+        "height": 86.484375,
+        "hit": true
+      },
+      {
+        "action": "tournaments",
+        "x": 182.8125,
+        "y": 372.03125,
+        "width": 170.15625,
+        "height": 86.484375,
+        "hit": true
+      },
+      {
+        "action": "goals",
+        "x": 5.625,
+        "y": 465.890625,
+        "width": 348.75,
+        "height": 56.25,
+        "hit": true
+      },
+      {
+        "action": "profile",
+        "x": 4.21875,
+        "y": 529.875,
+        "width": 84.375,
+        "height": 50.96875,
+        "hit": true
+      },
+      {
+        "action": "ranking",
+        "x": 89.296875,
+        "y": 529.875,
+        "width": 86.828125,
+        "height": 50.96875,
+        "hit": true
+      },
+      {
+        "action": "achievements",
+        "x": 177.1875,
+        "y": 529.875,
+        "width": 89.640625,
+        "height": 50.96875,
+        "hit": true
+      },
+      {
+        "action": "rules",
+        "x": 268.9375,
+        "y": 529.875,
+        "width": 87.1875,
+        "height": 50.96875,
+        "hit": true
+      }
+    ]
+  },
+  {
+    "width": 375,
+    "height": 667,
+    "stage": {
+      "x": 0,
+      "y": 52.25,
+      "width": 375,
+      "height": 562.5
+    },
+    "image": {
+      "x": 0,
+      "y": 52.25,
+      "width": 375,
+      "height": 562.5
+    },
+    "host": {
+      "x": 0,
+      "y": 0,
+      "width": 375,
+      "height": 667
+    },
+    "natural": [
+      1024,
+      1536
+    ],
+    "scroll": false,
+    "buttons": [
+      {
+        "action": "settings",
+        "x": 333.25,
+        "y": 60.296875,
+        "width": 33.6875,
+        "height": 31.484375,
+        "hit": true
+      },
+      {
+        "action": "coins",
+        "x": 275.75,
+        "y": 96.921875,
+        "width": 91.546875,
+        "height": 29.296875,
+        "hit": true
+      },
+      {
+        "action": "rewards",
+        "x": 274.65625,
+        "y": 128.421875,
+        "width": 93.375,
+        "height": 38.4375,
+        "hit": true
+      },
+      {
+        "action": "quick",
+        "x": 90.8125,
+        "y": 337.890625,
+        "width": 194.078125,
+        "height": 44.671875,
+        "hit": true
+      },
+      {
+        "action": "journey",
+        "x": 7.3125,
+        "y": 387.6875,
+        "width": 177.96875,
+        "height": 90.078125,
+        "hit": true
+      },
+      {
+        "action": "tournaments",
+        "x": 190.421875,
+        "y": 387.6875,
+        "width": 177.234375,
+        "height": 90.078125,
+        "hit": true
+      },
+      {
+        "action": "goals",
+        "x": 5.859375,
+        "y": 485.46875,
+        "width": 363.28125,
+        "height": 58.59375,
+        "hit": true
+      },
+      {
+        "action": "profile",
+        "x": 4.390625,
+        "y": 552.125,
+        "width": 87.890625,
+        "height": 53.09375,
+        "hit": true
+      },
+      {
+        "action": "ranking",
+        "x": 93.015625,
+        "y": 552.125,
+        "width": 90.453125,
+        "height": 53.09375,
+        "hit": true
+      },
+      {
+        "action": "achievements",
+        "x": 184.5625,
+        "y": 552.125,
+        "width": 93.375,
+        "height": 53.09375,
+        "hit": true
+      },
+      {
+        "action": "rules",
+        "x": 280.140625,
+        "y": 552.125,
+        "width": 90.8125,
+        "height": 53.09375,
+        "hit": true
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "stage": {
+      "x": 0,
+      "y": 129.5,
+      "width": 390,
+      "height": 585
+    },
+    "image": {
+      "x": 0,
+      "y": 129.5,
+      "width": 390,
+      "height": 585
+    },
+    "host": {
+      "x": 0,
+      "y": 0,
+      "width": 390,
+      "height": 844
+    },
+    "natural": [
+      1024,
+      1536
+    ],
+    "scroll": false,
+    "buttons": [
+      {
+        "action": "settings",
+        "x": 346.578125,
+        "y": 137.875,
+        "width": 35.03125,
+        "height": 32.75,
+        "hit": true
+      },
+      {
+        "action": "coins",
+        "x": 286.78125,
+        "y": 175.953125,
+        "width": 95.203125,
+        "height": 30.46875,
+        "hit": true
+      },
+      {
+        "action": "rewards",
+        "x": 285.640625,
+        "y": 208.71875,
+        "width": 97.109375,
+        "height": 39.984375,
+        "hit": true
+      },
+      {
+        "action": "quick",
+        "x": 94.453125,
+        "y": 426.5625,
+        "width": 201.84375,
+        "height": 46.453125,
+        "hit": true
+      },
+      {
+        "action": "journey",
+        "x": 7.609375,
+        "y": 478.359375,
+        "width": 185.09375,
+        "height": 93.6875,
+        "hit": true
+      },
+      {
+        "action": "tournaments",
+        "x": 198.046875,
+        "y": 478.359375,
+        "width": 184.328125,
+        "height": 93.6875,
+        "hit": true
+      },
+      {
+        "action": "goals",
+        "x": 6.09375,
+        "y": 580.046875,
+        "width": 377.8125,
+        "height": 60.9375,
+        "hit": true
+      },
+      {
+        "action": "profile",
+        "x": 4.5625,
+        "y": 649.359375,
+        "width": 91.40625,
+        "height": 55.21875,
+        "hit": true
+      },
+      {
+        "action": "ranking",
+        "x": 96.734375,
+        "y": 649.359375,
+        "width": 94.0625,
+        "height": 55.21875,
+        "hit": true
+      },
+      {
+        "action": "achievements",
+        "x": 191.953125,
+        "y": 649.359375,
+        "width": 97.109375,
+        "height": 55.21875,
+        "hit": true
+      },
+      {
+        "action": "rules",
+        "x": 291.34375,
+        "y": 649.359375,
+        "width": 94.453125,
+        "height": 55.21875,
+        "hit": true
+      }
+    ]
+  },
+  {
+    "width": 412,
+    "height": 915,
+    "stage": {
+      "x": 0,
+      "y": 148.5,
+      "width": 412,
+      "height": 618
+    },
+    "image": {
+      "x": 0,
+      "y": 148.5,
+      "width": 412,
+      "height": 618
+    },
+    "host": {
+      "x": 0,
+      "y": 0,
+      "width": 412,
+      "height": 915
+    },
+    "natural": [
+      1024,
+      1536
+    ],
+    "scroll": false,
+    "buttons": [
+      {
+        "action": "settings",
+        "x": 366.125,
+        "y": 157.34375,
+        "width": 37.015625,
+        "height": 34.59375,
+        "hit": true
+      },
+      {
+        "action": "coins",
+        "x": 302.953125,
+        "y": 197.578125,
+        "width": 100.578125,
+        "height": 32.1875,
+        "hit": true
+      },
+      {
+        "action": "rewards",
+        "x": 301.75,
+        "y": 232.1875,
+        "width": 102.59375,
+        "height": 42.234375,
+        "hit": true
+      },
+      {
+        "action": "quick",
+        "x": 99.78125,
+        "y": 462.328125,
+        "width": 213.234375,
+        "height": 49.078125,
+        "hit": true
+      },
+      {
+        "action": "journey",
+        "x": 8.046875,
+        "y": 517.046875,
+        "width": 195.53125,
+        "height": 98.96875,
+        "hit": true
+      },
+      {
+        "action": "tournaments",
+        "x": 209.21875,
+        "y": 517.046875,
+        "width": 194.734375,
+        "height": 98.96875,
+        "hit": true
+      },
+      {
+        "action": "goals",
+        "x": 6.4375,
+        "y": 624.46875,
+        "width": 399.125,
+        "height": 64.375,
+        "hit": true
+      },
+      {
+        "action": "profile",
+        "x": 4.828125,
+        "y": 697.6875,
+        "width": 96.5625,
+        "height": 58.328125,
+        "hit": true
+      },
+      {
+        "action": "ranking",
+        "x": 102.1875,
+        "y": 697.6875,
+        "width": 99.375,
+        "height": 58.328125,
+        "hit": true
+      },
+      {
+        "action": "achievements",
+        "x": 202.78125,
+        "y": 697.6875,
+        "width": 102.59375,
+        "height": 58.328125,
+        "hit": true
+      },
+      {
+        "action": "rules",
+        "x": 307.78125,
+        "y": 697.6875,
+        "width": 99.78125,
+        "height": 58.328125,
+        "hit": true
+      }
+    ]
+  },
+  {
+    "width": 430,
+    "height": 932,
+    "stage": {
+      "x": 0,
+      "y": 143.5,
+      "width": 430,
+      "height": 645
+    },
+    "image": {
+      "x": 0,
+      "y": 143.5,
+      "width": 430,
+      "height": 645
+    },
+    "host": {
+      "x": 0,
+      "y": 0,
+      "width": 430,
+      "height": 932
+    },
+    "natural": [
+      1024,
+      1536
+    ],
+    "scroll": false,
+    "buttons": [
+      {
+        "action": "settings",
+        "x": 382.125,
+        "y": 152.734375,
+        "width": 38.625,
+        "height": 36.109375,
+        "hit": true
+      },
+      {
+        "action": "coins",
+        "x": 316.1875,
+        "y": 194.71875,
+        "width": 104.96875,
+        "height": 33.59375,
+        "hit": true
+      },
+      {
+        "action": "rewards",
+        "x": 314.9375,
+        "y": 230.84375,
+        "width": 107.078125,
+        "height": 44.078125,
+        "hit": true
+      },
+      {
+        "action": "quick",
+        "x": 104.140625,
+        "y": 471.03125,
+        "width": 222.546875,
+        "height": 51.21875,
+        "hit": true
+      },
+      {
+        "action": "journey",
+        "x": 8.390625,
+        "y": 528.140625,
+        "width": 204.078125,
+        "height": 103.296875,
+        "hit": true
+      },
+      {
+        "action": "tournaments",
+        "x": 218.359375,
+        "y": 528.140625,
+        "width": 203.234375,
+        "height": 103.296875,
+        "hit": true
+      },
+      {
+        "action": "goals",
+        "x": 6.71875,
+        "y": 640.265625,
+        "width": 416.5625,
+        "height": 67.1875,
+        "hit": true
+      },
+      {
+        "action": "profile",
+        "x": 5.03125,
+        "y": 716.6875,
+        "width": 100.78125,
+        "height": 60.875,
+        "hit": true
+      },
+      {
+        "action": "ranking",
+        "x": 106.65625,
+        "y": 716.6875,
+        "width": 103.71875,
+        "height": 60.875,
+        "hit": true
+      },
+      {
+        "action": "achievements",
+        "x": 211.640625,
+        "y": 716.6875,
+        "width": 107.078125,
+        "height": 60.875,
+        "hit": true
+      },
+      {
+        "action": "rules",
+        "x": 321.234375,
+        "y": 716.6875,
+        "width": 104.140625,
+        "height": 60.875,
+        "hit": true
+      }
+    ]
+  },
+  {
+    "width": 384,
+    "height": 854,
+    "stage": {
+      "x": 0,
+      "y": 139,
+      "width": 384,
+      "height": 576
+    },
+    "image": {
+      "x": 0,
+      "y": 139,
+      "width": 384,
+      "height": 576
+    },
+    "host": {
+      "x": 0,
+      "y": 0,
+      "width": 384,
+      "height": 854
+    },
+    "natural": [
+      1024,
+      1536
+    ],
+    "scroll": false,
+    "buttons": [
+      {
+        "action": "settings",
+        "x": 341.25,
+        "y": 147.25,
+        "width": 34.5,
+        "height": 32.25,
+        "hit": true
+      },
+      {
+        "action": "coins",
+        "x": 282.375,
+        "y": 184.75,
+        "width": 93.75,
+        "height": 30,
+        "hit": true
+      },
+      {
+        "action": "rewards",
+        "x": 281.25,
+        "y": 217,
+        "width": 95.625,
+        "height": 39.375,
+        "hit": true
+      },
+      {
+        "action": "quick",
+        "x": 93,
+        "y": 431.5,
+        "width": 198.75,
+        "height": 45.75,
+        "hit": true
+      },
+      {
+        "action": "journey",
+        "x": 7.5,
+        "y": 482.5,
+        "width": 182.25,
+        "height": 92.25,
+        "hit": true
+      },
+      {
+        "action": "tournaments",
+        "x": 195,
+        "y": 482.5,
+        "width": 181.5,
+        "height": 92.25,
+        "hit": true
+      },
+      {
+        "action": "goals",
+        "x": 6,
+        "y": 582.625,
+        "width": 372,
+        "height": 60,
+        "hit": true
+      },
+      {
+        "action": "profile",
+        "x": 4.5,
+        "y": 650.875,
+        "width": 90,
+        "height": 54.375,
+        "hit": true
+      },
+      {
+        "action": "ranking",
+        "x": 95.25,
+        "y": 650.875,
+        "width": 92.625,
+        "height": 54.375,
+        "hit": true
+      },
+      {
+        "action": "achievements",
+        "x": 189,
+        "y": 650.875,
+        "width": 95.625,
+        "height": 54.375,
+        "hit": true
+      },
+      {
+        "action": "rules",
+        "x": 286.875,
+        "y": 650.875,
+        "width": 93,
+        "height": 54.375,
+        "hit": true
+      }
+    ]
+  },
+  {
+    "width": 412,
+    "height": 760,
+    "stage": {
+      "x": 0,
+      "y": 71,
+      "width": 412,
+      "height": 618
+    },
+    "image": {
+      "x": 0,
+      "y": 71,
+      "width": 412,
+      "height": 618
+    },
+    "host": {
+      "x": 0,
+      "y": 0,
+      "width": 412,
+      "height": 760
+    },
+    "natural": [
+      1024,
+      1536
+    ],
+    "scroll": false,
+    "buttons": [
+      {
+        "action": "settings",
+        "x": 366.125,
+        "y": 79.84375,
+        "width": 37.015625,
+        "height": 34.59375,
+        "hit": true
+      },
+      {
+        "action": "coins",
+        "x": 302.953125,
+        "y": 120.078125,
+        "width": 100.578125,
+        "height": 32.1875,
+        "hit": true
+      },
+      {
+        "action": "rewards",
+        "x": 301.75,
+        "y": 154.6875,
+        "width": 102.59375,
+        "height": 42.234375,
+        "hit": true
+      },
+      {
+        "action": "quick",
+        "x": 99.78125,
+        "y": 384.828125,
+        "width": 213.234375,
+        "height": 49.078125,
+        "hit": true
+      },
+      {
+        "action": "journey",
+        "x": 8.046875,
+        "y": 439.546875,
+        "width": 195.53125,
+        "height": 98.96875,
+        "hit": true
+      },
+      {
+        "action": "tournaments",
+        "x": 209.21875,
+        "y": 439.546875,
+        "width": 194.734375,
+        "height": 98.96875,
+        "hit": true
+      },
+      {
+        "action": "goals",
+        "x": 6.4375,
+        "y": 546.96875,
+        "width": 399.125,
+        "height": 64.375,
+        "hit": true
+      },
+      {
+        "action": "profile",
+        "x": 4.828125,
+        "y": 620.1875,
+        "width": 96.5625,
+        "height": 58.328125,
+        "hit": true
+      },
+      {
+        "action": "ranking",
+        "x": 102.1875,
+        "y": 620.1875,
+        "width": 99.375,
+        "height": 58.328125,
+        "hit": true
+      },
+      {
+        "action": "achievements",
+        "x": 202.78125,
+        "y": 620.1875,
+        "width": 102.59375,
+        "height": 58.328125,
+        "hit": true
+      },
+      {
+        "action": "rules",
+        "x": 307.78125,
+        "y": 620.1875,
+        "width": 99.78125,
+        "height": 58.328125,
+        "hit": true
+      }
+    ]
+  },
+  {
+    "width": 320,
+    "height": 400,
+    "stage": {
+      "x": 6,
+      "y": 0,
+      "width": 308,
+      "height": 462
+    },
+    "image": {
+      "x": 6,
+      "y": 0,
+      "width": 308,
+      "height": 462
+    },
+    "host": {
+      "x": 0,
+      "y": 0,
+      "width": 320,
+      "height": 400
+    },
+    "natural": [
+      1024,
+      1536
+    ],
+    "scroll": true,
+    "buttons": [
+      {
+        "action": "settings",
+        "x": 279.703125,
+        "y": 6.609375,
+        "width": 27.671875,
+        "height": 25.859375,
+        "hit": true
+      },
+      {
+        "action": "coins",
+        "x": 232.484375,
+        "y": 36.6875,
+        "width": 75.1875,
+        "height": 24.0625,
+        "hit": true
+      },
+      {
+        "action": "rewards",
+        "x": 231.578125,
+        "y": 62.5625,
+        "width": 76.6875,
+        "height": 31.578125,
+        "hit": true
+      },
+      {
+        "action": "quick",
+        "x": 80.59375,
+        "y": 234.609375,
+        "width": 159.40625,
+        "height": 36.6875,
+        "hit": true
+      },
+      {
+        "action": "journey",
+        "x": 12.015625,
+        "y": 275.515625,
+        "width": 146.171875,
+        "height": 73.984375,
+        "hit": true
+      },
+      {
+        "action": "tournaments",
+        "x": 162.40625,
+        "y": 275.515625,
+        "width": 145.578125,
+        "height": 73.984375,
+        "hit": true
+      },
+      {
+        "action": "goals",
+        "x": 10.8125,
+        "y": 355.8125,
+        "width": 298.375,
+        "height": 48.125,
+        "hit": true
+      },
+      {
+        "action": "profile",
+        "x": 9.609375,
+        "y": 410.5625,
+        "width": 72.1875,
+        "height": 43.609375,
+        "hit": false
+      },
+      {
+        "action": "ranking",
+        "x": 82.390625,
+        "y": 410.5625,
+        "width": 74.28125,
+        "height": 43.609375,
+        "hit": false
+      },
+      {
+        "action": "achievements",
+        "x": 157.59375,
+        "y": 410.5625,
+        "width": 76.6875,
+        "height": 43.609375,
+        "hit": false
+      },
+      {
+        "action": "rules",
+        "x": 236.09375,
+        "y": 410.5625,
+        "width": 74.59375,
+        "height": 43.609375,
+        "hit": false
+      }
+    ]
+  }
+]

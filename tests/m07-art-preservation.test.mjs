@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';
+test('M07 official PNG is byte-identical to owner-approved source',()=>{assert.deepEqual(readFileSync(new URL('../web/assets/approved/screen-02-oficial.png',import.meta.url)),readFileSync(new URL('../web/assets/approved/screen-02-apresentacao-rumo-a-lenda-super-definitiva.png',import.meta.url)))});

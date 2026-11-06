@@ -4,6 +4,7 @@ const dialog=$('official02-dialog');let saved;
 const info={
  profile:['Perfil local','O apelido e a partida offline são salvos neste navegador quando o armazenamento está disponível. O avatar existente é preservado. Dados locais não são sincronizados com outro aparelho e podem ser perdidos ao limpar os dados ou desinstalar. O nome e nível desenhados na arte são ilustrativos.'],
  coins:['Moedas','O saldo de 3.850 moedas faz parte da arte aprovada. Não representa saldo real nem permite compras nesta prévia.'],
+ rewards:['Recompensa por hora','Recompensa de 1.000 moedas para usuários autenticados, sem acúmulo. O serviço de autenticação e a validação de resgate ainda não estão integrados nesta prévia. Nenhuma moeda foi concedida.'],
  gems:['Gemas','As 120 gemas são ilustrativas. Não há compra nem cobrança nesta prévia.'],
  notifications:['Notificações','Não há notificações integradas nesta prévia.'],
  settings:['Configurações','Escolha dificuldade e distribuição em Jogar Rápido. A mesa mantém suas configurações atuais. Sem música de fundo.'],

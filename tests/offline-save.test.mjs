@@ -19,7 +19,7 @@ test('official screen 02 PNG matches original approved bytes and every image con
  const png=readFileSync(new URL('../web/assets/approved/screen-02-apresentacao-rumo-a-lenda.png',import.meta.url));
  assert.equal(createHash('sha256').update(png).digest('hex'),'f668011054b12323ece150bacb6c915fcad84b981f8c66a63c3178c7ac35b83c');
  const html=readFileSync(new URL('../web/index.html',import.meta.url),'utf8');const code=readFileSync(new URL('../web/central.js',import.meta.url),'utf8');
- const actions=[...html.matchAll(/data-official-action="([a-z]+)"/g)].map(m=>m[1]);assert.equal(actions.length,16);
+ const actions=[...html.matchAll(/data-official-action="([a-z]+)"/g)].map(m=>m[1]);assert.equal(actions.length,11);
  for(const action of new Set(actions)){if(action!=='quick')assert.ok(code.includes(action+':['),action)}
  assert.match(code,/if\(\$\('official02-mode'\).value!=='offline'\)return/);
 });
