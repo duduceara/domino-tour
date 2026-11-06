@@ -298,3 +298,19 @@ header strong{font-family:Georgia,serif;line-height:1;font-size:20px}header stro
 #official02-dialog button{width:100%;margin-top:10px;min-height:46px}
 #official02-start{background:linear-gradient(#ffe79a,#dba635);color:#122b32;font-weight:750}
 #entry-flow[hidden]{display:none}
+
+
+/* Portrait entry: fill available height without stretching logos, lettering or controls. */
+#entry-flow[data-step="1"],#entry-flow[data-step="2"]{height:100dvh;max-height:100dvh;min-height:0;overflow:hidden;padding:0;background:#00152e}
+#entry-flow .splash-original{height:100%;display:block}
+#entry-flow .splash-fullscreen{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+.official-presentation{height:100%;display:block;overflow:auto}
+.official02-stage{width:min(100%,440px);height:100%;margin:auto;aspect-ratio:auto;display:flex;flex-direction:column;min-height:0;background:radial-gradient(ellipse at 50% 43%,#164c53,#001b32 55%)}
+.mobile-art{position:relative;flex:none;width:100%;aspect-ratio:var(--art-ratio);overflow:hidden}
+.mobile-art>img{position:absolute;display:block;left:var(--art-left);top:var(--art-top);width:var(--art-width);height:auto;max-width:none}
+.mobile-main{flex:1;min-height:0;display:grid;grid-template-rows:minmax(0,1fr) auto auto}
+.mobile-quick-slot{min-height:0;display:flex;justify-content:center;align-items:center;overflow:hidden;background:radial-gradient(ellipse,#14523455,transparent 70%)}
+.mobile-quick{height:100%;width:auto;max-width:100%;flex:none}
+#entry-flow[hidden],.official-presentation[hidden]{display:none}
+@media(max-aspect-ratio: 3/4){.official02-stage{min-height:calc(100vw * 1.6)}}
+@media(min-aspect-ratio:3/4){.official02-stage{width:min(100%,calc(100dvh * .6));min-height:calc(100dvh * 1.15)}#entry-flow .splash-fullscreen{object-fit:contain}}
