@@ -314,3 +314,24 @@ header strong{font-family:Georgia,serif;line-height:1;font-size:20px}header stro
 #entry-flow[hidden],.official-presentation[hidden]{display:none}
 @media(max-aspect-ratio: 3/4){.official02-stage{min-height:calc(100vw * 1.6)}}
 @media(min-aspect-ratio:3/4){.official02-stage{width:min(100%,calc(100dvh * .6));min-height:calc(100dvh * 1.15)}#entry-flow .splash-fullscreen{object-fit:contain}}
+
+/* Screen 02 hierarchy: one dominant action, two compact secondary destinations. */
+.mobile-main{display:flex;flex-direction:column;gap:8px;padding:8px 10px 5px;min-height:0}
+#entry-flow .primary-quick{position:relative;flex:1;min-height:150px;width:100%;margin:0;padding:12px 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border:2px solid #ffe393;border-radius:24px;background:radial-gradient(ellipse at 50% 35%,#3c9c19 0%,#07830b 40%,#005916 75%,#003d19);color:#ffe487;box-shadow:inset 0 0 0 3px #8da937,inset 0 0 0 5px #f0bd40,0 3px 0 #9b6b1d,0 7px 18px #0006;isolation:isolate}
+.primary-quick:before{content:'';position:absolute;inset:8px;border:1px solid #c9ed6d88;border-radius:17px;pointer-events:none}
+.primary-domino-sprite{position:relative;display:block;width:clamp(95px,29vw,130px);aspect-ratio:300/210;overflow:hidden;flex:none;mask-image:radial-gradient(ellipse at center,#000 48%,transparent 74%)}
+.primary-domino-sprite>img{position:absolute;width:468%;height:auto;left:-60%;top:-264.285714%;max-width:none}
+.primary-quick-title{font:900 italic clamp(30px,10vw,46px)/.94 system-ui,sans-serif;letter-spacing:-.045em;text-shadow:0 2px 0 #ad7610,0 4px 0 #51370a,0 6px 6px #00230d;display:block;color:#ffe786}
+.primary-quick-caption{font-size:11px;line-height:1.35;color:#fff6cf;font-weight:600;margin-top:4px}
+.primary-quick-go{display:flex;align-items:center;justify-content:center;gap:14px;width:min(90%,260px);min-height:43px;margin-top:8px;padding:9px 12px;border:1px solid #fff2b2;border-radius:999px;background:linear-gradient(#ffec96,#ffc42d 55%,#e89a10);box-shadow:0 3px 0 #8e5d10,0 6px 9px #00290d77;color:#284014;font-size:12px;letter-spacing:.035em;font-weight:850;text-shadow:none}
+.primary-quick-go>span{font-size:19px;color:#fffbe8;text-shadow:0 1px 2px #543600}
+.primary-quick:focus-visible{outline:3px solid white;outline-offset:-8px}
+.primary-quick:active{filter:brightness(1.08)}
+.secondary-game-links{display:grid;grid-template-columns:1fr 1fr;gap:6px;align-items:stretch;flex:none}
+.secondary-game-links .mobile-art{border-radius:12px;align-self:center}
+@media(max-height:680px) and (orientation:portrait){.primary-domino-sprite{width:85px}.primary-quick-title{font-size:32px}.primary-quick-caption{font-size:10px}.primary-quick-go{min-height:36px;margin-top:4px}.mobile-main{gap:5px;padding-top:5px}#entry-flow .primary-quick{gap:3px;padding:9px}}
+/* Keep the primary label readable at arm's length on Android. */
+.primary-domino-sprite{width:clamp(125px,39vw,165px);aspect-ratio:300/170}
+.primary-domino-sprite>img{top:-326.470588%}
+.primary-quick-title{font-size:clamp(42px,15vw,62px)}
+@media(max-height:680px) and (orientation:portrait){.primary-domino-sprite{width:105px}.primary-quick-title{font-size:42px}}

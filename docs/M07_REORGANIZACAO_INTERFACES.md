@@ -53,3 +53,6 @@ Online bloqueado: não existe provedor de autenticação ou servidor de partidas
 
 ## Encaixe mobile das Telas 01/02
 Altura dinâmica 100dvh. Tela 01 usa escala uniforme para cobrir a área útil, recortando apenas cenário lateral no retrato; logo, carregamento e EDVÓRIA permanecem visíveis. Tela 02 recompõe regiões do PNG original: cabeçalho, Jornada, Jogar Rápido, Torneios, Jornada Mundial, desafio e menu. Painéis empilhados para telas altas, com aspecto nativo de cada região e alvos de toque transformados junto à arte. PNGs inalterados. Conferência visual em área de 393×710; homologação física final pelo proprietário.
+
+## Ajuste de hierarquia solicitado após teste físico
+Tela 01 aprovada e congelada. Somente Tela 02: ação Jogar Rápido reconstruída como controle web verde/dourado dominante, texto grande e área de toque única, usando recorte decorativo das pedras originais; PNG preservado. Torneios e Jornada em duas colunas secundárias, desafio e navegação inferior preservados. Sem alteração de regras, dados ou funcionalidades. Avaliação em área de 393×710; nova aprovação do proprietário pendente.
