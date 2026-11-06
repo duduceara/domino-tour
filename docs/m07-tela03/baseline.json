@@ -1,0 +1,16 @@
+{
+  "site_source_commit": "9397e2dd687fbf308271c0d5bde8e6c891168c70",
+  "github_base": "b9b3ab28187983c5de4bad265bbdc26db173aa28",
+  "main_base": "d27c5e36b6a1b132935a304937f8e318eb7dd58d",
+  "screen02_section_sha256": "fe7dff32d289627356243bd66f3f123ef942e36de9c26d35bc2c68fba90e51ca",
+  "files": {
+    "layout.css": "3b938f39b3427a000e11244899d8e03994ce415ef51aeff19acaffa54c49548d",
+    "presentation-fit.js": "efb6a65162eda31ef30070e080a575cf3a5d60c33d2710fc330bbb637d474252",
+    "assets/approved/screen-02-brilho-v3.png": "cdfe7a1354ff7c12a020060c06fd6e5ff048d27fb7d5e4150269c8258dc54c57",
+    "assets/approved/screen-02-cenario-bordas-v6.png": "720156261e137245f26759b045eed9259262b6c03b241903f3424d24b066e3b0"
+  },
+  "screen03": {
+    "screen-03-offline.png": "8fd15d4e406eb5e7daff502f34d86e35ea561e03d2fd76c0b24b2a63d744d7c4",
+    "screen-03-online.png": "84875833f876c87105cd1dc97bf65972cf3c4c42f79ab68fe55a5b0ff7d258ec"
+  }
+}
