@@ -11,7 +11,7 @@ const html = readFileSync(resolve(root, 'web/index.html'), 'utf8');
 const catalog = JSON.parse(readFileSync(resolve(root, 'web/approved-interfaces.json'), 'utf8'));
 const rule = selector => {
   const marker = selector + '{';
-  const at = css.indexOf(marker);
+  const at = css.lastIndexOf(marker);
   assert.ok(at >= 0, 'Missing CSS selector: ' + selector);
   const closing = css.indexOf('}', at + marker.length);
   assert.ok(closing > at, 'Unclosed CSS rule: ' + selector);
