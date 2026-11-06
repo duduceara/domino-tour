@@ -10,10 +10,12 @@ const app = readFileSync(resolve(root, 'web/app.js'), 'utf8');
 const html = readFileSync(resolve(root, 'web/index.html'), 'utf8');
 const catalog = JSON.parse(readFileSync(resolve(root, 'web/approved-interfaces.json'), 'utf8'));
 const rule = selector => {
-  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const match = css.match(new RegExp(escaped + '\\s*\\{([^}]*)\\}'));
-  assert.ok(match, 'Missing CSS selector: ' + selector);
-  return match[1];
+  const marker = selector + '{';
+  const at = css.indexOf(marker);
+  assert.ok(at >= 0, 'Missing CSS selector: ' + selector);
+  const closing = css.indexOf('}', at + marker.length);
+  assert.ok(closing > at, 'Unclosed CSS rule: ' + selector);
+  return css.slice(at + marker.length, closing);
 };
 
 test('Mesa Premium: board layer does not intercept pointer events', () => {
