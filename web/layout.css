@@ -282,8 +282,8 @@ header strong{font-family:Georgia,serif;line-height:1;font-size:20px}header stro
 #entry-flow[hidden]{display:none}
 
 /* Official screen 02: original PNG and proportional, transparent touch targets. */
-#entry-flow[data-step="2"]{display:grid;place-items:center;padding:0;overflow:auto;background:#00182b}
-.official-presentation{width:100%;height:100%;display:grid;place-items:center;overflow:auto}
+#entry-flow[data-step="2"]{display:grid;place-items:start center;padding:0;overflow:auto;background:#00182b}
+.official-presentation{width:100%;height:100%;display:grid;place-items:start center;align-content:start;overflow:auto}
 .official-presentation[hidden]{display:none}
 .official02-stage{position:relative;width:min(100vw,91.40625svh);aspect-ratio:1404/1536;flex:none}
 .official02-stage>img{display:block;width:100%;height:auto}
