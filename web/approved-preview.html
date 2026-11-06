@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>DOMINÓ TOUR | Revisão de interfaces M06</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,sans-serif;background:#071b30;color:#fff}
+*{box-sizing:border-box}body{margin:0}main{max-width:1100px;margin:auto;padding:24px 16px 70px}
+header{border-bottom:1px solid #b89a5b;padding-bottom:20px;margin-bottom:24px}h1{margin:0;color:#f0ce80;font-size:clamp(24px,5vw,36px)}
+p{line-height:1.5;color:#d8e1eb}.status{padding:10px 14px;border:1px solid #b89a5b;border-radius:10px;margin:18px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:20px}
+figure{margin:0;border:1px solid #49617b;border-radius:14px;overflow:hidden;background:#0c2948}
+figcaption{padding:12px 14px;font-weight:650}small{display:block;font-weight:400;color:#bacbd9;margin-top:5px}
+img{display:block;width:100%;height:auto;max-height:520px;object-fit:contain;background:#061424}
+.empty{min-height:180px;display:grid;place-items:center;padding:20px;text-align:center;color:#e2d1aa}
+a{color:#f0ce80}a:focus-visible{outline:3px solid #f0ce80;outline-offset:3px}
+</style>
+</head>
+<body><main><header><h1>DOMINÓ TOUR · Revisão M06</h1><p>Galeria técnica das interfaces aprovadas. Esta página não altera o jogo e não representa homologação da experiência mobile.</p></header>
+<div class="status" id="status" role="status">Carregando catálogo…</div>
+<div class="grid" id="gallery" aria-label="Interfaces aprovadas"></div>
+</main>
+<script type="module">
+const status=document.getElementById('status'),gallery=document.getElementById('gallery');
+try{
+ const response=await fetch('./approved-interfaces.json',{cache:'no-store'});
+ if(!response.ok)throw new Error('Catálogo HTTP '+response.status);
+ const entries=await response.json();
+ if(!Array.isArray(entries)||entries.length!==16)throw new Error('Catálogo incompleto');
+ for(const entry of entries){
+  const figure=document.createElement('figure');
+  const caption=document.createElement('figcaption');
+  caption.textContent='Tela '+String(entry.number).padStart(2,'0')+' · '+entry.title;
+  const detail=document.createElement('small');
+  if(entry.number===4||!entry.src){
+   const empty=document.createElement('div');empty.className='empty';
+   empty.textContent='Arte original ainda não confirmada. Não substituir automaticamente.';
+   figure.append(empty);detail.textContent='Pendente de confirmação editorial';
+  }else{
+   const img=document.createElement('img');img.loading='lazy';
+   img.alt='Interface aprovada '+entry.number+': '+entry.title;
+   img.src='./'+entry.src;
+   img.addEventListener('error',()=>{detail.textContent='Falha ao carregar imagem';});
+   figure.append(img);
+   detail.textContent=entry.number===8?'Referência reutilizada da tela 06':'Arte declarada no catálogo';
+  }
+  caption.append(detail);figure.append(caption);gallery.append(figure);
+ }
+ status.textContent='16 posições catalogadas · 15 referências de imagem · Tela 04 pendente · Tela 08 reutiliza a 06';
+}catch(error){status.textContent='Falha ao carregar catálogo: '+error.message;}
+</script>
+</body></html>
