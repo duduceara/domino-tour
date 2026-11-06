@@ -1,4 +1,6 @@
 /* Screen 03 is scoped: it never changes the approved presentation or the game. */
+.config03 .official02-slice{position:relative;flex:none;aspect-ratio:var(--slice-ratio);overflow:hidden}
+.config03 .official02-slice>img{position:absolute;display:block;height:auto;max-width:none;pointer-events:none}
 .config03{position:fixed;inset:0;z-index:210;box-sizing:border-box;height:100vh;height:100svh;height:100dvh;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);background:#02192c;color:#fff6dc;overflow:auto;scrollbar-width:none}
 .config03[hidden]{display:none}.config03::-webkit-scrollbar{display:none}
 .config03-page{width:min(100%,600px);min-height:100%;margin:0 auto;display:flex;flex-direction:column;justify-content:space-between;gap:5px;background:radial-gradient(ellipse at 50% 5%,#14365a,#03182b 65%)}

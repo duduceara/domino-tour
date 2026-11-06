@@ -20,12 +20,7 @@ const info={
 function show(title,message,quick=false){$('official02-title').textContent=title;$('official02-message').textContent=message;$('official02-options').hidden=!quick;dialog.showModal()}
 for(const b of document.querySelectorAll('[data-official-action]'))b.addEventListener('click',()=>{
  if(b.dataset.officialAction!=='quick'){show(...info[b.dataset.officialAction]);return}
- saved=readOffline(storage);$('official02-mode').value='offline';$('official02-start').disabled=false;
- $('official02-name').value=saved.name||'';$('official02-difficulty').value=saved.session?.difficulty||'easy';$('official02-deal').value=String(saved.session?.state.dealSize||6);
- const resume=saved.kind==='saved';for(const id of ['official02-difficulty','official02-deal'])$(id).disabled=resume;
- $('official02-start').textContent=resume?'Continuar partida offline':'Jogar offline';
- $('official02-save-status').textContent=saved.kind==='unavailable'?'Não foi possível ler o salvamento. Os dados existentes serão preservados; esta sessão pode não ser salva.':'Progresso salvo somente neste navegador. Não há sincronização; limpar dados ou desinstalar pode apagá-lo.';
- show('Jogar Rápido',resume?'Sua partida local foi encontrada. Continue de onde parou, sem cadastro.':'Escolha as opções e entre na mesa, sem cadastro obrigatório.',true);
+ window.dispatchEvent(new Event('domino-tour:configure-match'));
 });
 $('official02-mode').addEventListener('change',()=>{const online=$('official02-mode').value==='online';$('official02-start').disabled=online;$('official02-save-status').textContent=online?'Online indisponível: exige autenticação segura e servidor, ainda não configurados. Nenhuma partida online será iniciada.':'Salvamento somente neste dispositivo, sem sincronização automática.'});
 $('official02-start').addEventListener('click',()=>{
