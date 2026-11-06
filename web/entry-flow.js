@@ -14,9 +14,9 @@ document.querySelectorAll('[data-entry-back]').forEach(b=>b.addEventListener('cl
 document.getElementById('entry-play').addEventListener('click',enterGame);
 show();
 
-// Both the two-second minimum and real page loading must finish before leaving.
+// Both the three-second minimum and real page loading must finish before leaving.
 let minimumElapsed=false;
 let pageLoaded=document.readyState==='complete';
-function finishSplash(){if(!minimumElapsed||!pageLoaded)return;splashReady=true;if(step===0){step=1;show()}}
+function finishSplash(){if(!minimumElapsed||!pageLoaded)return;splashReady=true;if(typeof location!=='undefined'&&new URLSearchParams(location.search).get('homologacao')==='tela01'){const status=document.getElementById('splash-status');if(status)status.textContent='Carregamento concluído. Tela 01 em avaliação.';return}if(step===0){step=1;show()}}
 window.addEventListener('load',()=>{pageLoaded=true;finishSplash()},{once:true});
-setTimeout(()=>{minimumElapsed=true;finishSplash()},2000);
+setTimeout(()=>{minimumElapsed=true;finishSplash()},3000);

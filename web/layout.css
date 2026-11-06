@@ -218,20 +218,6 @@ header strong{font-family:Georgia,serif;line-height:1;font-size:20px}header stro
 .entry-card .avatar-choice{padding-bottom:0}
 .avatar-label{display:block;width:100%;min-height:44px;margin:0;padding:6px 44px 6px 4px;text-align:left}
 
-/* M06: approved original loading artwork, scoped to the entry splash only.
-   The dark overlay protects legibility and the existing 2-second flow is unchanged. */
-#entry-flow [data-entry-step]:first-child{
-  background-image:linear-gradient(145deg,rgba(3,18,30,.88),rgba(3,18,30,.76)),url('./assets/approved/screen-01.png');
-  background-position:center;
-  background-repeat:no-repeat;
-  background-size:cover;
-}
-#entry-flow [data-entry-step]:first-child h1,
-#entry-flow [data-entry-step]:first-child p,
-#entry-flow [data-entry-step]:first-child .entry-kicker{
-  text-shadow:0 2px 5px rgba(0,0,0,.9);
-}
-
 /* M06: approved original access artwork, isolated to entry step 02.
    All navigation, buttons and the avatar gate remain unchanged. */
 #entry-flow [data-entry-step]:nth-child(2){
@@ -272,3 +258,10 @@ header strong{font-family:Georgia,serif;line-height:1;font-size:20px}header stro
 #entry-flow [data-entry-step]:nth-child(6) .entry-kicker{
   text-shadow:0 2px 5px rgba(0,0,0,.9);
 }
+
+/* M07 / screen 01 only: preserve the entire original artwork. */
+#entry-flow[data-step="1"]{padding:0;background:#00152f;overflow:hidden}
+#entry-flow .splash-original{display:flex;align-items:center;justify-content:center;width:100%;height:100%;max-height:none;margin:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none;overflow:hidden}
+#entry-flow .splash-original[hidden]{display:none}
+.splash-original img{display:block;width:100%;height:100%;object-fit:contain}
+.splash-status{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
