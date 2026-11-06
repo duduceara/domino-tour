@@ -1,10 +1,13 @@
+import {readOffline,writeOffline} from './offline-save.js';
 import {landscapeViewport,framePoint,fittedTableSpace,tablePoint} from '../dist/src/viewport.js';
 import {LocalSession} from '../dist/src/session.js';
 import {validSides,chooseRoute} from '../dist/src/table.js';
 import {legalTiles,secureIndex} from '../dist/src/engine.js';
 const $=id=>document.getElementById(id);
 const PLAYER_NAMES=['Você','RobiX','AndroX','DomiX'];
-let game=new LocalSession();let routeStyle=chooseRoute(secureIndex);
+let offlineStorage=null;try{offlineStorage=window.localStorage}catch{}
+const restoredOffline=readOffline(offlineStorage);let offlineName=restoredOffline.name||'Visitante';let offlineStarted=false;let offlineSaveBlocked=restoredOffline.kind==='unavailable';
+let game=restoredOffline.session||new LocalSession();let routeStyle=restoredOffline.routeStyle||chooseRoute(secureIndex);
 let handDrag=null,insertionMarker=null;
 let dragId=null,origin=null,dragMoved=false,ghost=null,floatingTile=null;const activePointers=new Set();let gestureBlocked=false;
 let rotated=false,zoom=1,pan={x:0,y:0},panStart=null;
@@ -104,10 +107,11 @@ function drawBoard(model,previewId=null){
  }
 }
 function sync(){
+ if(offlineStarted&&!offlineSaveBlocked){const saved=writeOffline(offlineStorage,game,routeStyle,offlineName);document.body.dataset.offlineSave=saved?'saved':'unavailable'}
  if(handDrag)cancelGesture();
  const prior=rect();if(!prior){$('table').dataset.layout='waiting';return} $('table').dataset.layout='ready';game.setRouteStyle(routeStyle);game.resize(prior,'horizontal');
  const s=game.state,human=s.players[0];
- $('scores').replaceChildren(...s.players.map(p=>{const e=document.createElement('span');e.className='seat'+(s.turn===p.seat?' active':'');e.dataset.seat=String(p.seat);e.setAttribute('aria-label',p.seat===0?'Seu placar':`Placar de ${PLAYER_NAMES[p.seat]}`);e.textContent=`${p.seat===0?'Você':PLAYER_NAMES[p.seat]} · ${p.score} pts · ${p.hand.length} pedras`;const avatar=document.createElement('span');avatar.className='avatar-slot';avatar.dataset.avatarSeat=String(p.seat);avatar.textContent=p.seat===0?'Você':PLAYER_NAMES[p.seat][0];e.append(avatar);return e}));
+ $('scores').replaceChildren(...s.players.map(p=>{const e=document.createElement('span');e.className='seat'+(s.turn===p.seat?' active':'');e.dataset.seat=String(p.seat);e.setAttribute('aria-label',p.seat===0?'Seu placar':`Placar de ${PLAYER_NAMES[p.seat]}`);e.textContent=`${p.seat===0?offlineName:PLAYER_NAMES[p.seat]} · ${p.score} pts · ${p.hand.length} pedras`;const avatar=document.createElement('span');avatar.className='avatar-slot';avatar.dataset.avatarSeat=String(p.seat);avatar.textContent=p.seat===0?offlineName:PLAYER_NAMES[p.seat][0];e.append(avatar);return e}));
  window.dispatchEvent?.(new Event('domino-tour:participants-rendered'));
  drawBoard(game.model);
  const hand=$('hand');hand.replaceChildren();
@@ -178,6 +182,7 @@ function sync(){
  $('next-round').hidden=s.phase!=='round-complete';
  $('play-again').hidden=s.phase!=='finished';
  $('message').textContent=game.model.status==='unavailable'?'Mesa não desenhada: '+game.model.failure:s.phase==='round-complete'?'Rodada encerrada! Vencedor: '+(s.nextOpeningSeat===0?'Você':PLAYER_NAMES[s.nextOpeningSeat])+'. Pontuação atualizada. Toque em Próxima rodada para continuar.':s.phase==='finished'?'Partida encerrada. Vencedor: '+(s.winner===0?'Você':PLAYER_NAMES[s.winner]):s.phase==='blocked-awaiting-rule'?'Rodada bloqueada: regra da V0.21 preservada.':s.turn===0?(game.interaction.selectedTile!==null?(validSides(s,0,game.interaction.selectedTile).length===1?'Uma ponta disponível: toque novamente na pedra para jogar.':'Duas pontas disponíveis: escolha uma ponta iluminada.'):'Sua vez! Arraste na mão para organizar ou leve uma pedra à mesa.'):`${PLAYER_NAMES[s.turn]} pensando... (3 segundos por jogada)`;
+ if(offlineStarted&&document.body.dataset.offlineSave==='unavailable')$('message').textContent+=' · Não foi possível salvar neste navegador.';
 }
 // Capture phase sees a second pointer even outside the rack/first captured element.
 document.addEventListener('pointerdown',e=>{activePointers.add(e.pointerId);if(activePointers.size>1){gestureBlocked=true;cancelGesture();drawBoard(game.model)}},true);
@@ -218,5 +223,13 @@ document.addEventListener('fullscreenchange',queueViewport);
 const layoutObserver=new ResizeObserver(queueViewport);
 layoutObserver.observe(document.documentElement);layoutObserver.observe($('table'));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)queueViewport()});
-window.addEventListener('domino-tour:enter-game',()=>{sync();scheduleBots();queueViewport();void lockLandscape(true)});
+window.addEventListener('domino-tour:offline-options',e=>{
+ if($('entry-flow').hidden||$('entry-flow').dataset.step!=='2')return;
+ const o=e.detail;if(!['easy','medium','hard'].includes(o.difficulty)||![6,7].includes(o.deal))return;
+ if(!o.resume){stopBotSequence();cancelGesture();game=new LocalSession(100,o.deal,o.difficulty);routeStyle=chooseRoute(secureIndex)}
+ offlineName=String(o.name).slice(0,24);o.accepted=true;
+});
+window.addEventListener('domino-tour:enter-game',()=>{offlineStarted=true;sync();scheduleBots();queueViewport();void lockLandscape(true)});
+window.addEventListener('pagehide',()=>{if(offlineStarted&&!offlineSaveBlocked)writeOffline(offlineStorage,game,routeStyle,offlineName)});
+$('difficulty').value=game.difficulty;$('entry-difficulty').value=game.difficulty;$('target').value=String(game.state.target);$('deal').value=String(game.state.dealSize);
 fitViewport();sync();scheduleBots();queueViewport();

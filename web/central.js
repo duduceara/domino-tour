@@ -1,15 +1,35 @@
-// Central navigation only; no match state or storage writes.
-const $=id=>document.getElementById(id);
-const sections={
- jornada:['Jornada Mundial','Do Brasil aos continentes: destinos turísticos, campeonatos estaduais, regionais e nacionais até o título de Lenda. A progressão territorial ainda está em preparação; não há progresso registrado para exibir nesta Central.'],
- competicoes:['Competições','Torneios e ligas serão disponibilizados em uma próxima etapa. As competições oficiais online exigirão autenticação. Você já pode testar a partida offline em Jogar Agora.'],
- ranking:['Ranking','O ranking competitivo oficial será exclusivamente online e exigirá uma conta autenticada. A classificação ainda não está disponível nesta prévia.'],
- conquistas:['Conquistas e passaporte','A Jornada terá medalhas offline e online por território. O registro de conquistas ainda não está integrado; nenhum resultado ilustrativo é apresentado como conquista real.'],
- perfil:['Perfil local','Seu avatar, quando escolhido, é recuperado deste navegador. A conta e a sincronização serão tratadas na Tela 03. Os dados locais não são transferidos automaticamente para outro aparelho e podem ser perdidos ao apagar os dados do navegador ou desinstalar o aplicativo.'],
- configuracoes:['Configurações','Nesta prévia, dificuldade e opções da partida continuam disponíveis na engrenagem da mesa. A tela completa de configurações será homologada em seu próprio ciclo. Sem música de fundo.'],
- ajuda:['Como jogar','Toque em Jogar Agora para uma mesa offline com quatro participantes individuais, seis pedras por jogador e quatro reservadas. Na sua vez, toque em uma pedra e depois numa ponta válida, ou arraste a pedra até a ponta. A mesa usa orientação horizontal.']
+import {readOffline} from './offline-save.js';
+const $=id=>document.getElementById(id);let storage=null;try{storage=window.localStorage}catch{}
+const dialog=$('official02-dialog');let saved;
+const info={
+ profile:['Perfil local','O apelido e a partida offline são salvos neste navegador quando o armazenamento está disponível. O avatar existente é preservado. Dados locais não são sincronizados com outro aparelho e podem ser perdidos ao limpar os dados ou desinstalar. O nome e nível desenhados na arte são ilustrativos.'],
+ coins:['Moedas','O saldo de 3.850 moedas faz parte da arte aprovada. Não representa saldo real nem permite compras nesta prévia.'],
+ gems:['Gemas','As 120 gemas são ilustrativas. Não há compra nem cobrança nesta prévia.'],
+ notifications:['Notificações','Não há notificações integradas nesta prévia.'],
+ settings:['Configurações','Escolha dificuldade e distribuição em Jogar Rápido. A mesa mantém suas configurações atuais. Sem música de fundo.'],
+ journey:['Jornada Mundial','A progressão começa no Brasil, pelo Ceará, e segue por estados, regiões, países e continentes até Lenda. Este percurso ainda não está implementado. O progresso de 38% da arte é ilustrativo.'],
+ goals:['Metas','O nível 12, os 38% e a meta de nível 13 fazem parte da arte. Não representam evolução real. A partida offline pode ser retomada; a progressão da Jornada ainda não foi integrada.'],
+ tournaments:['Torneios Especiais','Competições ainda não estão disponíveis. O online permanecerá bloqueado até existir autenticação segura e servidor de partidas.'],
+ challenge:['Próximo Desafio','O desafio e os 320 pontos desenhados são ilustrativos. A Jornada será integrada e homologada em outro ciclo.'],
+ ranking:['Ranking','O ranking oficial será online, com autenticação obrigatória. Ainda não está disponível.'],
+ achievements:['Conquistas','Medalhas e conquistas da Jornada ainda não estão integradas. A pontuação e o estado da partida offline são preservados localmente.'],
+ shop:['Loja','A loja ainda não está disponível. Não há pagamentos nesta prévia.'],
+ rules:['Regras','Quatro participantes individuais. Distribuição de seis pedras com quatro reservadas, ou sete sem reservadas. Toque numa pedra e depois numa ponta válida ou arraste até a ponta. Passagens sem jogada legal são automáticas. Sem duplas.']
 };
-for(const button of document.querySelectorAll('[data-central-action]'))button.addEventListener('click',()=>{
- const [title,copy]=sections[button.dataset.centralAction];$('central-dialog-title').textContent=title;$('central-dialog-copy').textContent=copy;$('central-dialog').showModal();
+function show(title,message,quick=false){$('official02-title').textContent=title;$('official02-message').textContent=message;$('official02-options').hidden=!quick;dialog.showModal()}
+for(const b of document.querySelectorAll('[data-official-action]'))b.addEventListener('click',()=>{
+ if(b.dataset.officialAction!=='quick'){show(...info[b.dataset.officialAction]);return}
+ saved=readOffline(storage);$('official02-mode').value='offline';$('official02-start').disabled=false;
+ $('official02-name').value=saved.name||'';$('official02-difficulty').value=saved.session?.difficulty||'easy';$('official02-deal').value=String(saved.session?.state.dealSize||6);
+ const resume=saved.kind==='saved';for(const id of ['official02-difficulty','official02-deal'])$(id).disabled=resume;
+ $('official02-start').textContent=resume?'Continuar partida offline':'Jogar offline';
+ $('official02-save-status').textContent=saved.kind==='unavailable'?'Não foi possível ler o salvamento. Os dados existentes serão preservados; esta sessão pode não ser salva.':'Progresso salvo somente neste navegador. Não há sincronização; limpar dados ou desinstalar pode apagá-lo.';
+ show('Jogar Rápido',resume?'Sua partida local foi encontrada. Continue de onde parou, sem cadastro.':'Escolha as opções e entre na mesa, sem cadastro obrigatório.',true);
 });
-$('central-play').addEventListener('click',()=>window.dispatchEvent(new Event('domino-tour:quick-play')));
+$('official02-mode').addEventListener('change',()=>{const online=$('official02-mode').value==='online';$('official02-start').disabled=online;$('official02-save-status').textContent=online?'Online indisponível: exige autenticação segura e servidor, ainda não configurados. Nenhuma partida online será iniciada.':'Salvamento somente neste dispositivo, sem sincronização automática.'});
+$('official02-start').addEventListener('click',()=>{
+ if($('official02-mode').value!=='offline')return;
+ const detail={resume:saved.kind==='saved',name:$('official02-name').value.trim()||'Visitante',difficulty:$('official02-difficulty').value,deal:Number($('official02-deal').value),accepted:false};
+ window.dispatchEvent(new CustomEvent('domino-tour:offline-options',{detail}));if(!detail.accepted)return;
+ dialog.close();window.dispatchEvent(new Event('domino-tour:quick-play'));
+});
