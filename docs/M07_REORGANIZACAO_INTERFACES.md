@@ -42,3 +42,6 @@ A transição definitiva para a Central é dependência da Tela 02 e permanece p
 
 ## Protocolo
 Entregar captura, link e testes; parar. Só avançar com “TELA 01 APROVADA. PODE AVANÇAR.” Aprovação da arte antiga, testes ou silêncio não aprovam a implementação mobile.
+
+## Ciclo Tela 02 — Central do Jogador
+Tela 01 aprovada pelo proprietário. Central implementada com Jogar Agora offline em um toque, sem exigir cadastro ou seleção obrigatória de avatar. Usa avatar local quando disponível; apelido padrão Visitante porque o perfil atual ainda não possui apelido. Brasil/Fortaleza é o início planejado, sem progresso territorial fictício. Jornada, competições, ranking e conquistas têm painéis informativos transparentes até sua implementação. Não há infraestrutura atual de recuperação de partidas nem sincronização: o aviso explicita a ausência de salvamento da partida. Conta, progresso durável e online permanecem dependências da Tela 03 e ciclos posteriores. Os seis containers legados permanecem preservados; a entrada rápida usa o evento existente de início do jogo, sem alterar motor, regras ou viewport. A rota de homologação da Tela 01 permanece intacta.

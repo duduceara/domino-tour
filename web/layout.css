@@ -218,20 +218,6 @@ header strong{font-family:Georgia,serif;line-height:1;font-size:20px}header stro
 .entry-card .avatar-choice{padding-bottom:0}
 .avatar-label{display:block;width:100%;min-height:44px;margin:0;padding:6px 44px 6px 4px;text-align:left}
 
-/* M06: approved original access artwork, isolated to entry step 02.
-   All navigation, buttons and the avatar gate remain unchanged. */
-#entry-flow [data-entry-step]:nth-child(2){
-  background-image:linear-gradient(145deg,rgba(3,18,30,.88),rgba(3,18,30,.78)),url('./assets/approved/screen-02.png');
-  background-position:center;
-  background-repeat:no-repeat;
-  background-size:cover;
-}
-#entry-flow [data-entry-step]:nth-child(2) h1,
-#entry-flow [data-entry-step]:nth-child(2) p,
-#entry-flow [data-entry-step]:nth-child(2) .entry-kicker{
-  text-shadow:0 2px 5px rgba(0,0,0,.9);
-}
-
 /* M06: approved original identity artwork, scoped to the avatar selection step.
    Opaque card content and controls retain their existing layout and behavior. */
 #entry-flow [data-entry-step].avatar-stage{
@@ -265,3 +251,32 @@ header strong{font-family:Georgia,serif;line-height:1;font-size:20px}header stro
 #entry-flow .splash-original[hidden]{display:none}
 .splash-original img{display:block;width:100%;height:100%;object-fit:contain}
 .splash-status{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* M07 screen 02: Central. Scoped; approved splash and game viewport unchanged. */
+#entry-flow[data-step="2"]{display:block;padding:0;overflow:auto;background:radial-gradient(ellipse at 85% 15%,#14507955,transparent 45%),linear-gradient(160deg,#061b30,#041222 70%);color:#fff5df}
+.central{width:min(100%,680px);min-height:100%;margin:auto;padding:22px max(20px,env(safe-area-inset-right)) 16px max(20px,env(safe-area-inset-left));font-family:system-ui,sans-serif}
+.central[hidden]{display:none}
+.central-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:32px}
+.central-brand{text-decoration:none;color:#f4d28c;line-height:1;flex:none}.central-brand strong{display:block;font:700 25px Georgia,serif;letter-spacing:.035em}.central-brand>span{display:block;font-size:11px;letter-spacing:.25em;margin-top:5px}.central-brand i{font-style:normal;font-size:8px;letter-spacing:.1em}
+.central button{font-family:inherit;min-height:48px}
+.central .central-profile{display:flex;align-items:center;gap:9px;padding:0;background:none;border:0;text-align:left;color:#fff5df;box-shadow:none;border-radius:10px}
+.central-profile .avatar-slot{width:43px;height:43px;flex-basis:43px}.central-profile small{display:block;font-size:8px;letter-spacing:.12em;color:#a9bdcd}.central-profile b{display:block;font-size:14px;margin-top:3px}.central-profile .avatar-initial{font-size:10px}
+.central-eyebrow{font-size:9px;font-weight:700;letter-spacing:.2em;color:#d9b779}
+.central-intro h1{font:400 clamp(29px,7.5vw,45px)/1.13 Georgia,serif;letter-spacing:-.025em;margin:12px 0;color:#fff2d7}.central-intro>p{font-size:12px;color:#aec0cf;margin:0 0 25px}
+.central-destination{display:flex;gap:16px;align-items:center;padding:19px 16px;border:1px solid #b88e4566;border-radius:18px;background:linear-gradient(120deg,#12364c,#092137);box-shadow:0 10px 30px #0002}
+.central-destination h2{font:400 26px Georgia,serif;margin:7px 0;color:#f6d899}.central-destination h2 span{font:400 14px system-ui,sans-serif;color:#d9e0e6}.central-destination p{font-size:11px;color:#b0c3d1;line-height:1.5;margin:0 0 8px}.central-status{font-size:9px;color:#d6ba83;border:1px solid #b88e4555;border-radius:20px;padding:4px 8px;display:inline-block}
+.central-globe{flex:none;width:66px;height:66px;border-radius:50%;border:1px solid #e5bd69;background:repeating-linear-gradient(0deg,transparent 0 13px,#e8c77944 14px 15px),radial-gradient(ellipse at 30% 25%,#39748d,#08283f 70%);position:relative;display:grid;place-items:center;box-shadow:0 0 24px #d3b16622,inset -9px -5px 16px #0006;color:#ffe1a3;font:700 16px Georgia,serif}.central-globe:before{content:'';position:absolute;inset:0 15px;border:1px solid #f8d99166;border-radius:50%}.central-globe span{z-index:1;background:#12334ae8;padding:4px}
+.central .central-play{position:relative;display:grid;grid-template-columns:1fr auto;width:100%;margin:23px 0 0;padding:18px 23px 16px;border:1px solid #ffe8aa;border-radius:15px;color:#192e2b;background:linear-gradient(#ffe59a,#e9b548);box-shadow:0 7px 0 #77552655,0 10px 28px #d0a04322;text-align:left}
+.central-play>span:first-child{font-size:20px;font-weight:850;letter-spacing:.04em}.central-play>span:nth-child(2){grid-column:2;grid-row:1/3;align-self:center;font-size:24px}.central-play small{grid-column:1;font-size:11px;margin-top:4px;color:#33453a}
+.central-local-note{text-align:center;font-size:10px;line-height:1.6;color:#91aabc;margin:15px 0 23px}
+.central-links{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.central-links button{display:grid;grid-template-columns:28px 1fr;align-items:center;text-align:left;gap:3px 8px;padding:15px 11px;background:linear-gradient(145deg,#102e44,#0a2034);border:1px solid #37536b;border-radius:13px;color:#fff0d5}
+.central-links button>span{grid-row:1/3;font-size:25px;color:#dbb875;text-align:center}.central-links b{font-size:12px;font-weight:600}.central-links small{font-size:9px;color:#91aabd;line-height:1.5}
+.central-footer{display:flex;flex-wrap:wrap;gap:6px;justify-content:space-between;align-items:center;margin-top:21px;padding-top:12px;border-top:1px solid #57728544}.central-footer button{border:0;background:none;padding:0;color:#c6d2db;font-size:10px}.central-footer>span{font-size:8px;color:#819bab;letter-spacing:.1em}
+#central-dialog{max-width:390px;width:88vw;padding:26px;border:1px solid #c7a265;border-radius:18px;background:#0a2337;color:#fff0d5}#central-dialog::backdrop{background:#000b}#central-dialog h2{font:400 27px Georgia,serif;margin:12px 0}#central-dialog p{font:14px/1.65 system-ui,sans-serif;color:#b8ccda}#central-dialog button{width:100%;border-color:#ebc780;background:linear-gradient(#ffe39b,#d8a646);color:#142a30;font-weight:700}
+@media(max-width:360px){.central{padding-inline:14px}.central-profile small{font-size:7px}.central-links{gap:8px}.central-links button{padding:12px 8px;gap:3px 4px;grid-template-columns:23px 1fr}.central-links b{font-size:11px}.central-footer>span{order:3;width:100%;text-align:center}}
+
+#entry-flow .central{background:none;border:0;box-shadow:none}
+.central .central-top{background:none;border:0;box-shadow:none;padding:0;min-height:48px}
+/* The game entry must always hide navigation, including the Central layout. */
+#entry-flow[hidden]{display:none}

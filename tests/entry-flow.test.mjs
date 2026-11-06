@@ -36,3 +36,10 @@ test('real load alone cannot bypass the three-second minimum',()=>{
  const h=entry('interactive');h.handlers.get('load')();
  assert.equal(h.flow.dataset.step,'1');h.timer();assert.equal(h.flow.dataset.step,'2');
 });
+
+test('quick play cannot bypass splash and enters offline without avatar from Central',()=>{
+ const h=entry();h.handlers.get('domino-tour:quick-play')();assert.equal(h.entered(),0);
+ h.timer();assert.equal(h.flow.dataset.step,'2');assert.equal(h.document.body.dataset.avatarReady,undefined);
+ h.handlers.get('domino-tour:quick-play')();assert.equal(h.entered(),1);assert.equal(h.flow.hidden,true);
+ h.handlers.get('domino-tour:quick-play')();assert.equal(h.entered(),1);
+});
