@@ -1,0 +1,131 @@
+{
+  "referenceCommit": "ef7919ce79294f27107fc58715bdacda6a38d4f2",
+  "initialHead": "4e18a1e35c99346fca8729df9b671ce07d0c3229",
+  "files": {
+    "web/assets/approved/screen-01.png": {
+      "sha256": "d735c9e5c79930692c82bbbadfbfbf8cb8f89b80705beaae1cd9249680610f30",
+      "width": 1024,
+      "height": 1536
+    },
+    "web/assets/approved/screen-02-apresentacao-rumo-a-lenda-super-definitiva.png": {
+      "sha256": "1c764246cf92895329280bc9d50d1efe6eb3e2d628498948795118a519b73e7b",
+      "width": 1024,
+      "height": 1536
+    },
+    "web/assets/approved/screen-02-apresentacao-rumo-a-lenda.png": {
+      "sha256": "f668011054b12323ece150bacb6c915fcad84b981f8c66a63c3178c7ac35b83c",
+      "width": 65536,
+      "height": 4293001688
+    },
+    "web/assets/approved/screen-02-oficial.png": {
+      "sha256": "1c764246cf92895329280bc9d50d1efe6eb3e2d628498948795118a519b73e7b",
+      "width": 1024,
+      "height": 1536
+    },
+    "web/assets/approved/screen-02.png": {
+      "sha256": "179b81c7304c829b88180e1f4b3efe6dc5d3bb9a332b8bfbdfe92b1ed134e554",
+      "width": 65536,
+      "height": 4293001688
+    },
+    "web/assets/approved/screen-03-offline.png": {
+      "sha256": "8fd15d4e406eb5e7daff502f34d86e35ea561e03d2fd76c0b24b2a63d744d7c4",
+      "width": 768,
+      "height": 1024
+    },
+    "web/assets/approved/screen-03-online.png": {
+      "sha256": "84875833f876c87105cd1dc97bf65972cf3c4c42f79ab68fe55a5b0ff7d258ec",
+      "width": 768,
+      "height": 1024
+    },
+    "web/assets/approved/screen-03.png": {
+      "sha256": "d30d114e7ecf511b74573450065d820854fdbdd7d546e13efb18f6609da4080a",
+      "width": 65536,
+      "height": 4293001688
+    },
+    "web/assets/approved/screen-05-identidade-oficial.png": {
+      "sha256": "c7f38447eaa0ebe5e62b843297cf296e0f4e23a946640e4a22ee2620b5594867",
+      "width": 941,
+      "height": 1672
+    },
+    "web/assets/approved/screen-05.png": {
+      "sha256": "d9acf0d993ee6f121ec68350a9a986ae40dc406e9ccd6e766be78561d900947e",
+      "width": 65536,
+      "height": 4293001688
+    },
+    "web/assets/approved/screen-06-mesa-oficial.png": {
+      "sha256": "d86e7473f7bee937bd0ebf45616f13a7aeba5d5bb2e746e42b1e09ee4da4766c",
+      "width": 1672,
+      "height": 941
+    },
+    "web/assets/approved/screen-06.png": {
+      "sha256": "a4d7e62c0421393d7aa3e535a4abf4eee870736c61fb542b9f09b949a742e76c",
+      "width": 65536,
+      "height": 4293001688
+    },
+    "web/assets/approved/screen-07.png": {
+      "sha256": "97db44768a2c28b840e6e90558fbfc6bc67ce119e1c9f1657bd3b925c42b65ac",
+      "width": 1024,
+      "height": 1536
+    },
+    "web/assets/approved/screen-09.png": {
+      "sha256": "090271f3ec1b85963011f59c13a4cd256a617e9a6a42a929b8611f04b68da2b9",
+      "width": 1024,
+      "height": 1536
+    },
+    "web/assets/approved/screen-10.png": {
+      "sha256": "721c8e5c2e89b444a807c0b530f7477458729429c6d602b397f304dd0cf47de7",
+      "width": 1024,
+      "height": 1536
+    },
+    "web/assets/approved/screen-11.png": {
+      "sha256": "083adb1dbefb01f109c9cad124df93b8157e927ad9f64a5d94dd1f378ad2a957",
+      "width": 1024,
+      "height": 1536
+    },
+    "web/assets/approved/screen-12.png": {
+      "sha256": "2492c1449f00bccf26723f4ca3663e77c85b1d130ed25c4d1088fb0189d115c6",
+      "width": 1024,
+      "height": 1536
+    },
+    "web/assets/approved/screen-13.png": {
+      "sha256": "ecbedfdeee098f59977f10e13031c8dcfc833203afbf42623ec6bf556a2857db",
+      "width": 1024,
+      "height": 1536
+    },
+    "web/assets/approved/screen-14.png": {
+      "sha256": "a988f5924369a837c48b9d6bc4f13726a6613823aa77d21f468d6fa18ac741ca",
+      "width": 1024,
+      "height": 1536
+    },
+    "web/assets/approved/screen-15.png": {
+      "sha256": "48bb364531214f4d4e6c8ad8eab3915a4fae03e1f6914fd89566971d4e87d35c",
+      "width": 1024,
+      "height": 1536
+    },
+    "web/assets/approved/screen-16.png": {
+      "sha256": "dd8fccfdfceaaffec0b8bb8d25c64ba68b4a2c9ecc1dd2ff7ab51d45b8ac9706",
+      "width": 1024,
+      "height": 1536
+    }
+  },
+  "protectedCode": {
+    "dist/src/bot-sampling.js": "2e3685e94d250fd7de0f58d61b6ac0107638329588754cc974544e407d77b0dc",
+    "dist/src/bots.js": "7c991fc3d43395528c2021248d5d219390d9e5c8573608a11f8753563e66a9c9",
+    "dist/src/engine.js": "6e3103f5a697e4ba907e1bb835acb1a8e5b55acb8e85a95e26ec1854bda483d1",
+    "dist/src/hand.js": "adb9cf81bc644269679490663f9f9b0eebf8fba8953baa50ae0ed4a1b2ca971a",
+    "dist/src/port-values.js": "4274e1d8fa29623fc7867900353bb6f573ad9c1a46cce2528b3b732ea4d5e768",
+    "dist/src/semantic.js": "41c331a076fccbb47ee7fbf6e64a7ee5769da73e6cb73eb37901e9db34d13aa3",
+    "dist/src/session.js": "db3f5a2ac26bdc7a512a64505dae054999f622372a7a885fc2ad0218f7073d71",
+    "dist/src/table.js": "da4224e4269b3da6c880e3021b98d85541fd3e08341c13bfdcbf95ec578bfd10",
+    "dist/src/touch.js": "9f94b0ef2bf9af1ca8b6ef13beff5ceb1d89843fa045b59e29d40d4f98217653",
+    "dist/src/viewport.js": "49b3e4e9c341d6f250948b33ac6f2ff76ab2d14241c70b9bcce7df6e6d999375",
+    "dist/src/visual.js": "fa351bf9e5715702496dcf28d66fa3c6c42e1c0f96fe6ec8d8ffbc4dfa1b297a",
+    "web/layout.css": "ea0eeed06d66e2d8df5dad8a7825440e593ce8e59fda5314d34c6326562f335a",
+    "web/match-setup.css": "07ef6012925ef0bc3e42b7650b3d358a4285dc7d1f069a0fa6fdc674b350398d",
+    "web/identity-screen.css": "d59ef42ceb358145e5e343530bf91ecec4e552dddb9f4bdb0a53e33f34309d77",
+    "web/guest-access.css": "297d5caa5c2000042bdde85f1682f4c3174efbf6d235ee8551baff8effb088b4",
+    "web/table-screen.css": "eacd553db22f80c43d3b04fb48a69bc3360bf44f83cf1ab940d57a4cfc3a84d6",
+    "web/table-screen.js": "56e569b961ecd363dfaf27c77749076fb0a56d932456b1d1b9d49fe34cf392fb",
+    "web/app.js": "57c46d6486fac4f106d5a6a1684f5e5f4cdca99138c0171f9f006f5f7b6f91cc"
+  }
+}

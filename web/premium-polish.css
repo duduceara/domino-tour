@@ -1,39 +1,3 @@
-/* UI polish: original artwork files and engine geometry are preserved. */
-#entry-flow[data-step="1"],#entry-flow[data-step="2"],#guest-access,#identity-screen,#match-setup{top:var(--navigation-top,0px);bottom:auto;height:var(--navigation-height,100dvh);max-height:var(--navigation-height,100dvh)}
-#entry-flow[data-step="2"],#guest-access,#identity-screen{isolation:isolate;background:radial-gradient(ellipse at 50% 10%,#123b68,#03162c 75%);overflow-x:hidden}
-#entry-flow[data-step="2"]::before,#guest-access::before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;background-position:center;background-size:cover;filter:blur(18px) brightness(.4) saturate(1.12);opacity:.7}
-#entry-flow[data-step="2"]::before{background-image:url('./assets/approved/screen-02-oficial.png')}
-#guest-access::before{background-image:url('./assets/approved/screen-02.png')}
-#entry-flow .official-presentation{background:transparent}
-#entry-flow .official02-stage>img,#guest-access .guest04-art>img{filter:brightness(1.025) saturate(1.035)}
-#guest-access .guest04-art{width:min(100%,calc((var(--navigation-height,100dvh) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))*2/3));min-width:0;margin:auto}
-#entry-flow .official02-hit[data-official-action="quick"]{border-radius:50px;box-shadow:inset 0 0 10px #fff8,0 0 12px #ffd36b30}
-/* Configuration is native UI: real settings replace illustrative sliced labels. */
-#match-setup{background:radial-gradient(ellipse at 50% 0%,#164575,#03172d 65%);scrollbar-width:thin;scrollbar-color:#a88747 #03172d}
-#match-setup .config03-page{width:min(100%,520px);min-height:100%;padding:8px 14px 10px;gap:8px;justify-content:flex-start;background:none}
-#match-setup .config03-native-header{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:8px;min-height:70px;background:none;border:0;margin:0}
-#match-setup .config03-native-header>div{text-align:center}
-#match-setup .config03-brand{font:700 14px Georgia,serif;letter-spacing:.12em;color:#e6c67e}
-#match-setup .config03-native-header h1{margin:6px 0 0;color:#fff0ce;font:700 19px/1.1 system-ui}
-#match-setup .config03-native-header button{min-width:44px;min-height:44px;padding:0;background:linear-gradient(#224e79,#09223e);border:1px solid #d8b66c;border-radius:14px;font-size:30px}
-#match-setup .config03-native-header button:last-child{font-size:22px}
-#match-setup .config03-mode-info{margin:0;padding:8px 4px;text-align:center;color:#c8dfec;font:600 12px/1.2 system-ui;letter-spacing:.04em}
-#match-setup .config03-options{width:100%;flex-shrink:0;border:1px solid #799cba;border-radius:16px;background:linear-gradient(120deg,#12395e,#061e39);box-shadow:inset 0 1px 0 #c1d8e530,0 3px 7px #0004}
-#match-setup .config03-native-heading{margin:0;padding:7px 10px 5px;color:#ffe5ad;font:700 12px/1.1 system-ui;letter-spacing:.045em}
-#match-setup .config03-group{gap:7px;padding:3px 8px 8px}
-#match-setup .config03-choice{min-height:44px;font:700 14px/1.15 system-ui;border-width:1px;border-color:#a6c2d9;background:linear-gradient(#215075,#092440);box-shadow:inset 0 1px 1px #fff3,0 2px 2px #0007}
-#match-setup .config03-difficulty .config03-choice{min-height:52px;gap:3px}
-#match-setup .config03-choice[aria-pressed="true"]{border-color:#f1d998;background:linear-gradient(#278b48,#0b5530);box-shadow:inset 0 1px 0 #d4ffc65c,0 0 0 1px #d8b66c,0 2px 5px #0006}
-#match-setup .config03-choice[aria-disabled="true"]{opacity:.55}
-#match-setup .config03-deal .config03-group{grid-template-columns:repeat(2,minmax(0,1fr))}
-#match-setup .config03-deal .config03-choice{display:flex;flex-direction:column;justify-content:center;gap:5px;min-height:58px;padding:8px 3px}
-#match-setup .config03-deal strong{font-size:13px}#match-setup .config03-deal small{font:500 10px/1.15 system-ui;color:#e1eaf0}
-#match-setup .config03-themes{grid-template-columns:22px repeat(5,minmax(0,1fr)) 22px;gap:5px;padding:3px 6px 8px}
-#match-setup .config03-theme{min-height:44px}
-#match-setup .config03-arrow{font-size:30px;min-width:22px}
-#match-setup .config03-native-footer{margin-top:auto;position:sticky;bottom:-10px;z-index:10;padding:10px 0 4px;background:linear-gradient(transparent,#03172df5 20%);text-align:center}
-#match-setup .config03-native-footer button{width:100%;min-height:56px;border:2px solid #f1d697;border-radius:24px;background:linear-gradient(#269746,#0c652f 70%,#074221);box-shadow:inset 0 2px 1px #dcffb45c,0 3px 0 #8b682f,0 6px 10px #0007;color:#fff5d8;font:800 21px/1.1 system-ui}
-#match-setup .config03-native-footer small{display:block;margin-top:8px;font:600 10px Georgia,serif;letter-spacing:.2em;color:#d8bf87}
 /* Ivory dominoes: a recessed pip and a small yellow pin, without an oversized ball. */
 .app.premium06 .piece{background:linear-gradient(135deg,#fffdf5,#f3ead7 72%,#dfd2b8);border-color:#d9cbb2;border-radius:3px;box-shadow:inset 0 .7px .8px #fff,0 .8px 0 #b9aa8e,0 1.5px 2px #0005}
 .app.premium06 .piece.inhand{border-radius:7px;background:linear-gradient(135deg,#fffef8,#f1e7d1);border-color:#e2d4b8;box-shadow:inset 0 1px 1px #fff,0 2px 0 #aa9673,0 4px 6px #0006}
@@ -53,11 +17,11 @@
 .premium06 .toolbar label:has(select:disabled){display:none}
 @media(prefers-reduced-motion:reduce){.app.premium06 .seat.active{animation:none}#entry-flow .official02-hit[data-official-action="quick"]{box-shadow:none}}
 
-/* Full-height approved artwork: foreground bands retain their original proportions. */
-#entry-flow[data-step="2"]::before,#guest-access::before{display:none}
-#entry-flow .official02-stage,#guest-access .guest04-art,#identity-screen .identity05-stage{width:100%;min-width:0;margin:0;aspect-ratio:auto;flex:none;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 50% 30%,#0a3155,#03172d 80%)}
-.art-fit-band{position:absolute;left:0;width:100%;pointer-events:none;background-repeat:no-repeat;z-index:0}
-.art-fit-stage>img:first-child{position:absolute;opacity:0;pointer-events:none}
-.art-fit-stage>button,.art-fit-stage>input,.art-fit-stage>.identity05-options,.art-fit-stage>.identity05-portrait{z-index:1}
-#identity-screen{justify-content:flex-start}
-#identity-screen .identity05-status{position:fixed;bottom:8px;z-index:3}
+
+/* Localized recovery: preserve complete original images and hit regions. */
+#entry-flow .splash-fullscreen{object-fit:contain}
+#match-setup .config03-deal .config03-group{grid-template-columns:repeat(2,minmax(0,1fr))}
+#match-setup .config03-deal h2{margin:0;padding:8px 10px 4px;font:700 14px Georgia,serif;color:#ffe3a0;text-shadow:0 2px 2px #000}
+#match-setup .config03-deal button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:58px;border-color:#dbbe7c;background:linear-gradient(#1c4b72,#082442);font-size:14px}
+#match-setup .config03-deal button[aria-pressed="true"]{background:linear-gradient(#1c8c36,#064e24);border-color:#ffe37c}
+#match-setup .config03-deal small{font:500 11px system-ui;color:#eff7f4}

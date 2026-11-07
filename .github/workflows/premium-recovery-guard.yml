@@ -1,0 +1,19 @@
+name: Premium fidelity guard
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [feature/mobile-touch-v1]
+  push:
+    branches: [feature/mobile-touch-v1]
+    paths: ['web/**', 'tests/**', 'docs/m13-r/**', '.github/workflows/premium-recovery-guard.yml']
+permissions:
+  contents: read
+jobs:
+  fidelity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/premium-recovery.test.mjs tests/identity.test.mjs tests/m07-match-config.test.mjs tests/m09-screen03-flow.test.mjs tests/m10-guest.test.mjs tests/mobile-touch.test.mjs tests/round-transition.test.mjs tests/artwork-fit.test.mjs
