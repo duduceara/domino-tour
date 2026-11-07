@@ -21,3 +21,10 @@ let pageLoaded=document.readyState==='complete';
 function finishSplash(){if(!minimumElapsed||!pageLoaded)return;splashReady=true;if(typeof location!=='undefined'&&new URLSearchParams(location.search).get('homologacao')==='tela01'){const status=document.getElementById('splash-status');if(status)status.textContent='Carregamento concluído. Tela 01 em avaliação.';return}if(step===0){step=1;show()}}
 window.addEventListener('load',()=>{pageLoaded=true;finishSplash()},{once:true});
 setTimeout(()=>{minimumElapsed=true;finishSplash()},3000);
+
+// Return to the approved central menu without replaying the splash.
+window.addEventListener('domino-tour:return-menu',()=>{
+ step=1;flow.hidden=false;flow.inert=false;flow.removeAttribute?.('aria-hidden');
+ document.body.dataset.entry='menu';show();
+ document.querySelector('[data-official-action="quick"]')?.focus({preventScroll:true});
+});

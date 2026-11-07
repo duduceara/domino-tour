@@ -90,3 +90,9 @@ const sprites=new Image();sprites.src=ART.offline.src;sprites.addEventListener('
 });
 renderState();
 export function readPendingIdentification(){return pendingIdentification}
+
+window.addEventListener('domino-tour:return-menu',()=>{
+ if(dialog.open)dialog.close();root.hidden=true;pendingIdentification=null;
+ flow.inert=false;flow.removeAttribute('aria-hidden');
+ appWasInert=true;app.inert=true;
+});

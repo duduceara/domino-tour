@@ -1,0 +1,83 @@
+/* Screen 06: real controls over authored surfaces. Other screens stay untouched. */
+.app.premium06{--felt:#062659;--gold:#e7ba55;display:block;padding:0;isolation:isolate;background:radial-gradient(ellipse at 50% 0%,#12446e,#081527 60%,#261d19);color:#fff1cf}
+.app.premium06>header{position:absolute;inset:0 0 auto;height:12%;display:flex;justify-content:space-between;gap:5px;padding:2px 1%;z-index:10;background:linear-gradient(#07172f,#0b3459);border-bottom:2px solid #b88c3f}
+.premium06 header strong{height:100%;width:12%;flex:none;margin:0}
+.mesa-logo{display:block;width:100%;height:100%;background-image:url('./assets/approved/screen-06-mesa-oficial.png');background-size:1000% 840%;background-position:0 0;background-repeat:no-repeat}
+.mesa-info{display:flex;flex:1;gap:5px;justify-content:center;align-items:center;min-width:0}
+.mesa-info>span{display:grid;place-items:center;text-align:center;background:linear-gradient(#102e52,#031326);border:1px solid var(--gold);border-radius:18px;padding:5px 8px;font-weight:700;line-height:1.1;font-size:clamp(10px,1.4vw,19px)}
+.premium06 header #restart,.premium06 header #organize{position:absolute}
+.premium06 header #restart{display:none}
+.premium06 header #organize{top:350%;right:1%;z-index:12;width:8%;height:44px!important}
+.premium06 header button{font-size:clamp(10px,1.25vw,15px);padding:3px 7px;min-height:36px!important;height:auto!important;max-width:11%;white-space:normal}
+.premium06 #fullscreen{width:auto!important;min-width:0!important}
+.premium06 #leave-table{background:linear-gradient(#70452e,#35201c)}
+.premium06 .arena{position:absolute;inset:12% 1% 23%;width:auto;height:auto;max-width:none;max-height:none;background:radial-gradient(ellipse at 50% 30%,#0b3470,var(--felt));border:4px solid #dcb45a;border-radius:7% / 14%;box-shadow:inset 0 0 0 2px #72411f,inset 0 0 25px #010b2c,0 2px 4px #000;align-self:auto}
+.premium06 .table{inset:19% 13% 10%!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:hidden}
+.premium06 .scores{inset:0;z-index:5}
+.premium06 .seat{font-size:clamp(10px,1.5vw,19px)!important;line-height:1.15!important;max-width:25%!important;min-width:0;width:auto!important;gap:5px;padding:2px 7px!important;white-space:pre-line!important;background:linear-gradient(#123d67,#03162f);border:1px solid #dfbc61;pointer-events:none}
+.premium06 .seat:nth-child(1){bottom:-9%!important;top:auto;left:50%;transform:translateX(-50%);flex-direction:row}
+.premium06 .seat:nth-child(2){top:30%;left:1%;right:auto;max-width:10%!important;transform:none;flex-direction:column}
+.premium06 .seat:nth-child(3){top:-2%!important;left:50%;transform:translateX(-50%);flex-direction:row}
+.premium06 .seat:nth-child(4){top:30%;right:1%;left:auto;max-width:10%!important;transform:none;flex-direction:column}
+.premium06 .seat .avatar-slot{width:clamp(25px,4vw,60px)!important;height:clamp(25px,4vw,60px)!important;flex-basis:auto!important;border:2px solid var(--gold)}
+.premium06 .seat .avatar-slot .avatar{width:100%;height:100%;object-fit:cover}
+#opponent-hands{position:absolute;inset:0;pointer-events:none}
+.opponent-hand{position:absolute;display:flex;gap:3px}
+.opponent-1,.opponent-3{top:25%;flex-direction:column}
+.opponent-1{left:10%}.opponent-3{right:10%}
+.opponent-2{top:11%;left:50%;transform:translateX(-50%)}
+.domino-back{display:inline-block;border:1px solid #ffdf93;border-radius:3px;background:repeating-linear-gradient(45deg,transparent 0 3px,#8299c550 3px 4px),repeating-linear-gradient(-45deg,#0c2559 0 3px,#8a9fc8 3px 4px);box-shadow:0 2px 0 #b68e44,inset 0 0 0 2px #0b204a;width:clamp(18px,3vw,44px);height:clamp(10px,1.5vw,22px)}
+.mesa-counter{position:absolute;left:.5%;bottom:17%;white-space:pre-line;text-align:center;padding:4px;border:1px solid var(--gold);border-radius:12px;background:linear-gradient(#143557,#06132d);font-size:clamp(10px,1.35vw,17px);font-weight:700;max-width:10%}
+.app.premium06 .hand{position:absolute;left:26%;right:26%;bottom:1.5%;height:19%;margin:0;padding:4px 7px;gap:3px;border:2px solid #d2a04e;border-radius:14px;background:linear-gradient(#6b391f,#23150f);box-shadow:0 3px 0 #93602d}
+.app.premium06 .piece.inhand{height:95%!important;width:auto!important;aspect-ratio:1/2!important;max-width:calc((100% - 18px)/7);flex-shrink:1;flex-direction:column;font-size:18px;min-width:0;min-height:0;border-radius:7px}
+.app.premium06 .piece{background:linear-gradient(135deg,#fff5db,#efd39b);border:1px solid #ddb971;box-shadow:inset 0 1px 1px #fff,0 2px 0 #b18432;padding:2px;border-radius:4px}
+.premium06 .piece .divider{position:relative;overflow:visible}
+.premium06 .piece .divider:after{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:clamp(3px,.5vw,7px);height:clamp(3px,.5vw,7px);border-radius:50%;background:radial-gradient(circle at 30% 25%,#fff4a7,#d99d17 65%,#815417);box-shadow:0 1px 1px #38220d}
+.premium06 .piece.inhand.unavailable{opacity:1;filter:none}
+.premium06 .play-controls{position:absolute;left:74%;right:17%;bottom:4%;height:14%;display:flex;justify-content:center;align-items:center;z-index:7}
+.premium06 .play-controls .message{font-size:clamp(10px,1.25vw,16px);white-space:normal;max-height:100%;padding:4px;background:linear-gradient(#136a31,#06401d);border:1px solid #daba59;border-radius:10px}
+.premium06 .view-controls{display:none}
+.premium06 #next-round,.premium06 #play-again{display:none}
+.premium06 .toolbar{z-index:20;top:12%;background:#061c37}
+.mesa-dock{position:absolute;inset:0;pointer-events:none}
+.mesa-dock button,.mesa-dock #turn-clock{pointer-events:auto}
+#table-chat{position:absolute;left:1%;bottom:5%;border-radius:50%;width:44px;height:44px;min-height:44px;padding:0;font-size:23px}
+#sleeping-rack{position:absolute;left:6.5%;bottom:3%;width:18%;height:13%;display:flex;justify-content:center;align-items:end;gap:4px;border:1px solid var(--gold);border-radius:12px;padding:20px 6px 6px;background:#071d3d}
+#sleeping-rack[hidden]{display:none}
+#sleeping-rack>span{position:absolute;top:2px;left:0;width:100%;text-align:center;font-size:clamp(10px,1.25vw,16px)}
+#sleeping-rack .domino-back{height:80%;width:auto;aspect-ratio:1/2}
+#turn-clock{position:absolute;right:1%;bottom:3%;width:15%;height:16%;border:2px solid #e3b958;border-radius:16px;padding:3px 7px;text-align:center;background:#04152f;display:flex;flex-direction:column;justify-content:center;gap:2px}
+#turn-clock[hidden]{display:none}
+#turn-clock strong{font-size:clamp(16px,2.2vw,30px)}
+#turn-clock meter{width:100%;height:12px}
+#turn-clock small{font-size:clamp(8px,1vw,12px);line-height:1.1}
+#turn-clock[data-warning=true]{border-color:#ff6a33;background:#43180f;color:#ffe28f}
+#turn-clock[data-warning=true] meter{accent-color:#f44}
+.premium06 .mesa-dialog{position:fixed;inset:0;width:min(80%,520px);max-height:85%;overflow:auto;border:2px solid #d6b466;border-radius:18px;background:#072544;color:#fff0ce;padding:18px;z-index:120}
+.mesa-dialog::backdrop{background:#000a}
+.mesa-dialog h2{margin:0 0 10px;font:700 23px Georgia,serif}.mesa-dialog p{font:14px/1.4 system-ui}
+.decision-actions,.quick-messages{display:flex;flex-wrap:wrap;gap:10px}
+.decision-actions button{flex:1;min-width:130px;background:#174c68;min-height:44px}
+#table-message-bubble{position:absolute;left:2%;bottom:22%;z-index:15;padding:6px 10px;border-radius:12px;background:#fff0cc;color:#122943;font-size:13px;pointer-events:none}
+#table-message-bubble[hidden]{display:none}
+@media(prefers-reduced-motion:reduce){.premium06 *{animation:none!important;transition:none!important}}
+/* Absolute arena must have explicit width: the inherited justify-self centers
+   an auto-width absolute box at zero width in Chromium. */
+.app.premium06 .arena{width:98%;justify-self:auto}
+.app.premium06 header #fullscreen{font-size:clamp(10px,1.15vw,14px)!important;height:auto!important;min-height:36px!important}
+.app.premium06 .arena #organize{position:absolute;right:.5%;bottom:17%;top:auto;z-index:8;width:10%;min-height:44px;font-size:clamp(10px,1.3vw,16px);padding:3px;background:linear-gradient(#143557,#06132d)}
+.app.premium06 .hand{height:22%;bottom:1%}
+.app.premium06 .piece.inhand{height:98%!important}
+.opponent-2{top:16%}
+.mesa-logo{background-size:760% auto;background-position:left top}
+.app.premium06 header strong{width:10%;flex:none}
+.premium06 .arena{background:repeating-linear-gradient(83deg,#ffffff03 0 1px,transparent 1px 3px),radial-gradient(ellipse at 50% 20%,#0b3470,var(--felt))}
+.premium06 #sleeping-rack{bottom:3%;height:13%}
+.premium06 .play-controls .message{overflow:auto}
+.premium06 #pass-notice{position:absolute;bottom:110%;right:0;width:200%;background:#092645;color:#ffe28e;border:1px solid #e7ba55;border-radius:10px;padding:6px;font-weight:bold;font-size:12px}
+.app.premium06[data-guest-theme="green"]{--felt:#084633}
+.app.premium06[data-guest-theme="red"]{--felt:#5b1725}
+.app.premium06[data-guest-theme="purple"]{--felt:#351d59}
+.app.premium06[data-guest-theme="wood"]{--felt:#533421}
+.app.premium06[data-guest-theme="blue"]{--felt:#062659}
+.premium06 .arena{background:repeating-linear-gradient(83deg,#ffffff03 0 1px,transparent 1px 3px),radial-gradient(ellipse at 50% 20%,color-mix(in srgb,var(--felt),white 9%),var(--felt))}

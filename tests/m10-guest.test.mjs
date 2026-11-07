@@ -24,7 +24,7 @@ test('existing engine adapter accepts guest choices and rejects Online without a
  const app=readFileSync(new URL('../web/app.js',import.meta.url),'utf8');
  const listener=app.match(/window.addEventListener\('domino-tour:offline-options',e=>\{([\s\S]*?)\n\}\);/)[1];
  const nodes=new Map();const $=id=>id==='entry-flow'?{hidden:false,dataset:{step:'2'}}:nodes.get(id)??(nodes.set(id,{}),nodes.get(id));
- const context=vm.createContext({$,LocalSession,stopBotSequence(){},cancelGesture(){},chooseRoute:()=> 'classic',secureIndex(){},game:null,routeStyle:null,offlineName:null,e:{detail:guestOptions({...createMatchConfig(),difficulty:'hard',target:200})}});
+ const context=vm.createContext({turnClock:{stop(){}},completedKey:null,$,LocalSession,stopBotSequence(){},cancelGesture(){},chooseRoute:()=> 'classic',secureIndex(){},game:null,routeStyle:null,offlineName:null,e:{detail:guestOptions({...createMatchConfig(),difficulty:'hard',target:200})}});
  vm.runInContext("(()=>{"+listener+"})()",context);assert.equal(context.e.detail.accepted,true);assert.equal(context.game.state.target,200);assert.equal(context.game.difficulty,'hard');assert.equal(context.game.state.dealSize,6);assert.equal(context.offlineName,'Visitante');
  const prior=context.game;context.e={detail:{...guestOptions(createMatchConfig()),mode:'online'}};vm.runInContext("(()=>{"+listener+"})()",context);assert.equal(context.e.detail.accepted,false);assert.equal(context.game,prior);
 });

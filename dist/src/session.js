@@ -12,8 +12,9 @@ export class LocalSession {
     bounds = { x: 0, y: 0, width: 800, height: 430 };
     previews = new Map();
     handLayout = null;
+    layoutOptions = {};
     constructor(target = 100, dealSize = 6, difficulty = 'easy') { this.difficulty = validateDifficulty(difficulty); this.state = newGame(target, dealSize); this.model = this.solve(); this.interaction = this.makeInteraction(); }
-    solve() { return buildTableModel(this.state.placements, this.bounds, this.orientation, this.routeStyle, new Map(this.state.chain.map(t => [t.id, t]))); }
+    solve() { return buildTableModel(this.state.placements, this.bounds, this.orientation, this.routeStyle, new Map(this.state.chain.map(t => [t.id, t])), this.layoutOptions); }
     geometry() { const center = { x: this.bounds.x + this.bounds.width / 2, y: this.bounds.y + this.bounds.height / 2 }; return this.model.geometry ?? { bounds: this.bounds, orientation: this.orientation, style: this.routeStyle, tileWidth: 0, tileHeight: 0, tiles: [], links: [], endpoints: { left: center, right: center } }; }
     makeInteraction() { return new TableInteraction(this.state, 0, this.geometry(), (id, side) => this.preview(id, side), (id, side) => this.humanPlay(id, side)); }
     preview(tileId, side) {
@@ -26,7 +27,7 @@ export class LocalSession {
         const joined = this.state.left === null ? tile.a : (side === 'left' ? this.state.left : this.state.right);
         const exposed = this.state.left === null ? tile.b : (tile.a === joined ? tile.b : tile.a);
         const placement = { tileId, side, joined, exposed };
-        const model = buildTableModel([...this.state.placements, placement], this.bounds, this.orientation, this.routeStyle, new Map([...this.state.chain, tile].map(t => [t.id, t])));
+        const model = buildTableModel([...this.state.placements, placement], this.bounds, this.orientation, this.routeStyle, new Map([...this.state.chain, tile].map(t => [t.id, t])), this.layoutOptions);
         const node = model.nodes.at(-1);
         const result = model.status === 'verified' && node ? { tileId, side, center: node.shape.center, valid: true, model, shape: node.shape, printed: node.printed } : null;
         this.previews.set(key, result);

@@ -7,18 +7,20 @@ import * as engine from '../dist/src/engine.js';
 import * as offline from '../web/offline-save.js';
 import * as table from '../dist/src/table.js';
 import * as viewport from '../dist/src/viewport.js';
+import {TurnClock} from '../web/turn-clock.js';
 import {LocalSession} from '../dist/src/session.js';
 // DOM adapter, not a real browser/device. Executes the unchanged app handlers and timers.
 function app(){
  class Element{
   constructor(){this.children=[];this.dataset={};this.style={setProperty(k,v){this[k]=v}};this.listeners={};this.className='';this.value='100';this.clientWidth=800;this.clientHeight=430;this.offsetLeft=this.offsetTop=this.clientLeft=this.clientTop=0;this.parentElement={offsetLeft:0,offsetTop:0};}
+  querySelector(){return this.inner??=new Element()} focus(){} showModal(){this.open=true} close(){this.open=false} remove(){}
   replaceChildren(...v){this.children=v} append(v){this.children.push(v)} setAttribute(k,v){this[k]=v} addEventListener(k,v){(this.listeners[k]??=[]).push(v)} setPointerCapture(){} getBoundingClientRect(){return this.rect??{x:0,y:0,left:0,top:0,width:800,height:430}} closest(){return this}
  }
  const els=new Map();const get=id=>{if(!els.has(id))els.set(id,new Element());return els.get(id)};
  get('deal').value='6';get('route').value='classic';get('hand').rect={left:0,top:500,width:800,height:72};const events={};let now=0,id=0;const timers=new Map();
- const document={hidden:false,documentElement:{clientWidth:800},getElementById:get,createElement:()=>new Element(),addEventListener:(k,v)=>(events[k]??=[]).push(v)};
- const ctx=vm.createContext({...offline,...engine,...table,...viewport,LocalSession,document,window:{innerHeight:600,addEventListener:()=>{}},screen:{},navigator:{},requestAnimationFrame:()=>1,getComputedStyle:()=>({paddingTop:'0',paddingRight:'0',paddingBottom:'0',paddingLeft:'0'}),ResizeObserver:class{observe(){}},setTimeout:(f,ms)=>{timers.set(++id,{f,at:now+ms});return id},clearTimeout:i=>timers.delete(i)});
- const source=readFileSync(new URL('../web/app.js',import.meta.url),'utf8').replace(/^import .*;\n/gm,'');vm.runInContext(source,ctx);
+ const document={hidden:false,body:{dataset:{}},documentElement:{clientWidth:800},getElementById:get,createElement:()=>new Element(),addEventListener:(k,v)=>(events[k]??=[]).push(v)};
+ const ctx=vm.createContext({mountTableScreen:()=>({decision:new Element(),clearMessages(){}}),paintTableScreen(){},TurnClock,queueMicrotask(){},setInterval(){},...offline,...engine,...table,...viewport,LocalSession,document,window:{innerHeight:600,addEventListener:()=>{}},screen:{},navigator:{},requestAnimationFrame:()=>1,getComputedStyle:()=>({paddingTop:'0',paddingRight:'0',paddingBottom:'0',paddingLeft:'0'}),ResizeObserver:class{observe(){}},setTimeout:(f,ms)=>{timers.set(++id,{f,at:now+ms});return id},clearTimeout:i=>timers.delete(i)});
+ const source=readFileSync(new URL('../web/app.js',import.meta.url),'utf8').replace(/^import .*;\n/gm,'');vm.runInContext(source,ctx);vm.runInContext('tableActive=true',ctx);
  const run=s=>vm.runInContext(s,ctx);
  const emit=(el,type,extra={})=>{const e={pointerId:1,button:0,isPrimary:true,clientX:150,clientY:150,preventDefault(){},...extra};if(type==='pointerdown')for(const f of events[type]??[])f(e);for(const f of el.listeners[type]??[])f(e);if(type!=='pointerdown')for(const f of events[type]??[])f(e)};
  const tick=ms=>{const end=now+ms;while(true){const entry=[...timers].sort((a,b)=>a[1].at-b[1].at)[0];if(!entry||entry[1].at>end)break;now=entry[1].at;timers.delete(entry[0]);entry[1].f()}now=end};
@@ -128,8 +130,8 @@ test('rack to board and back to rack never commits a play; drop outside both zon
  h.emit(el,'pointerdown',{clientX:67,clientY:534});h.emit(el,'pointermove',{clientX:50,clientY:50});assert.equal(h.run('plays.length'),0);h.emit(el,'pointermove',{clientX:67,clientY:534});h.emit(el,'pointerup',{clientX:67,clientY:534});assert.equal(h.run('plays.length'),0);
  const another=h.get('hand').children[0];h.emit(another,'pointerdown',{clientX:67,clientY:534});h.emit(another,'pointermove',{clientX:900,clientY:450});h.emit(another,'pointerup',{clientX:900,clientY:450});assert.equal(h.run('plays.length'),0);assert.equal(h.run('JSON.stringify(game.snapshotHandLayout())'),before);
 });
-test('manual rotation and keyboard reorder are visual only; organize button never sorts',()=>{
- const h=app();rackFixture(h);const before=h.run('JSON.stringify(game.state)'),layout=h.run('JSON.stringify(game.snapshotHandLayout())'),el=h.get('hand').children[0];h.get('organize').onclick();assert.equal(h.run('JSON.stringify(game.snapshotHandLayout())'),layout);
+test('manual rotation, sorting and keyboard reorder are visual only',()=>{
+ const h=app();rackFixture(h);const before=h.run('JSON.stringify(game.state)'),layout=h.run('JSON.stringify(game.snapshotHandLayout())'),el=h.get('hand').children[0];h.get('organize').onclick();assert.equal(h.run('JSON.stringify(game.state)'),before);assert.deepEqual(JSON.parse(h.run('JSON.stringify(game.orderedHand().map(t=>t.id))')),JSON.parse(h.run('JSON.stringify([...game.state.players[0].hand].sort((a,b)=>a.a-b.a||a.b-b.b).map(t=>t.id))')));
  h.emit(el,'keydown',{key:'r'});assert.equal(h.run('JSON.stringify(game.state)'),before);assert.notEqual(h.run('JSON.stringify(game.snapshotHandLayout())'),layout);const current=h.get('hand').children[0];h.emit(current,'keydown',{key:'ArrowRight',altKey:true});assert.equal(h.run('JSON.stringify(game.state)'),before);assert.equal(h.run('game.state.events.length'),0);
 });
 test('logical rack hit test remains correct under the portrait visual rotation',()=>{

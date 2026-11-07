@@ -295,7 +295,7 @@ export function physicalLayout(placements, bounds, orientation, style, tilesById
     const rotated = (d) => (d + (orientation === 'vertical' ? 1 : 0)) % 4;
     // Per-scale budget avoids exponential stalls on impossible arrangements.
     for (const factor of [0.7]) {
-        const h = base / 13 * factor, w = 2 * h;
+        const h = options.fixedScale ? Math.min(bounds.width / 24, bounds.height / 12) : base / 13 * factor, w = 2 * h;
         const first = { tileId: placements[0].tileId, center: { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 }, angle: opening.a === opening.b ? (orientation === 'horizontal' ? 90 : 0) : (orientation === 'horizontal' ? 0 : 90), width: w, height: h };
         if (!validatePhysicalChain([first], bounds))
             continue;
@@ -328,7 +328,19 @@ export function physicalLayout(placements, bounds, orientation, style, tilesById
             const turnFirst = style === 'loop' ? (branchDepth % 5 === 3) : style === 'spiral' ? (branchDepth % 4 === 2) : branchDepth % 7 === 5;
             const preference = turnOrder[style].map(rotated);
             const preferred = turnFirst ? [...preference.filter(d => d !== oldDir), oldDir] : [oldDir, ...preference];
-            const candidates = preferred.filter((d, i) => preferred.indexOf(d) === i);
+            let candidates = preferred.filter((d, i) => preferred.indexOf(d) === i);
+            if(options.fixedScale){
+                // Long horizontal runs with clockwise/counterclockwise U-turns.
+                // At a descending segment, turn back across the next clear lane.
+                if(oldDir%2===0)candidates=[oldDir,1,(oldDir+2)%4,3];
+                else {
+                    const branch=placed.filter((t,i)=>i===0||placements[i]?.side===side);
+                    let lastHorizontal=side==='left'?2:0;
+                    for(let j=branch.length-1;j>0;j--){const dx=branch[j].center.x-branch[j-1].center.x;if(Math.abs(dx)>h){lastHorizontal=dx>0?0:2;break}}
+                    const across=(lastHorizontal+2)%4;
+                    candidates=[across,1,lastHorizontal,3];
+                }
+            }
             for (const d of candidates) {
                 const angle = (d % 2 === 0 ? 0 : 90) + (tile.a === tile.b ? 90 : 0);
                 const baseNext = attachAtFace(prev, { tileId: p.tileId, angle, width: w, height: h }, dirs[d]);
@@ -345,6 +357,10 @@ export function physicalLayout(placements, bounds, orientation, style, tilesById
                         const shift = pa - pb, next = { ...baseNext, center: { x: baseNext.center.x + tangent.x * shift, y: baseNext.center.y + tangent.y * shift } };
                         if (!faceContact(prev, next) || !validatePhysicalChain([...placed, next], { x: -1e8, y: -1e8, width: 2e8, height: 2e8 }))
                             continue;
+                        if(options.fixedScale){
+                            const extents=[...placed,next].map(t=>{const v=Math.abs(Math.sin(t.angle*Math.PI/180))>.5;return {l:t.center.x-(v?t.height:t.width)/2,r:t.center.x+(v?t.height:t.width)/2,t:t.center.y-(v?t.width:t.height)/2,b:t.center.y+(v?t.width:t.height)/2}});
+                            if(Math.max(...extents.map(b=>b.r))-Math.min(...extents.map(b=>b.l))>bounds.width-4*h || Math.max(...extents.map(b=>b.b))-Math.min(...extents.map(b=>b.t))>bounds.height-4*h)continue;
+                        }
                         // Non-neighbours must not acquire accidental extra edge connections.
                         if (placed.some(t => t.tileId !== prev.tileId && faceContact(t, next)))
                             continue;
@@ -383,7 +399,7 @@ export function physicalLayout(placements, bounds, orientation, style, tilesById
             const boxes = placed.map(t => { const vertical = Math.abs(Math.sin(t.angle * Math.PI / 180)) > .5; return { x: t.center.x - (vertical ? t.height : t.width) / 2, y: t.center.y - (vertical ? t.width : t.height) / 2, w: vertical ? t.height : t.width, h: vertical ? t.width : t.height }; });
             const minX = Math.min(...boxes.map(b => b.x), endpoints.left.x - h, endpoints.right.x - h), minY = Math.min(...boxes.map(b => b.y), endpoints.left.y - h, endpoints.right.y - h);
             const maxX = Math.max(...boxes.map(b => b.x + b.w), endpoints.left.x + h, endpoints.right.x + h), maxY = Math.max(...boxes.map(b => b.y + b.h), endpoints.left.y + h, endpoints.right.y + h);
-            const fit = Math.min(1, (bounds.width - 8) / (maxX - minX), (bounds.height - 8) / (maxY - minY));
+            const fit = options.fixedScale ? 1 : Math.min(1, (bounds.width - 8) / (maxX - minX), (bounds.height - 8) / (maxY - minY));
             const transform = (p) => ({ x: bounds.x + bounds.width / 2 + (p.x - (minX + maxX) / 2) * fit, y: bounds.y + bounds.height / 2 + (p.y - (minY + maxY) / 2) * fit });
             const fitted = placed.map(t => ({ ...t, center: transform(t.center), width: t.width * fit, height: t.height * fit }));
             if (!validatePhysicalChain(fitted, bounds) || !verifyFacePorts(placements, fitted) || !orientPrintedPorts(placements, fitted, tilesById))

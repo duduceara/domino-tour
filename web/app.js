@@ -1,3 +1,6 @@
+import {mountTableScreen,paintTableScreen} from './table-screen.js';
+import {TurnClock} from './turn-clock.js';
+import {SAVE_KEY} from './offline-save.js';
 import {readOffline,writeOffline} from './offline-save.js';
 import {landscapeViewport,framePoint,fittedTableSpace,tablePoint} from '../dist/src/viewport.js';
 import {LocalSession} from '../dist/src/session.js';
@@ -8,6 +11,8 @@ const PLAYER_NAMES=['Você','RobiX','AndroX','DomiX'];
 let offlineStorage=null;try{offlineStorage=window.localStorage}catch{}
 const restoredOffline=readOffline(offlineStorage);let offlineName=restoredOffline.name||'Visitante';let offlineStarted=false;let offlineSaveBlocked=restoredOffline.kind==='unavailable';
 let game=restoredOffline.session||new LocalSession();let routeStyle=restoredOffline.routeStyle||chooseRoute(secureIndex);
+const tableUI=mountTableScreen($('app')),turnClock=new TurnClock();
+let tableActive=false,decisionKind=null,completedKey=null;
 let handDrag=null,insertionMarker=null;
 let dragId=null,origin=null,dragMoved=false,ghost=null,floatingTile=null;const activePointers=new Set();let gestureBlocked=false;
 let rotated=false,zoom=1,pan={x:0,y:0},panStart=null;
@@ -21,16 +26,16 @@ function showPassNotice(seat){
 }
 function scheduleBots(){
  if(botTimer!==null){clearTimeout(botTimer);botTimer=null}botEpoch++;
- if(document.hidden||$('entry-flow')?.hidden===false||game.state.phase!=='playing'||passNoticeTimer!==null)return;
+ if(!tableActive||document.hidden||decisionKind||$('entry-flow')?.hidden===false||game.state.phase!=='playing'||passNoticeTimer!==null)return;
  const epoch=botEpoch,seat=game.state.turn;
  if(seat===0){
   if(game.state.lastPlayed!==null&&legalTiles(game.state,0).length===0){
-   botTimer=setTimeout(()=>{if(epoch!==botEpoch||document.hidden||game.state.phase!=='playing'||game.state.turn!==0)return;botTimer=null;const before=game.state.events.length;if(game.humanPass()){sync();const ev=game.state.events.slice(before).find(e=>e.type==='pass'&&e.seat===0);if(ev)showPassNotice(0);else scheduleBots()}},0);
+   botTimer=setTimeout(()=>{if(epoch!==botEpoch||!tableActive||decisionKind||document.hidden||game.state.phase!=='playing'||game.state.turn!==0)return;botTimer=null;const before=game.state.events.length;if(game.humanPass()){sync();const ev=game.state.events.slice(before).find(e=>e.type==='pass'&&e.seat===0);if(ev)showPassNotice(0);else scheduleBots()}},0);
   }
   return;
  }
  botTimer=setTimeout(()=>{
-  if(epoch!==botEpoch||document.hidden||game.state.phase!=='playing'||game.state.turn!==seat)return;
+  if(epoch!==botEpoch||!tableActive||decisionKind||document.hidden||game.state.phase!=='playing'||game.state.turn!==seat)return;
   botTimer=null;const before=game.state.events.length;game.advanceBots(1);sync();
   const ev=game.state.events.slice(before).find(e=>e.type==='pass');
   if(ev)showPassNotice(ev.seat);else scheduleBots();
@@ -40,9 +45,9 @@ function coords(e){const r=$('app').getBoundingClientRect(),p=framePoint({x:e.cl
 function fitViewport(){
  const probe=getComputedStyle($('safe-probe')),insets={top:parseFloat(probe.paddingTop),right:parseFloat(probe.paddingRight),bottom:parseFloat(probe.paddingBottom),left:parseFloat(probe.paddingLeft)};
  const visible=window.visualViewport;const v=landscapeViewport(visible?.width??document.documentElement.clientWidth,visible?.height??window.innerHeight,insets);const signature=JSON.stringify([v,visible?.offsetLeft??0,visible?.offsetTop??0]);if(signature===viewportSignature)return false;viewportSignature=signature;cancelGesture();zoom=1;pan={x:0,y:0};rotated=v.rotated;
- const app=$('app');app.style.width=v.width+'px';app.style.height=v.height+'px';app.style.left=(v.left+(visible?.offsetLeft??0))+'px';app.style.top=(v.top+(visible?.offsetTop??0))+'px';app.style.transform=rotated?'translateX('+v.height+'px) rotate(90deg)':'none';app.dataset.rotated=String(rotated);app.dataset.compact=String(v.height<500);app.dataset.dense=String(v.height<500);$('fullscreen').textContent=v.height<500?'⛶':'Tela cheia';app.style.setProperty('--gutter',Math.max(6,(v.width-1440)/2)+'px');return true;
+ const app=$('app');app.style.width=v.width+'px';app.style.height=v.height+'px';app.style.left=(v.left+(visible?.offsetLeft??0))+'px';app.style.top=(v.top+(visible?.offsetTop??0))+'px';app.style.transform=rotated?'translateX('+v.height+'px) rotate(90deg)':'none';app.dataset.rotated=String(rotated);app.dataset.compact=String(v.height<500);app.dataset.dense=String(v.height<500);$('fullscreen').textContent=document.fullscreenElement?'Sair da tela cheia':'Tela cheia';app.style.setProperty('--gutter',Math.max(6,(v.width-1440)/2)+'px');return true;
 }
-// Entry attempts orientation immediately; fullscreen is requested only with user activation.
+// Fullscreen is optional and requested ONLY by the explicit fullscreen button.
 async function lockLandscape(gesture=false){
  if(orientationPending)return;orientationPending=true;
  try{
@@ -88,14 +93,9 @@ function previewRackDrop(e,tile,source){
  source.dataset.dragging='true';return true;
 }
 function drawBoard(model,previewId=null){
- const surface=$('table');surface.replaceChildren();const table=document.createElement('div');table.className='board-layer';// Camera fits the occupied chain, not the solver's mostly empty canvas.
- let camera=previewId!==null?tableSpace.camera:null;
- if(!camera&&model.nodes.length&&model.geometry){
-  const bounds=model.nodes.map(n=>{const p=n.shape,a=p.angle*Math.PI/180,w=Math.abs(Math.cos(a))*p.width+Math.abs(Math.sin(a))*p.height,h=Math.abs(Math.sin(a))*p.width+Math.abs(Math.cos(a))*p.height;return {l:p.center.x-w/2,r:p.center.x+w/2,t:p.center.y-h/2,b:p.center.y+h/2}});
-  const ends=Object.values(model.geometry.endpoints);const l=Math.min(...bounds.map(b=>b.l),...ends.map(p=>p.x))-24,r=Math.max(...bounds.map(b=>b.r),...ends.map(p=>p.x))+24,t=Math.min(...bounds.map(b=>b.t),...ends.map(p=>p.y))-24,b=Math.max(...bounds.map(b=>b.b),...ends.map(p=>p.y))+24;
-  const short=Math.min(...model.nodes.map(n=>Math.min(n.shape.width,n.shape.height)));
-  camera={x:(l+r)/2,y:(t+b)/2,scale:Math.min(surface.clientWidth/(r-l),surface.clientHeight/(b-t),32/short)*.88};
- }
+ const surface=$('table');surface.replaceChildren();const table=document.createElement('div');table.className='board-layer'; // Fixed viewport camera: the solver owns translations, never occupancy-dependent zoom.
+ const camera={x:tableSpace.width/2,y:tableSpace.height/2,scale:tableSpace.scale};
+
  tableSpace.camera=camera;
  const scale=zoom*(camera?.scale??tableSpace.scale);table.style.width=tableSpace.width+'px';table.style.height=tableSpace.height+'px';table.style.transformOrigin='0 0';table.style.transform=`translate(${$('table').clientWidth/2+pan.x-(camera?.x??tableSpace.width/2)*scale}px,${$('table').clientHeight/2+pan.y-(camera?.y??tableSpace.height/2)*scale}px) scale(${scale})`;surface.append(table);
  surface.dataset.geometry=model.status;surface.dataset.nodes=String(model.nodes.length);
@@ -109,9 +109,11 @@ function drawBoard(model,previewId=null){
 function sync(){
  if(offlineStarted&&!offlineSaveBlocked){const saved=writeOffline(offlineStorage,game,routeStyle,offlineName);document.body.dataset.offlineSave=saved?'saved':'unavailable'}
  if(handDrag)cancelGesture();
+ game.layoutOptions={fixedScale:true,maxMillis:200,maxNodes:18000};
  const prior=rect();if(!prior){$('table').dataset.layout='waiting';return} $('table').dataset.layout='ready';game.setRouteStyle(routeStyle);game.resize(prior,'horizontal');
  const s=game.state,human=s.players[0];
- $('scores').replaceChildren(...s.players.map(p=>{const e=document.createElement('span');e.className='seat'+(s.turn===p.seat?' active':'');e.dataset.seat=String(p.seat);e.setAttribute('aria-label',p.seat===0?'Seu placar':`Placar de ${PLAYER_NAMES[p.seat]}`);e.textContent=`${p.seat===0?offlineName:PLAYER_NAMES[p.seat]} · ${p.score} pts · ${p.hand.length} pedras`;const avatar=document.createElement('span');avatar.className='avatar-slot';avatar.dataset.avatarSeat=String(p.seat);avatar.textContent=p.seat===0?offlineName:PLAYER_NAMES[p.seat][0];e.append(avatar);return e}));
+ paintTableScreen({difficulty:game.difficulty,target:s.target,deal:s.dealSize,sleeping:s.sleeping.length,remaining:28-s.chain.length,opponents:s.players.slice(1).map(p=>({seat:p.seat,name:PLAYER_NAMES[p.seat],count:p.hand.length}))});
+ $('scores').replaceChildren(...s.players.map(p=>{const e=document.createElement('span');e.className='seat'+(s.turn===p.seat?' active':'');e.dataset.seat=String(p.seat);e.setAttribute('aria-label',p.seat===0?'Seu placar':`Placar de ${PLAYER_NAMES[p.seat]}`);const label=document.createElement('span');label.textContent=`${p.seat===0?offlineName:PLAYER_NAMES[p.seat]}\n${p.score-s.target} pontos`;e.append(label);const avatar=document.createElement('span');avatar.className='avatar-slot';avatar.dataset.avatarSeat=String(p.seat);avatar.textContent=p.seat===0?offlineName:PLAYER_NAMES[p.seat][0];e.append(avatar);return e}));
  window.dispatchEvent?.(new Event('domino-tour:participants-rendered'));
  drawBoard(game.model);
  const hand=$('hand');hand.replaceChildren();
@@ -182,29 +184,36 @@ function sync(){
  $('next-round').hidden=s.phase!=='round-complete';
  $('play-again').hidden=s.phase!=='finished';
  $('message').textContent=game.model.status==='unavailable'?'Mesa não desenhada: '+game.model.failure:s.phase==='round-complete'?'Rodada encerrada! Vencedor: '+(s.nextOpeningSeat===0?'Você':PLAYER_NAMES[s.nextOpeningSeat])+'. Pontuação atualizada. Toque em Próxima rodada para continuar.':s.phase==='finished'?'Partida encerrada. Vencedor: '+(s.winner===0?'Você':PLAYER_NAMES[s.winner]):s.phase==='blocked-awaiting-rule'?'Rodada bloqueada: regra da V0.21 preservada.':s.turn===0?(game.interaction.selectedTile!==null?(validSides(s,0,game.interaction.selectedTile).length===1?'Uma ponta disponível: toque novamente na pedra para jogar.':'Duas pontas disponíveis: escolha uma ponta iluminada.'):'Sua vez! Arraste na mão para organizar ou leve uma pedra à mesa.'):`${PLAYER_NAMES[s.turn]} pensando... (3 segundos por jogada)`;
+ updateClock();
+ queueMicrotask(showCompleted);
  if(offlineStarted&&document.body.dataset.offlineSave==='unavailable')$('message').textContent+=' · Não foi possível salvar neste navegador.';
 }
 // Capture phase sees a second pointer even outside the rack/first captured element.
 document.addEventListener('pointerdown',e=>{activePointers.add(e.pointerId);if(activePointers.size>1){gestureBlocked=true;cancelGesture();drawBoard(game.model)}},true);
 for(const type of ['pointerup','pointercancel'])document.addEventListener(type,e=>{activePointers.delete(e.pointerId);if(!activePointers.size)gestureBlocked=false});
 window.addEventListener('blur',()=>{cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(game.model)});
-document.addEventListener('visibilitychange',()=>{if(document.hidden){stopBotSequence();cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(game.model)}else{sync();scheduleBots()}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){turnClock.pause();stopBotSequence();cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(game.model)}else{turnClock.resume();sync();scheduleBots()}});
 function afterAction(){clearDragVisual();dragId=null;origin=null;ghost=null;sync();scheduleBots()}
-$('organize').onclick=()=>{cancelGesture();$('message').textContent='Arraste qualquer pedra dentro da mão para organizar. Números iguais se alinham; leve à mesa para jogar.';[...$('hand').children][0]?.focus?.()};
+$('organize').onclick=()=>{
+ if(!tableActive||decisionKind||game.state.phase!=='playing')return;
+ cancelGesture();const ordered=[...game.state.players[0].hand].sort((a,b)=>a.a-b.a||a.b-b.b);
+ game.handLayout={version:1,order:ordered.map(t=>t.id),flipped:Object.fromEntries(ordered.map(t=>[t.id,false]))};sync();
+};
 $('difficulty').onchange=()=>{game.setDifficulty($('difficulty').value);$('entry-difficulty').value=game.difficulty;sync()};
 $('entry-difficulty').onchange=()=>{game.setDifficulty($('entry-difficulty').value);$('difficulty').value=game.difficulty};
 $('next-round').onclick=()=>{if(game.state.phase!=='round-complete')return;stopBotSequence();cancelGesture();if(game.nextRound()){sync();scheduleBots()}};
 $('play-again').onclick=()=>{if(game.state.phase!=='finished')return;stopBotSequence();cancelGesture();game.newMatch();sync();scheduleBots()};
-$('restart').onclick=()=>{stopBotSequence();cancelGesture();game=new LocalSession(Number($('target').value),Number($('deal').value),game.difficulty);routeStyle=$('route').value==='random'?chooseRoute(secureIndex):$('route').value;sync();scheduleBots()};
+$('restart').onclick=()=>askLeave('new');
 $('route').onchange=()=>{cancelGesture();routeStyle=$('route').value==='random'?chooseRoute(secureIndex):$('route').value;sync()};
 $('zoom').onclick=()=>{cancelGesture();zoom=zoom>=8?1:Math.min(8,zoom*2);pan={x:0,y:0};drawBoard(game.model)};
 $('fit').onclick=()=>{cancelGesture();zoom=1;pan={x:0,y:0};drawBoard(game.model)};
 $('table').addEventListener('pointerdown',e=>{if(zoom===1||e.target.closest('button')||!e.isPrimary||gestureBlocked)return;const r=$('app').getBoundingClientRect();panStart={id:e.pointerId,point:framePoint({x:e.clientX,y:e.clientY},r,rotated),pan:{...pan}};$('table').setPointerCapture(e.pointerId)});
 $('table').addEventListener('pointermove',e=>{if(!panStart||panStart.id!==e.pointerId)return;if(gestureBlocked){panStart=null;return}const p=framePoint({x:e.clientX,y:e.clientY},$('app').getBoundingClientRect(),rotated);pan={x:panStart.pan.x+p.x-panStart.point.x,y:panStart.pan.y+p.y-panStart.point.y};drawBoard(game.model)});
 for(const type of ['pointerup','pointercancel','lostpointercapture'])$('table').addEventListener(type,()=>{panStart=null});
-$('fullscreen').onclick=()=>lockLandscape(true);
-// Touch transient activation is granted on pointerup, unlike mouse pointerdown.
-document.addEventListener('pointerup',e=>{if(e.isTrusted&&$('entry-flow').hidden&&$('app').dataset.orientationLock!=='native')void lockLandscape(true)},{capture:true});
+$('fullscreen').onclick=async()=>{
+ if(document.fullscreenElement){try{await document.exitFullscreen()}catch{}screen.orientation?.unlock?.();queueViewport()}
+ else await lockLandscape(true);
+};
 $('settings').onclick=()=>{const panel=$('settings-panel');panel.hidden=!panel.hidden;$('settings').setAttribute('aria-expanded',String(!panel.hidden))};
 // All resize sources share one RAF queue; frame, geometry and controls commit before paint.
 let viewportFrame=null,viewportDirty=true,measuredSize='';
@@ -219,7 +228,7 @@ function flushViewport(){
 window.addEventListener('resize',queueViewport);
 window.visualViewport?.addEventListener('resize',queueViewport);
 window.visualViewport?.addEventListener('scroll',queueViewport);
-document.addEventListener('fullscreenchange',queueViewport);
+document.addEventListener('fullscreenchange',()=>{$('fullscreen').textContent=document.fullscreenElement?'Sair da tela cheia':'Tela cheia';queueViewport()});
 const layoutObserver=new ResizeObserver(queueViewport);
 layoutObserver.observe(document.documentElement);layoutObserver.observe($('table'));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)queueViewport()});
@@ -228,10 +237,72 @@ window.addEventListener('domino-tour:offline-options',e=>{
  const o=e.detail;if(!o||!['easy','medium','hard'].includes(o.difficulty)||![6,7].includes(o.deal))return;
  const target=o.target??100;if(![100,200].includes(target)||o.mode&&o.mode!=='offline')return;
  if(o.guest&&(!['green','red','blue','wood','purple'].includes(o.tableStyle)||o.resume))return;
- if(!o.resume){stopBotSequence();cancelGesture();game=new LocalSession(target,o.deal,o.difficulty);routeStyle=chooseRoute(secureIndex)}
+ if(!o.resume){stopBotSequence();cancelGesture();game=new LocalSession(target,o.deal,o.difficulty);game.layoutOptions={fixedScale:true};routeStyle='classic';turnClock.stop();completedKey=null}
  offlineName=String(o.name).slice(0,24);$('target').value=String(game.state.target);$('difficulty').value=game.difficulty;$('entry-difficulty').value=game.difficulty;$('deal').value=String(game.state.dealSize);o.accepted=true;
 });
-window.addEventListener('domino-tour:enter-game',()=>{offlineStarted=true;sync();scheduleBots();queueViewport();void lockLandscape(true)});
+window.addEventListener('domino-tour:enter-game',()=>{tableActive=true;offlineStarted=true;completedKey=null;turnClock.stop();sync();scheduleBots();queueViewport()});
 window.addEventListener('pagehide',()=>{if(offlineStarted&&!offlineSaveBlocked)writeOffline(offlineStorage,game,routeStyle,offlineName)});
+
+function updateClock(){
+ const active=tableActive&&game.state.phase==='playing'&&game.state.turn===0;
+ if(active)turnClock.start(game.state.roundsCompleted+':'+game.state.events.length);else turnClock.stop();
+ const seconds=turnClock.remaining(),el=$('turn-clock');el.hidden=!active;
+ el.querySelector('strong').textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
+ el.querySelector('meter').value=seconds;el.dataset.warning=String(active&&seconds<=10);
+ el.querySelector('small').textContent=seconds<=10?'Tempo acabando!':'Jogada automática ao zerar';
+}
+setInterval(()=>{
+ if(!tableActive||document.hidden||decisionKind)return;
+ updateClock();
+ if(!turnClock.claimExpiry())return;
+ cancelGesture();
+ for(const tile of legalTiles(game.state,0))for(const side of validSides(game.state,0,tile.id)){
+  if(game.humanPlay(tile.id,side)){afterAction();return}
+ }
+ // No legal move is a normal automatic pass; no extra timeout penalty.
+ if(!legalTiles(game.state,0).length){scheduleBots();return}
+ $('message').textContent='Não foi possível encaixar a jogada automática. Escolha uma ponta válida.';
+},200);
+function decide(kind,title,message,choices){
+ decisionKind=kind;stopBotSequence();cancelGesture();turnClock.pause();
+ const d=tableUI.decision;d.querySelector('h2').textContent=title;d.querySelector('p').textContent=message;
+ d.querySelector('.decision-actions').replaceChildren(...choices.map(([label,run])=>{
+  const b=document.createElement('button');b.textContent=label;b.onclick=()=>{d.close();decisionKind=null;turnClock.resume();run()};return b;
+ }));
+ if(!d.open)d.showModal();
+}
+function keepPlaying(){sync();scheduleBots()}
+function askLeave(destination='menu'){
+ if(!tableActive)return;
+ const inProgress=game.state.phase!=='finished';
+ decide('leave',inProgress?'Abandonar a partida?':'Sair da mesa?',inProgress?'Ao sair, você perde esta partida. Seu perfil e avatar serão preservados.':'Escolha o próximo passo.',
+ [['Continuar na mesa',keepPlaying],[destination==='new'?'Abandonar e iniciar outra':'Sair e voltar ao menu',()=>destination==='new'?newMatch():leaveTable()]]);
+}
+function newMatch(){
+ stopBotSequence();cancelGesture();turnClock.stop();completedKey=null;
+ game.newMatch();game.layoutOptions={fixedScale:true};sync();scheduleBots();
+}
+async function leaveTable(){
+ tableActive=false;offlineStarted=false;stopBotSequence();cancelGesture();turnClock.stop();tableUI.clearMessages();completedKey=null;
+ try{offlineStorage?.removeItem(SAVE_KEY);document.body.dataset.offlineSave='cleared'}catch{offlineSaveBlocked=true;document.body.dataset.offlineSave='unavailable'}
+ // Only this unfinished match is discarded. Profile, avatar and other data remain.
+ try{if(document.fullscreenElement)await document.exitFullscreen()}catch{}
+ screen.orientation?.unlock?.();
+ $('app').inert=true;
+ window.dispatchEvent(new Event('domino-tour:return-menu'));
+}
+function showCompleted(){
+ if(!tableActive||decisionKind||!['round-complete','finished'].includes(game.state.phase))return;
+ const s=game.state,key=s.phase+':'+s.roundsCompleted;
+ if(completedKey===key)return;completedKey=key;
+ const scores=s.players.map(p=>(p.seat===0?offlineName:PLAYER_NAMES[p.seat])+': '+(p.score-s.target)+' pontos').join(' · ');
+ const choices=[];
+ if(s.phase==='round-complete')choices.push(['Próxima rodada',()=>{if(game.nextRound()){turnClock.stop();sync();scheduleBots()}}]);
+ choices.push(['Nova partida',()=>{if(s.phase==='finished')newMatch();else askLeave('new')}],['Voltar ao menu',()=>{if(s.phase==='finished')void leaveTable();else askLeave()}]);
+ decide('result',s.phase==='finished'?'Partida encerrada':'Rodada encerrada',scores,choices);
+}
+tableUI.decision.addEventListener('cancel',e=>{e.preventDefault();if(decisionKind==='leave'){tableUI.decision.close();decisionKind=null;turnClock.resume();keepPlaying()}});
+$('leave-table').onclick=()=>askLeave();
+window.addEventListener('domino-tour:return-menu',()=>{queueViewport()});
 $('difficulty').value=game.difficulty;$('entry-difficulty').value=game.difficulty;$('target').value=String(game.state.target);$('deal').value=String(game.state.dealSize);
 fitViewport();sync();scheduleBots();queueViewport();
