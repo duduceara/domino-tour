@@ -15,20 +15,18 @@ function artWindow(className,y,height,rects=[],cropped=false){
  const img=new Image();img.alt='';img.setAttribute('aria-hidden','true');img.width=768;img.height=1024;e.append(img);
  windows.push({e,img,y,height,rects,cropped});return e;
 }
-const header=artWindow('config03-header',0,291,[
- ['back','Voltar',{x:20,y:148,width:135,height:62},close],
- ['help','Ajuda',{x:674,y:145,width:76,height:67},()=>showInfo('Como configurar','Offline: jogue contra três robôs. Escolha uma dificuldade, a meta de 100 ou 200 pontos e sua preferência de mesa. A meta de 300 pontos ainda não é suportada. Os estilos são preferências visuais para a próxima etapa.\n\nOnline: modo em desenvolvimento.\n\nO nome, nível, moedas e gemas desenhados são ilustrativos. A identificação será homologada na Tela 04.')],
- ['coins','Moedas ilustrativas',{x:317,y:0,width:170,height:45},()=>showInfo('Moedas','O saldo desenhado é ilustrativo. Nenhuma moeda é concedida nesta tela.')],
- ['gems','Gemas ilustrativas',{x:500,y:0,width:156,height:45},()=>showInfo('Gemas','O saldo de gemas desenhado é ilustrativo. Não há compras nesta prévia.')],
- ['settings','Configurações',{x:680,y:0,width:68,height:60},()=>showInfo('Configurações','As escolhas desta tela são mantidas durante a navegação. Nenhum dado salvo, avatar ou conquista é alterado. Sem música de fundo.')]
-]);
 const tabs=artWindow('config03-tabs',291,80,[
  ['offline','Jogar Offline',{x:43,y:292,width:348,height:71},()=>set('mode','offline')],
  ['online','Jogar Online',{x:403,y:292,width:321,height:71},()=>set('mode','online')]
 ]);
-const modeInfo=artWindow('config03-mode-info',371,104);
+const modeInfo=document.createElement('p');modeInfo.className='config03-mode-info';
 const banner=document.createElement('p');banner.className='config03-banner';banner.setAttribute('role','status');banner.textContent='Modo online em desenvolvimento. Em breve!';banner.hidden=true;
-function group(kind,headingY,headingHeight){const g=document.createElement('div');g.className='config03-options config03-'+kind;g.append(artWindow('config03-heading',headingY,headingHeight,[],true));const row=document.createElement('div');row.className='config03-group';row.setAttribute('role','group');g.append(row);return {g,row}}
+function group(kind,headingY,headingHeight){
+ const g=document.createElement('div');g.className='config03-options config03-'+kind;
+ const heading=document.createElement('h2');heading.className='config03-native-heading';
+ heading.textContent=({difficulty:'DIFICULDADE DOS ROBÔS','online-options':'JOGAR ONLINE',points:'META DA PARTIDA','table-styles':'COR DA MESA',deal:'DISTRIBUIÇÃO DAS PEDRAS'})[kind];g.append(heading);
+ const row=document.createElement('div');row.className='config03-group';row.setAttribute('role','group');g.append(row);return {g,row};
+}
 const difficulty=group('difficulty',475,39);difficulty.row.setAttribute('aria-label','Dificuldade dos robôs');
 const onlineOptions=group('online-options',475,39);onlineOptions.row.setAttribute('aria-label','Opções de jogo online em desenvolvimento');
 function choice(row,label,field,value,content){const b=document.createElement('button');b.type='button';b.className='config03-choice';b.dataset.configField=field;b.dataset.configValue=String(value);b.setAttribute('aria-label',label);b.innerHTML=content||label;b.addEventListener('click',()=>field==='onlineAction'?announceOnline():set(field,value));row.append(b);return b}
@@ -45,13 +43,20 @@ const themes=group('table-styles',707,39);themes.row.className='config03-themes'
 function arrow(direction){const b=document.createElement('button');b.type='button';b.className='config03-arrow';b.dataset.configAction=direction<0?'previous-style':'next-style';b.setAttribute('aria-label',direction<0?'Estilo anterior':'Próximo estilo');b.textContent=direction<0?'‹':'›';b.addEventListener('click',()=>{state=stepTableStyle(state,direction);pendingIdentification=null;renderState()});return b}
 themes.row.append(arrow(-1));
 for(const style of TABLE_STYLES){const b=choice(themes.row,TABLE_LABELS[style],'tableStyle',style,'');b.classList.add('config03-theme');b.textContent='';const c=document.createElement('canvas');c.width=110;c.height=66;c.setAttribute('aria-hidden','true');b.append(c)}themes.row.append(arrow(1));
-const footer=artWindow('config03-footer',849,175,[['start','Iniciar Partida',{x:146,y:858,width:480,height:96},()=>{
+const distribution=group('deal');distribution.row.setAttribute('aria-label','Distribuição das pedras');
+choice(distribution.row,'6 pedras por jogador e 4 dormidas','deal',6,'<strong>6 POR JOGADOR</strong><small>4 PEDRAS DORMIDAS</small>');
+choice(distribution.row,'7 pedras por jogador sem dormidas','deal',7,'<strong>7 POR JOGADOR</strong><small>SEM DORMIDAS · 28 EM JOGO</small>');
+const nativeHeader=document.createElement('header');nativeHeader.className='config03-native-header';
+function nativeButton(action,label,handler){const b=document.createElement('button');b.type='button';b.dataset.configAction=action;b.setAttribute('aria-label',label);b.textContent=label;b.addEventListener('click',handler);return b}
+const heading=document.createElement('div');const brand=document.createElement('span');brand.className='config03-brand';brand.textContent='DOMINÓ TOUR';const name=document.createElement('h1');name.textContent='CONFIGURAR PARTIDA';heading.append(brand,name);
+const back=nativeButton('back','Voltar',close);back.textContent='‹';const help=nativeButton('help','Ajuda',()=>showInfo('PREPARE SUA PARTIDA','Quatro jogadores individuais: você e três robôs. Escolha 6 pedras por pessoa com 4 dormidas, ou 7 por pessoa sem dormidas. As dormidas não são compradas nesta modalidade.\n\nEscolha a dificuldade, a meta e a cor da mesa. O modo online está em desenvolvimento.'));help.textContent='?';nativeHeader.append(back,heading,help);
+const footer=document.createElement('div');footer.className='config03-native-footer';
+const start=nativeButton('start','Iniciar Partida',()=>{
  const result=prepareIdentification(state);
  if(result.status==='online-unavailable'){announceOnline();return}
- pendingIdentification=result.config;
- window.dispatchEvent(new Event('domino-tour:identify-guest'));
-}]]);
-page.append(header,tabs,modeInfo,banner,difficulty.g,onlineOptions.g,points.g,themes.g,footer);
+ pendingIdentification=result.config;window.dispatchEvent(new Event('domino-tour:identify-guest'));
+});start.textContent='▶ INICIAR PARTIDA';const publisher=document.createElement('small');publisher.textContent='EDVÓRIA';footer.append(start,publisher);
+page.append(nativeHeader,tabs,modeInfo,banner,difficulty.g,onlineOptions.g,distribution.g,points.g,themes.g,footer);
 function set(field,value){
  const focusAction=document.activeElement?.dataset?.configAction;
  try{state=updateMatchConfig(state,field,value);pendingIdentification=null}catch{showInfo('Opção ainda indisponível','A meta de 300 pontos ainda não é suportada pelo motor atual. Escolha 100 ou 200 pontos. Sua seleção anterior foi preservada.');return}
@@ -59,12 +64,12 @@ function set(field,value){
  if(focusAction)root.querySelector(`[data-config-action="${focusAction}"]`)?.focus({preventScroll:true});
 }
 function renderState(){
+ modeInfo.textContent=state.mode==='offline'?'VOCÊ + 3 ROBÔS · CADA UM POR SI':'ONLINE EM DESENVOLVIMENTO';
  root.dataset.mode=state.mode;banner.hidden=state.mode!=='online';difficulty.g.hidden=state.mode==='online';onlineOptions.g.hidden=state.mode!=='online';
  for(const b of root.querySelectorAll('[data-config-field]')){const f=b.dataset.configField;b.setAttribute('aria-pressed',String(f==='onlineAction'?b.dataset.configValue==='quick':String(state[f])===b.dataset.configValue))}
  if(renderedMode===state.mode)return;renderedMode=state.mode;
  for(const item of windows){
   const art=ART[state.mode];let windowY=item.y;
-  if(item.e===points.g.firstElementChild)windowY=state.mode==='online'?613:600;
   const x=item.cropped?40:art.x,width=item.cropped?693:art.width;
   const win={x,y:windowY,width,height:item.height};
   item.e.style.setProperty('--slice-ratio',`${width}/${item.height}`);

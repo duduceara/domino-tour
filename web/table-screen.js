@@ -12,14 +12,16 @@ export function mountTableScreen(app){
  const humanRow=document.createElement('div');humanRow.className='mesa-human-row';
  const human=document.createElement('div');human.id='human-profile';humanRow.append(human,dock.querySelector('#sleeping-rack'));app.append(humanRow);
  const controls=app.querySelector('.play-controls');controls.append(dock.querySelector('#turn-clock'));
- const actions=document.createElement('div');actions.className='mesa-actions';actions.append(dock.querySelector('#table-chat'),app.querySelector('#organize'),app.querySelector('.view-controls'));app.append(actions);
+ const actions=document.createElement('div');actions.className='mesa-actions';actions.append(dock.querySelector('#table-chat'),app.querySelector('#organize'));
+ app.querySelector('#settings-panel').append(app.querySelector('.view-controls'));app.append(actions);
+ app.querySelector('#organize').setAttribute('aria-label','Organizar pedras');
  header.querySelector('#settings').textContent='☰';header.querySelector('#settings').setAttribute('aria-label','Menu da mesa');
  app.querySelector('#settings-panel').append(header.querySelector('#fullscreen'));
  app.querySelector('#fullscreen').setAttribute('aria-label','Tela cheia opcional');
  dock.remove();
  const chat=document.createElement('dialog');chat.id='table-chat-dialog';chat.className='mesa-dialog';chat.innerHTML='<h2>Frases e figurinhas</h2><p>Mensagens locais nesta partida offline.</p><div class="quick-messages"></div><form method="dialog"><button>Fechar</button></form>';app.append(chat);
  const bubble=document.createElement('p');bubble.id='table-message-bubble';bubble.setAttribute('role','status');bubble.hidden=true;app.append(bubble);let bubbleTimer;
- for(const phrase of ['Sua vez! 😉','Vamos jogar! ⏳','Boa jogada! 👏','😄','🤖','🎉']){const b=document.createElement('button');b.textContent=phrase;b.onclick=()=>{chat.close();bubble.textContent=phrase;bubble.hidden=false;clearTimeout(bubbleTimer);bubbleTimer=setTimeout(()=>bubble.hidden=true,2500)};chat.querySelector('.quick-messages').append(b)}
+ for(const phrase of ['BOA JOGADA!','CADA PEDRA CONTA!','QUE COMECE A VIAGEM!','SEGUIMOS NA DISPUTA!','FOCO NA JOGADA!','ESSA FOI BOA!','VAMOS À PRÓXIMA!','PARTIDA EQUILIBRADA!','😄','👏','🎉']){const b=document.createElement('button');b.textContent=phrase;b.onclick=()=>{chat.close();bubble.textContent=phrase;bubble.hidden=false;clearTimeout(bubbleTimer);bubbleTimer=setTimeout(()=>bubble.hidden=true,2500)};chat.querySelector('.quick-messages').append(b)}
  app.querySelector('#table-chat').onclick=()=>chat.showModal();
  const decision=document.createElement('dialog');decision.id='mesa-decision';decision.className='mesa-dialog';decision.innerHTML='<h2></h2><p></p><div class="decision-actions"></div>';app.append(decision);
  return {decision,placeHuman(node){if(node)human.replaceChildren(node)},clearMessages(){clearTimeout(bubbleTimer);bubble.hidden=true;if(chat.open)chat.close()}};

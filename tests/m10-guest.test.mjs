@@ -10,7 +10,7 @@ import {readOffline,writeOffline} from '../web/offline-save.js';
 test('guest options preserve difficulty, target and visual theme without authentication',()=>{
  const c={...createMatchConfig(),difficulty:'hard',target:200,tableStyle:'blue'};
  assert.deepEqual(guestOptions(c),{mode:'offline',guest:true,resume:false,name:'Visitante',difficulty:'hard',target:200,tableStyle:'blue',deal:6,accepted:false});
- assert.deepEqual(c,{mode:'offline',difficulty:'hard',target:200,tableStyle:'blue'});
+ assert.deepEqual(c,{mode:'offline',difficulty:'hard',target:200,tableStyle:'blue',deal:6});
 });
 test('Online and invalid configurations cannot prepare a guest game',()=>{
  for(const c of [{...createMatchConfig(),mode:'online'},{...createMatchConfig(),target:300},{...createMatchConfig(),difficulty:'invalid'}])assert.throws(()=>guestOptions(c));
@@ -37,3 +37,5 @@ test('account artwork is the exact approved original and not a replacement of th
  const b=readFileSync(new URL('../web/assets/approved/screen-02.png',import.meta.url));assert.equal(createHash('sha256').update(b).digest('hex'),'179b81c7304c829b88180e1f4b3efe6dc5d3bb9a332b8bfbdfe92b1ed134e554');
  const js=readFileSync(new URL('../web/guest-access.js',import.meta.url),'utf8');assert.equal((js.match(/ disabled aria-label=/g)||[]).length,3);assert.ok(js.includes('./assets/approved/screen-02.png'));
 });
+
+test('both official deals survive visitor handoff and existing engine distribution',()=>{for(const deal of [6,7]){const c=guestOptions({...createMatchConfig(),deal});assert.equal(c.deal,deal);const game=new LocalSession(c.target,c.deal,c.difficulty);assert.equal(game.state.dealSize,deal);assert.equal(game.state.players.length,4);assert.ok(game.state.players.every(p=>p.hand.length===deal));}});
