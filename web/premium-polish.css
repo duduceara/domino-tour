@@ -19,7 +19,7 @@
 
 
 /* Localized recovery: preserve complete original images and hit regions. */
-#entry-flow .splash-fullscreen{object-fit:contain}
+#entry-flow[data-step="1"] .splash-fullscreen{object-fit:cover;object-position:50% 50%}
 #match-setup .config03-deal .config03-group{grid-template-columns:repeat(2,minmax(0,1fr))}
 #match-setup .config03-deal h2{margin:0;padding:8px 10px 4px;font:700 14px Georgia,serif;color:#ffe3a0;text-shadow:0 2px 2px #000}
 #match-setup .config03-deal button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:58px;border-color:#dbbe7c;background:linear-gradient(#1c4b72,#082442);font-size:14px}
