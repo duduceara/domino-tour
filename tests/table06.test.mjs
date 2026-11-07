@@ -1,3 +1,4 @@
+import {fitTableCamera} from '../web/table-camera.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {TurnClock} from '../web/turn-clock.js';
@@ -31,6 +32,13 @@ test('900 geometry cases: 28 unique pieces, all doubles, both growing ends, exac
   for(const [width,height]of [[600,180],[800,260],[1000,350]])for(const n of [1,7,14,21,28]){
    const bounds={x:0,y:0,width,height},placements=ps.slice(0,n),m=buildTableModel(placements,bounds,'horizontal','classic',by,{fixedScale:true});
    assert.equal(m.status,'verified',JSON.stringify({seed,width,height,n,failure:m.failure}));
+   const camera=fitTableCamera(m,{width,height,scale:1},width,height);
+   for(const node of m.nodes){const p=node.shape,a=p.angle*Math.PI/180,hw=(Math.abs(Math.cos(a))*p.width+Math.abs(Math.sin(a))*p.height)/2,hh=(Math.abs(Math.sin(a))*p.width+Math.abs(Math.cos(a))*p.height)/2;
+    const x=(p.center.x-camera.x)*camera.scale+width/2,y=(p.center.y-camera.y)*camera.scale+height/2;
+    assert.ok(x-hw*camera.scale>=-1e-7&&x+hw*camera.scale<=width+1e-7,'visible tile width');
+    assert.ok(y-hh*camera.scale>=-1e-7&&y+hh*camera.scale<=height+1e-7,'visible tile height');
+   }
+   for(const p of Object.values(m.geometry.endpoints)){const x=(p.x-camera.x)*camera.scale+width/2,y=(p.y-camera.y)*camera.scale+height/2;assert.ok(x>=22&&x<=width-22&&y>=22&&y<=height-22,'44px endpoint stays visible');}
    assert.equal(m.nodes.length,n);assert.equal(new Set(m.nodes.map(n=>n.tileId)).size,n);
    assert.ok(validatePhysicalChain(m.geometry.tiles,bounds));assert.ok(verifyPhysicalContacts(placements,m.geometry.tiles));assert.ok(orientPrintedPorts(placements,m.geometry.tiles,by));
    for(const node of m.nodes){assert.ok(Math.abs(node.shape.height-Math.min(width/24,height/12))<1e-8);assert.equal(node.shape.width,node.shape.height*2)}

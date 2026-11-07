@@ -1,3 +1,4 @@
+import {fitTableCamera} from './table-camera.js';
 import {mountTableScreen,paintTableScreen} from './table-screen.js';
 import {TurnClock} from './turn-clock.js';
 import {SAVE_KEY} from './offline-save.js';
@@ -45,6 +46,9 @@ function coords(e){const r=$('app').getBoundingClientRect(),p=framePoint({x:e.cl
 function fitViewport(){
  const probe=getComputedStyle($('safe-probe')),insets={top:parseFloat(probe.paddingTop),right:parseFloat(probe.paddingRight),bottom:parseFloat(probe.paddingBottom),left:parseFloat(probe.paddingLeft)};
  const visible=window.visualViewport;const v=landscapeViewport(visible?.width??document.documentElement.clientWidth,visible?.height??window.innerHeight,insets);const signature=JSON.stringify([v,visible?.offsetLeft??0,visible?.offsetTop??0]);if(signature===viewportSignature)return false;viewportSignature=signature;cancelGesture();zoom=1;pan={x:0,y:0};rotated=v.rotated;
+ const referenceRatio=1672/941,frameWidth=Math.min(v.width,v.height*referenceRatio),frameHeight=frameWidth/referenceRatio;
+ const extraX=(v.width-frameWidth)/2,extraY=(v.height-frameHeight)/2;
+ v.left+=rotated?extraY:extraX;v.top+=rotated?extraX:extraY;v.width=frameWidth;v.height=frameHeight;
  const app=$('app');app.style.width=v.width+'px';app.style.height=v.height+'px';app.style.left=(v.left+(visible?.offsetLeft??0))+'px';app.style.top=(v.top+(visible?.offsetTop??0))+'px';app.style.transform=rotated?'translateX('+v.height+'px) rotate(90deg)':'none';app.dataset.rotated=String(rotated);app.dataset.compact=String(v.height<500);app.dataset.dense=String(v.height<500);$('fullscreen').textContent=document.fullscreenElement?'Sair da tela cheia':'Tela cheia';app.style.setProperty('--gutter',Math.max(6,(v.width-1440)/2)+'px');return true;
 }
 // Fullscreen is optional and requested ONLY by the explicit fullscreen button.
@@ -93,9 +97,8 @@ function previewRackDrop(e,tile,source){
  source.dataset.dragging='true';return true;
 }
 function drawBoard(model,previewId=null){
- const surface=$('table');surface.replaceChildren();const table=document.createElement('div');table.className='board-layer'; // Fixed viewport camera: the solver owns translations, never occupancy-dependent zoom.
- const camera={x:tableSpace.width/2,y:tableSpace.height/2,scale:tableSpace.scale};
-
+ const surface=$('table');surface.replaceChildren();const table=document.createElement('div');table.className='board-layer';
+ const camera=previewId!==null&&tableSpace.camera?tableSpace.camera:fitTableCamera(model,tableSpace,$('table').clientWidth,$('table').clientHeight);
  tableSpace.camera=camera;
  const scale=zoom*(camera?.scale??tableSpace.scale);table.style.width=tableSpace.width+'px';table.style.height=tableSpace.height+'px';table.style.transformOrigin='0 0';table.style.transform=`translate(${$('table').clientWidth/2+pan.x-(camera?.x??tableSpace.width/2)*scale}px,${$('table').clientHeight/2+pan.y-(camera?.y??tableSpace.height/2)*scale}px) scale(${scale})`;surface.append(table);
  surface.dataset.geometry=model.status;surface.dataset.nodes=String(model.nodes.length);
@@ -183,7 +186,7 @@ function sync(){
  }
  $('next-round').hidden=s.phase!=='round-complete';
  $('play-again').hidden=s.phase!=='finished';
- $('message').textContent=game.model.status==='unavailable'?'Mesa não desenhada: '+game.model.failure:s.phase==='round-complete'?'Rodada encerrada! Vencedor: '+(s.nextOpeningSeat===0?'Você':PLAYER_NAMES[s.nextOpeningSeat])+'. Pontuação atualizada. Toque em Próxima rodada para continuar.':s.phase==='finished'?'Partida encerrada. Vencedor: '+(s.winner===0?'Você':PLAYER_NAMES[s.winner]):s.phase==='blocked-awaiting-rule'?'Rodada bloqueada: regra da V0.21 preservada.':s.turn===0?(game.interaction.selectedTile!==null?(validSides(s,0,game.interaction.selectedTile).length===1?'Uma ponta disponível: toque novamente na pedra para jogar.':'Duas pontas disponíveis: escolha uma ponta iluminada.'):'Sua vez! Arraste na mão para organizar ou leve uma pedra à mesa.'):`${PLAYER_NAMES[s.turn]} pensando... (3 segundos por jogada)`;
+ $('message').textContent=game.model.status==='unavailable'?'Mesa não desenhada: '+game.model.failure:s.phase==='round-complete'?'Rodada encerrada! Vencedor: '+(s.nextOpeningSeat===0?'Você':PLAYER_NAMES[s.nextOpeningSeat])+'. Pontuação atualizada. Toque em Próxima rodada para continuar.':s.phase==='finished'?'Partida encerrada. Vencedor: '+(s.winner===0?'Você':PLAYER_NAMES[s.winner]):s.phase==='blocked-awaiting-rule'?'Rodada bloqueada: regra da V0.21 preservada.':s.turn===0?(game.interaction.selectedTile!==null?(validSides(s,0,game.interaction.selectedTile).length===1?'Toque novamente para jogar.':'Escolha uma ponta iluminada.'):'Sua vez de jogar!'):`${PLAYER_NAMES[s.turn]} pensando…`;
  updateClock();
  queueMicrotask(showCompleted);
  if(offlineStarted&&document.body.dataset.offlineSave==='unavailable')$('message').textContent+=' · Não foi possível salvar neste navegador.';
@@ -214,6 +217,7 @@ $('fullscreen').onclick=async()=>{
  if(document.fullscreenElement){try{await document.exitFullscreen()}catch{}screen.orientation?.unlock?.();queueViewport()}
  else await lockLandscape(true);
 };
+for(const id of ['target','deal']){$(id).disabled=true;$(id).title='Definido antes da partida. Volte ao menu para mudar.'}
 $('settings').onclick=()=>{const panel=$('settings-panel');panel.hidden=!panel.hidden;$('settings').setAttribute('aria-expanded',String(!panel.hidden))};
 // All resize sources share one RAF queue; frame, geometry and controls commit before paint.
 let viewportFrame=null,viewportDirty=true,measuredSize='';
