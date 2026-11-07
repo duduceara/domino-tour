@@ -1,9 +1,10 @@
+import {portraitTableViewport,portraitPoint} from './table-viewport.js';
 import {fitTableCamera} from './table-camera.js';
 import {mountTableScreen,paintTableScreen} from './table-screen.js';
 import {TurnClock} from './turn-clock.js';
 import {SAVE_KEY} from './offline-save.js';
 import {readOffline,writeOffline} from './offline-save.js';
-import {landscapeViewport,framePoint,fittedTableSpace,tablePoint} from '../dist/src/viewport.js';
+import {fittedTableSpace,tablePoint} from '../dist/src/viewport.js';
 import {LocalSession} from '../dist/src/session.js';
 import {validSides,chooseRoute} from '../dist/src/table.js';
 import {legalTiles,secureIndex} from '../dist/src/engine.js';
@@ -16,8 +17,8 @@ const tableUI=mountTableScreen($('app')),turnClock=new TurnClock();
 let tableActive=false,decisionKind=null,completedKey=null;
 let handDrag=null,insertionMarker=null;
 let dragId=null,origin=null,dragMoved=false,ghost=null,floatingTile=null;const activePointers=new Set();let gestureBlocked=false;
-let rotated=false,zoom=1,pan={x:0,y:0},panStart=null;
-let tableSpace={width:800,height:430,scale:1},viewportSignature='',orientationPending=false;
+let viewportScale=1,zoom=1,pan={x:0,y:0},panStart=null;
+let tableSpace={width:800,height:430,scale:1},viewportSignature='';
 let botTimer=null,botEpoch=0,passNoticeTimer=null,passNoticeEpoch=0;
 function clearPassNotice(){passNoticeEpoch++;if(passNoticeTimer!==null){clearTimeout(passNoticeTimer);passNoticeTimer=null}$('pass-notice').hidden=true}
 function stopBotSequence(){botEpoch++;if(botTimer!==null){clearTimeout(botTimer);botTimer=null}clearPassNotice()}
@@ -42,39 +43,37 @@ function scheduleBots(){
   if(ev)showPassNotice(ev.seat);else scheduleBots();
  },3000);
 }
-function coords(e){const r=$('app').getBoundingClientRect(),p=framePoint({x:e.clientX,y:e.clientY},r,rotated);const x=p.x-$('table').offsetLeft-$('table').parentElement.offsetLeft-$('table').clientLeft,y=p.y-$('table').offsetTop-$('table').parentElement.offsetTop-$('table').clientTop;return tablePoint({x,y},{width:$('table').clientWidth,height:$('table').clientHeight},tableSpace,zoom,pan)}
+function coords(e){const r=$('table').getBoundingClientRect();return tablePoint({x:(e.clientX-r.left)/viewportScale-$('table').clientLeft,y:(e.clientY-r.top)/viewportScale-$('table').clientTop},{width:$('table').clientWidth,height:$('table').clientHeight},tableSpace,zoom,pan)}
 function fitViewport(){
  const probe=getComputedStyle($('safe-probe')),insets={top:parseFloat(probe.paddingTop),right:parseFloat(probe.paddingRight),bottom:parseFloat(probe.paddingBottom),left:parseFloat(probe.paddingLeft)};
- const visible=window.visualViewport;const v=landscapeViewport(visible?.width??document.documentElement.clientWidth,visible?.height??window.innerHeight,insets);const signature=JSON.stringify([v,visible?.offsetLeft??0,visible?.offsetTop??0]);if(signature===viewportSignature)return false;viewportSignature=signature;cancelGesture();zoom=1;pan={x:0,y:0};rotated=v.rotated;
- const referenceRatio=1672/941,frameWidth=Math.min(v.width,v.height*referenceRatio),frameHeight=frameWidth/referenceRatio;
- const extraX=(v.width-frameWidth)/2,extraY=(v.height-frameHeight)/2;
- v.left+=rotated?extraY:extraX;v.top+=rotated?extraX:extraY;v.width=frameWidth;v.height=frameHeight;
- const app=$('app');app.style.width=v.width+'px';app.style.height=v.height+'px';app.style.left=(v.left+(visible?.offsetLeft??0))+'px';app.style.top=(v.top+(visible?.offsetTop??0))+'px';app.style.transform=rotated?'translateX('+v.height+'px) rotate(90deg)':'none';app.dataset.rotated=String(rotated);app.dataset.compact=String(v.height<500);app.dataset.dense=String(v.height<500);$('fullscreen').textContent=document.fullscreenElement?'Sair da tela cheia':'Tela cheia';app.style.setProperty('--gutter',Math.max(6,(v.width-1440)/2)+'px');return true;
+ const visible=window.visualViewport;
+ const v=portraitTableViewport(visible?.width??document.documentElement.clientWidth,visible?.height??window.innerHeight,insets,{left:visible?.offsetLeft??0,top:visible?.offsetTop??0});
+ const signature=JSON.stringify(v);if(signature===viewportSignature)return false;
+ viewportSignature=signature;cancelGesture();viewportScale=v.scale;zoom=1;pan={x:0,y:0};
+ const app=$('app');app.style.width=v.width+'px';app.style.height=v.height+'px';app.style.left=v.left+'px';app.style.top=v.top+'px';app.style.transform=v.scale===1?'none':`scale(${v.scale})`;
+ app.dataset.rotated='false';app.dataset.compact=String(v.height<700);app.dataset.dense='false';
+ $('fullscreen').textContent=document.fullscreenElement?'Sair da tela cheia':'Tela cheia (opcional)';
+ return true;
 }
-// Fullscreen is optional and requested ONLY by the explicit fullscreen button.
-async function lockLandscape(gesture=false){
- if(orientationPending)return;orientationPending=true;
- try{
-  if(gesture&&!document.fullscreenElement&&document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();
-  if(!screen.orientation?.lock)throw new Error('Orientation lock unavailable');
-  await screen.orientation.lock('landscape');$('app').dataset.orientationLock='native';
- }catch{$('app').dataset.orientationLock='visual-fallback'}
- finally{orientationPending=false;queueViewport()}
+// Optional fullscreen stays in portrait and is requested only by its own button.
+async function toggleTableFullscreen(){
+ try{if(document.fullscreenElement)await document.exitFullscreen();else if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen()}catch{}
+ queueViewport();
 }
 function rect(){const physical={width:$('table').clientWidth,height:$('table').clientHeight};const fitted=fittedTableSpace(physical.width,physical.height);if(!fitted)return null;tableSpace=fitted;return {x:0,y:0,width:fitted.width,height:fitted.height}}
 function clearDragVisual(){floatingTile?.remove?.();floatingTile=null;insertionMarker?.remove?.();insertionMarker=null;for(const el of $('hand').children)delete el.dataset.dragging}
-function followPointer(e,tile,source){if(!floatingTile){floatingTile=tileEl(tile,'drag-floating rack-floating',handDrag?.flipped??false);floatingTile.setAttribute('aria-hidden','true');floatingTile.style.width=(source.offsetWidth||34)+'px';floatingTile.style.height=(source.offsetHeight||68)+'px';$('app').append(floatingTile)}const p=framePoint({x:e.clientX,y:e.clientY},$('app').getBoundingClientRect(),rotated);floatingTile.style.left=p.x+'px';floatingTile.style.top=p.y+'px'}
+function followPointer(e,tile,source){if(!floatingTile){floatingTile=tileEl(tile,'drag-floating rack-floating',handDrag?.flipped??false);floatingTile.setAttribute('aria-hidden','true');floatingTile.style.width=(source.offsetWidth||34)+'px';floatingTile.style.height=(source.offsetHeight||68)+'px';$('app').append(floatingTile)}const p=portraitPoint({x:e.clientX,y:e.clientY},$('app').getBoundingClientRect(),viewportScale);floatingTile.style.left=p.x+'px';floatingTile.style.top=p.y+'px'}
 function cancelGesture(){handDrag=null;clearDragVisual();game.interaction.cancel();dragId=null;origin=null;dragMoved=false;ghost=null;panStart=null}
 const PIP_POSITIONS=[[],[4],[0,8],[0,4,8],[0,2,6,8],[0,2,4,6,8],[0,2,3,5,6,8]];
 function pipFace(value){const occupied=new Set(PIP_POSITIONS[value]??[]);return '<span class="pip-face" aria-hidden="true">'+Array.from({length:9},(_,i)=>'<i class="pip'+(occupied.has(i)?' on':'')+'"></i>').join('')+'</span>'}
 function tileEl(tile,css='',flipped=false){const b=document.createElement('button');b.className='piece '+css;b.dataset.tileId=tile.id;b.innerHTML=pipFace(flipped?tile.b:tile.a)+'<span class="divider"></span>'+pipFace(flipped?tile.a:tile.b);b.dataset.flipped=String(flipped);b.setAttribute('aria-label',`Pedra ${tile.a} e ${tile.b}`);return b}
-// Pointer zones are measured in the logical landscape frame, including visual rotation.
+// Pointer zones share the same unrotated portrait frame as the visible rack.
 function frameRect(element){
  const r=element.getBoundingClientRect(),app=$('app').getBoundingClientRect();
- const a=framePoint({x:r.left,y:r.top},app,rotated),b=framePoint({x:r.left+r.width,y:r.top+r.height},app,rotated);
+ const a=portraitPoint({x:r.left,y:r.top},app,viewportScale),b=portraitPoint({x:r.left+r.width,y:r.top+r.height},app,viewportScale);
  return {x:Math.min(a.x,b.x),y:Math.min(a.y,b.y),width:Math.abs(b.x-a.x),height:Math.abs(b.y-a.y)};
 }
-function pointerFrame(e){return framePoint({x:e.clientX,y:e.clientY},$('app').getBoundingClientRect(),rotated)}
+function pointerFrame(e){return portraitPoint({x:e.clientX,y:e.clientY},$('app').getBoundingClientRect(),viewportScale)}
 function within(p,r,padding=0){return p.x>=r.x-padding&&p.x<=r.x+r.width+padding&&p.y>=r.y-padding&&p.y<=r.y+r.height+padding}
 function handDropPlan(e,tileId){
  const point=pointerFrame(e),rack=frameRect($('hand'));
@@ -105,7 +104,7 @@ function drawBoard(model,previewId=null){
  if(!model.geometry){const warning=document.createElement('p');warning.className='geometry-warning';warning.textContent='Geometria indisponível ('+model.failure+'). Tente outro percurso ou orientação. Nenhum encaixe artificial foi desenhado.';table.append(warning);return}
  for(const node of model.nodes){const el=tileEl({...node.official,a:node.printed[0],b:node.printed[1]},node.tileId===previewId?'ghost':'');el.disabled=true;const p=node.shape;el.style.left=p.center.x+'px';el.style.top=p.center.y+'px';el.style.width=p.width+'px';el.style.height=p.height+'px';el.style.transform=`translate(-50%,-50%) rotate(${p.angle}deg)`;el.style.fontSize=Math.min(22,p.height*.72)+'px';el.dataset.order=String(node.order);table.append(el)}
  for(const side of ['left','right']){
-  const point=model.geometry.endpoints[side],b=document.createElement('button');b.className='endpoint';b.dataset.side=side;b.textContent=side==='left'?'←':'→';b.setAttribute('aria-label','Jogar na ponta '+(side==='left'?'esquerda':'direita'));b.style.left=point.x+'px';b.style.top=point.y+'px';b.style.width=b.style.height=b.style.minHeight=(44/scale)+'px';b.style.fontSize=(16/scale)+'px';b.disabled=previewId!==null||game.state.turn!==0||game.interaction.selectedTile===null||!validSides(game.state,0,game.interaction.selectedTile).includes(side);
+  const point=model.geometry.endpoints[side],b=document.createElement('button');b.className='endpoint';b.dataset.side=side;b.textContent=side==='left'?'A':'B';b.setAttribute('aria-label','Jogar na ponta '+(side==='left'?'A':'B'));b.style.left=point.x+'px';b.style.top=point.y+'px';b.style.width=b.style.height=b.style.minHeight=(44/scale)+'px';b.style.fontSize=(16/scale)+'px';b.disabled=previewId!==null||game.state.turn!==0||game.interaction.selectedTile===null||!validSides(game.state,0,game.interaction.selectedTile).includes(side);
   b.onclick=()=>{if(game.interaction.tapEndpoint(side))afterAction();else $('message').textContent='Essa pedra não tem encaixe físico validado nessa ponta.'};table.append(b);
  }
 }
@@ -113,10 +112,11 @@ function sync(){
  if(offlineStarted&&!offlineSaveBlocked){const saved=writeOffline(offlineStorage,game,routeStyle,offlineName);document.body.dataset.offlineSave=saved?'saved':'unavailable'}
  if(handDrag)cancelGesture();
  game.layoutOptions={fixedScale:true,maxMillis:200,maxNodes:18000};
- const prior=rect();if(!prior){$('table').dataset.layout='waiting';return} $('table').dataset.layout='ready';game.setRouteStyle(routeStyle);game.resize(prior,'horizontal');
+ const prior=rect();if(!prior){$('table').dataset.layout='waiting';return} $('table').dataset.layout='ready';game.setRouteStyle(routeStyle);game.resize(prior,'vertical');
  const s=game.state,human=s.players[0];
  paintTableScreen({difficulty:game.difficulty,target:s.target,deal:s.dealSize,sleeping:s.sleeping.length,remaining:28-s.chain.length,opponents:s.players.slice(1).map(p=>({seat:p.seat,name:PLAYER_NAMES[p.seat],count:p.hand.length}))});
- $('scores').replaceChildren(...s.players.map(p=>{const e=document.createElement('span');e.className='seat'+(s.turn===p.seat?' active':'');e.dataset.seat=String(p.seat);e.setAttribute('aria-label',p.seat===0?'Seu placar':`Placar de ${PLAYER_NAMES[p.seat]}`);const label=document.createElement('span');label.textContent=`${p.seat===0?offlineName:PLAYER_NAMES[p.seat]}\n${p.score-s.target} pontos`;e.append(label);const avatar=document.createElement('span');avatar.className='avatar-slot';avatar.dataset.avatarSeat=String(p.seat);avatar.textContent=p.seat===0?offlineName:PLAYER_NAMES[p.seat][0];e.append(avatar);return e}));
+ $('scores').replaceChildren(...s.players.map(p=>{const e=document.createElement('span');e.className='seat'+(s.turn===p.seat?' active':'');e.dataset.seat=String(p.seat);e.setAttribute('aria-label',p.seat===0?'Seu placar':`Placar de ${PLAYER_NAMES[p.seat]}`);const label=document.createElement('span');label.textContent=`${p.seat===0?offlineName:PLAYER_NAMES[p.seat]}\n${p.score-s.target} ${p.seat===0?'pontos':'pts'}`;if(p.seat!==0){const count=document.createElement('small');count.className='seat-hand-count';count.textContent=p.hand.length+' peças';label.append(count)}e.append(label);e.dataset.handCount=String(p.hand.length);const avatar=document.createElement('span');avatar.className='avatar-slot';avatar.dataset.avatarSeat=String(p.seat);avatar.textContent=p.seat===0?offlineName:PLAYER_NAMES[p.seat][0];e.append(avatar);return e}));
+ tableUI.placeHuman($('scores').querySelector('[data-seat="0"]'));
  window.dispatchEvent?.(new Event('domino-tour:participants-rendered'));
  drawBoard(game.model);
  const hand=$('hand');hand.replaceChildren();
@@ -210,13 +210,11 @@ $('restart').onclick=()=>askLeave('new');
 $('route').onchange=()=>{cancelGesture();routeStyle=$('route').value==='random'?chooseRoute(secureIndex):$('route').value;sync()};
 $('zoom').onclick=()=>{cancelGesture();zoom=zoom>=8?1:Math.min(8,zoom*2);pan={x:0,y:0};drawBoard(game.model)};
 $('fit').onclick=()=>{cancelGesture();zoom=1;pan={x:0,y:0};drawBoard(game.model)};
-$('table').addEventListener('pointerdown',e=>{if(zoom===1||e.target.closest('button')||!e.isPrimary||gestureBlocked)return;const r=$('app').getBoundingClientRect();panStart={id:e.pointerId,point:framePoint({x:e.clientX,y:e.clientY},r,rotated),pan:{...pan}};$('table').setPointerCapture(e.pointerId)});
-$('table').addEventListener('pointermove',e=>{if(!panStart||panStart.id!==e.pointerId)return;if(gestureBlocked){panStart=null;return}const p=framePoint({x:e.clientX,y:e.clientY},$('app').getBoundingClientRect(),rotated);pan={x:panStart.pan.x+p.x-panStart.point.x,y:panStart.pan.y+p.y-panStart.point.y};drawBoard(game.model)});
+$('table').addEventListener('pointerdown',e=>{if(zoom===1||e.target.closest('button')||!e.isPrimary||gestureBlocked)return;const r=$('app').getBoundingClientRect();panStart={id:e.pointerId,point:portraitPoint({x:e.clientX,y:e.clientY},r,viewportScale),pan:{...pan}};$('table').setPointerCapture(e.pointerId)});
+$('table').addEventListener('pointermove',e=>{if(!panStart||panStart.id!==e.pointerId)return;if(gestureBlocked){panStart=null;return}const p=portraitPoint({x:e.clientX,y:e.clientY},$('app').getBoundingClientRect(),viewportScale);pan={x:panStart.pan.x+p.x-panStart.point.x,y:panStart.pan.y+p.y-panStart.point.y};drawBoard(game.model)});
 for(const type of ['pointerup','pointercancel','lostpointercapture'])$('table').addEventListener(type,()=>{panStart=null});
-$('fullscreen').onclick=async()=>{
- if(document.fullscreenElement){try{await document.exitFullscreen()}catch{}screen.orientation?.unlock?.();queueViewport()}
- else await lockLandscape(true);
-};
+$('fullscreen').onclick=toggleTableFullscreen;
+window.addEventListener('fullscreenchange',queueViewport);
 for(const id of ['target','deal']){$(id).disabled=true;$(id).title='Definido antes da partida. Volte ao menu para mudar.'}
 $('settings').onclick=()=>{const panel=$('settings-panel');panel.hidden=!panel.hidden;$('settings').setAttribute('aria-expanded',String(!panel.hidden))};
 // All resize sources share one RAF queue; frame, geometry and controls commit before paint.

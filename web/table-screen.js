@@ -1,20 +1,28 @@
 // Presentation only. Receives public hand counts, never opponents' faces.
 export function mountTableScreen(app){
- app.classList.add('premium06');
+ app.classList.add('premium06');app.dataset.tableLayout='portrait';
  const header=app.querySelector('header');
  header.querySelector('strong').innerHTML='<span class="mesa-logo" aria-label="DOMINÓ TOUR — EDVÓRIA"></span>';
  const info=document.createElement('div');info.className='mesa-info';info.innerHTML='<span id="mesa-mode">Partida Offline</span><span id="mesa-target"></span><span id="mesa-deal"></span>';header.querySelector('strong').after(info);
- const exit=document.createElement('button');exit.id='leave-table';exit.textContent='Sair da mesa';exit.setAttribute('aria-label','Sair da mesa e voltar ao menu');header.append(exit);
- const arena=app.querySelector('.arena');arena.append(app.querySelector('#organize'));
+ const exit=document.createElement('button');exit.id='leave-table';exit.textContent='Sair';exit.setAttribute('aria-label','Sair da mesa e voltar ao menu');header.append(exit);
+ const arena=app.querySelector('.arena');
  const hidden=document.createElement('div');hidden.id='opponent-hands';hidden.setAttribute('aria-label','Pedras restantes dos adversários');arena.append(hidden);
  const remaining=document.createElement('div');remaining.id='remaining-count';remaining.className='mesa-counter';arena.append(remaining);
  const dock=document.createElement('div');dock.className='mesa-dock';dock.innerHTML='<button id="table-chat" aria-label="Frases e figurinhas">💬</button><div id="sleeping-rack" aria-label="Pedras dormidas"></div><div id="turn-clock" role="timer" aria-label="Tempo para jogar"><strong>01:00</strong><meter min="0" max="60" value="60"></meter><small>Jogada automática ao zerar</small></div>';app.append(dock);
+ const humanRow=document.createElement('div');humanRow.className='mesa-human-row';
+ const human=document.createElement('div');human.id='human-profile';humanRow.append(human,dock.querySelector('#sleeping-rack'));app.append(humanRow);
+ const controls=app.querySelector('.play-controls');controls.append(dock.querySelector('#turn-clock'));
+ const actions=document.createElement('div');actions.className='mesa-actions';actions.append(dock.querySelector('#table-chat'),app.querySelector('#organize'),app.querySelector('.view-controls'));app.append(actions);
+ header.querySelector('#settings').textContent='☰';header.querySelector('#settings').setAttribute('aria-label','Menu da mesa');
+ app.querySelector('#settings-panel').append(header.querySelector('#fullscreen'));
+ app.querySelector('#fullscreen').setAttribute('aria-label','Tela cheia opcional');
+ dock.remove();
  const chat=document.createElement('dialog');chat.id='table-chat-dialog';chat.className='mesa-dialog';chat.innerHTML='<h2>Frases e figurinhas</h2><p>Mensagens locais nesta partida offline.</p><div class="quick-messages"></div><form method="dialog"><button>Fechar</button></form>';app.append(chat);
  const bubble=document.createElement('p');bubble.id='table-message-bubble';bubble.setAttribute('role','status');bubble.hidden=true;app.append(bubble);let bubbleTimer;
  for(const phrase of ['Sua vez! 😉','Vamos jogar! ⏳','Boa jogada! 👏','😄','🤖','🎉']){const b=document.createElement('button');b.textContent=phrase;b.onclick=()=>{chat.close();bubble.textContent=phrase;bubble.hidden=false;clearTimeout(bubbleTimer);bubbleTimer=setTimeout(()=>bubble.hidden=true,2500)};chat.querySelector('.quick-messages').append(b)}
  app.querySelector('#table-chat').onclick=()=>chat.showModal();
  const decision=document.createElement('dialog');decision.id='mesa-decision';decision.className='mesa-dialog';decision.innerHTML='<h2></h2><p></p><div class="decision-actions"></div>';app.append(decision);
- return {decision,clearMessages(){clearTimeout(bubbleTimer);bubble.hidden=true;if(chat.open)chat.close()}};
+ return {decision,placeHuman(node){if(node)human.replaceChildren(node)},clearMessages(){clearTimeout(bubbleTimer);bubble.hidden=true;if(chat.open)chat.close()}};
 }
 export function paintTableScreen(view){
  const get=id=>document.getElementById(id);

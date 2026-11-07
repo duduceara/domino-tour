@@ -49,7 +49,8 @@ test('approved PNG remains byte-identical; fullscreen requires explicit button a
  const bytes=readFileSync(new URL('../web/assets/approved/screen-06-mesa-oficial.png',import.meta.url));
  assert.equal(createHash('sha256').update(bytes).digest('hex'),'d86e7473f7bee937bd0ebf45616f13a7aeba5d5bb2e746e42b1e09ee4da4766c');
  const source=readFileSync(new URL('../web/app.js',import.meta.url),'utf8');
- assert.equal((source.match(/await lockLandscape\(true\)/g)||[]).length,1);
+ assert.match(source,/onclick=toggleTableFullscreen/);
+ assert.doesNotMatch(source,/orientation\??\.lock|lockLandscape|rotate\(90/);
  assert.doesNotMatch(source,/void lockLandscape\(true\)/);
  assert.doesNotMatch(source,/Camera fits the occupied chain/);
 });
