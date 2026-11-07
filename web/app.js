@@ -1,10 +1,10 @@
+import {reflowChain} from './chain-reflow.js';
 import {portraitTableViewport,portraitPoint} from './table-viewport.js';
-import {fitTableCamera} from './table-camera.js';
+import {fitTableCamera,cameraPoint,chainSpace} from './table-camera.js';
 import {mountTableScreen,paintTableScreen} from './table-screen.js';
 import {TurnClock} from './turn-clock.js';
 import {SAVE_KEY} from './offline-save.js';
 import {readOffline,writeOffline} from './offline-save.js';
-import {fittedTableSpace,tablePoint} from '../dist/src/viewport.js';
 import {LocalSession} from '../dist/src/session.js';
 import {validSides,chooseRoute} from '../dist/src/table.js';
 import {legalTiles,secureIndex} from '../dist/src/engine.js';
@@ -43,7 +43,7 @@ function scheduleBots(){
   if(ev)showPassNotice(ev.seat);else scheduleBots();
  },3000);
 }
-function coords(e){const r=$('table').getBoundingClientRect();return tablePoint({x:(e.clientX-r.left)/viewportScale-$('table').clientLeft,y:(e.clientY-r.top)/viewportScale-$('table').clientTop},{width:$('table').clientWidth,height:$('table').clientHeight},tableSpace,zoom,pan)}
+function coords(e){const r=$('table').getBoundingClientRect();return cameraPoint({x:(e.clientX-r.left)/viewportScale-$('table').clientLeft,y:(e.clientY-r.top)/viewportScale-$('table').clientTop},{width:$('table').clientWidth,height:$('table').clientHeight},tableSpace,zoom,pan)}
 function fitViewport(){
  const probe=getComputedStyle($('safe-probe')),insets={top:parseFloat(probe.paddingTop),right:parseFloat(probe.paddingRight),bottom:parseFloat(probe.paddingBottom),left:parseFloat(probe.paddingLeft)};
  const visible=window.visualViewport;
@@ -60,7 +60,7 @@ async function toggleTableFullscreen(){
  try{if(document.fullscreenElement)await document.exitFullscreen();else if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen()}catch{}
  queueViewport();
 }
-function rect(){const physical={width:$('table').clientWidth,height:$('table').clientHeight};const fitted=fittedTableSpace(physical.width,physical.height);if(!fitted)return null;tableSpace=fitted;return {x:0,y:0,width:fitted.width,height:fitted.height}}
+function rect(){const fitted=chainSpace($('table').clientWidth,$('table').clientHeight);if(!fitted)return null;tableSpace=fitted;return {x:0,y:0,width:fitted.width,height:fitted.height}}
 function clearDragVisual(){floatingTile?.remove?.();floatingTile=null;insertionMarker?.remove?.();insertionMarker=null;for(const el of $('hand').children)delete el.dataset.dragging}
 function followPointer(e,tile,source){if(!floatingTile){floatingTile=tileEl(tile,'drag-floating rack-floating',handDrag?.flipped??false);floatingTile.setAttribute('aria-hidden','true');floatingTile.style.width=(source.offsetWidth||34)+'px';floatingTile.style.height=(source.offsetHeight||68)+'px';$('app').append(floatingTile)}const p=portraitPoint({x:e.clientX,y:e.clientY},$('app').getBoundingClientRect(),viewportScale);floatingTile.style.left=p.x+'px';floatingTile.style.top=p.y+'px'}
 function cancelGesture(){handDrag=null;clearDragVisual();game.interaction.cancel();dragId=null;origin=null;dragMoved=false;ghost=null;panStart=null}
@@ -99,7 +99,7 @@ function drawBoard(model,previewId=null){
  const surface=$('table');surface.replaceChildren();const table=document.createElement('div');table.className='board-layer';
  const camera=previewId!==null&&tableSpace.camera?tableSpace.camera:fitTableCamera(model,tableSpace,$('table').clientWidth,$('table').clientHeight);
  tableSpace.camera=camera;
- const scale=zoom*(camera?.scale??tableSpace.scale);table.style.width=tableSpace.width+'px';table.style.height=tableSpace.height+'px';table.style.transformOrigin='0 0';table.style.transform=`translate(${$('table').clientWidth/2+pan.x-(camera?.x??tableSpace.width/2)*scale}px,${$('table').clientHeight/2+pan.y-(camera?.y??tableSpace.height/2)*scale}px) scale(${scale})`;surface.append(table);
+ const scale=zoom*(camera?.scale??tableSpace.scale);table.style.width=tableSpace.width+'px';table.style.height=tableSpace.height+'px';table.style.transformOrigin='0 0';table.style.transform=`translate(${$('table').clientWidth/2+pan.x}px,${$('table').clientHeight/2+pan.y}px) rotate(${camera.quarterTurn?90:0}deg) scale(${scale}) translate(${-camera.x}px,${-camera.y}px)`;surface.append(table);
  surface.dataset.geometry=model.status;surface.dataset.nodes=String(model.nodes.length);
  if(!model.geometry){const warning=document.createElement('p');warning.className='geometry-warning';warning.textContent='Geometria indisponível ('+model.failure+'). Tente outro percurso ou orientação. Nenhum encaixe artificial foi desenhado.';table.append(warning);return}
  for(const node of model.nodes){const el=tileEl({...node.official,a:node.printed[0],b:node.printed[1]},node.tileId===previewId?'ghost':'');el.disabled=true;const p=node.shape;el.style.left=p.center.x+'px';el.style.top=p.center.y+'px';el.style.width=p.width+'px';el.style.height=p.height+'px';el.style.transform=`translate(-50%,-50%) rotate(${p.angle}deg)`;el.style.fontSize=Math.min(22,p.height*.72)+'px';el.dataset.order=String(node.order);table.append(el)}
@@ -112,13 +112,20 @@ function sync(){
  if(offlineStarted&&!offlineSaveBlocked){const saved=writeOffline(offlineStorage,game,routeStyle,offlineName);document.body.dataset.offlineSave=saved?'saved':'unavailable'}
  if(handDrag)cancelGesture();
  game.layoutOptions={fixedScale:true,maxMillis:200,maxNodes:18000};
- const prior=rect();if(!prior){$('table').dataset.layout='waiting';return} $('table').dataset.layout='ready';game.setRouteStyle(routeStyle);game.resize(prior,'vertical');
+ const prior=rect();if(!prior){$('table').dataset.layout='waiting';return} $('table').dataset.layout='ready';game.setRouteStyle(routeStyle);game.resize(prior,'horizontal');
  const s=game.state,human=s.players[0];
  paintTableScreen({difficulty:game.difficulty,target:s.target,deal:s.dealSize,sleeping:s.sleeping.length,remaining:28-s.chain.length,opponents:s.players.slice(1).map(p=>({seat:p.seat,name:PLAYER_NAMES[p.seat],count:p.hand.length}))});
  $('scores').replaceChildren(...s.players.map(p=>{const e=document.createElement('span');e.className='seat'+(s.turn===p.seat?' active':'');e.dataset.seat=String(p.seat);e.setAttribute('aria-label',p.seat===0?'Seu placar':`Placar de ${PLAYER_NAMES[p.seat]}`);const label=document.createElement('span');label.textContent=`${p.seat===0?offlineName:PLAYER_NAMES[p.seat]}\n${p.score-s.target} ${p.seat===0?'pontos':'pts'}`;if(p.seat!==0){const count=document.createElement('small');count.className='seat-hand-count';count.textContent=p.hand.length+' peças';label.append(count)}e.append(label);e.dataset.handCount=String(p.hand.length);const avatar=document.createElement('span');avatar.className='avatar-slot';avatar.dataset.avatarSeat=String(p.seat);avatar.textContent=p.seat===0?offlineName:PLAYER_NAMES[p.seat][0];e.append(avatar);return e}));
  tableUI.placeHuman($('scores').querySelector('[data-seat="0"]'));
  window.dispatchEvent?.(new Event('domino-tour:participants-rendered'));
- drawBoard(game.model);
+ const view=reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight);
+ game.interaction.updateGeometry(view.geometry??game.geometry());
+ game.interaction.resolver=(id,side)=>{
+  const preview=game.preview(id,side);if(!preview)return null;
+  const model=reflowChain(preview.model,tableSpace,$('table').clientWidth,$('table').clientHeight),node=model.nodes.find(n=>n.tileId===id);
+  return {...preview,model,center:node.shape.center,shape:node.shape,printed:node.printed};
+ };
+ drawBoard(view);
  const hand=$('hand');hand.replaceChildren();
  for(const tile of game.orderedHand()){
   const b=tileEl(tile,'inhand'+(game.interaction.selectedTile===tile.id?' selected':'')+(validSides(s,0,tile.id).length?' playable':' unavailable'),game.handLayout.flipped[tile.id]);b.setAttribute('aria-pressed',String(game.interaction.selectedTile===tile.id));b.disabled=s.phase!=='playing';b.setAttribute('aria-keyshortcuts','Alt+ArrowLeft Alt+ArrowRight R');b.title='Arraste na mão para organizar. R gira; Alt + setas move.';
@@ -126,7 +133,7 @@ function sync(){
   b.addEventListener('pointerdown',e=>{
    secondTapCandidate=false;
    if(gestureBlocked||s.phase!=='playing')return;
-   if(dragId!==null){cancelGesture();drawBoard(game.model);return}
+   if(dragId!==null){cancelGesture();drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight));return}
    if(e.button!==0||!e.isPrimary)return;
    secondTapCandidate=game.interaction.selectedTile===tile.id;
    game.interaction.cancel();
@@ -141,13 +148,13 @@ function sync(){
    followPointer(e,tile,b);
    if(previewRackDrop(e,tile,b)){
     if(handDrag.tableStarted){game.interaction.cancel();handDrag.tableStarted=false}
-    if(ghost!==null){ghost=null;drawBoard(game.model)}return;
+    if(ghost!==null){ghost=null;drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight))}return;
    }
-   if(!within(point,frameRect($('table')))){if(ghost!==null){ghost=null;drawBoard(game.model)}return}
+   if(!within(point,frameRect($('table')))){if(ghost!==null){ghost=null;drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight))}return}
    if(!handDrag.tableStarted)handDrag.tableStarted=Boolean(game.interaction.begin(e.pointerId,tile.id,handDrag.tableStart));
    if(!handDrag.tableStarted)return;
    const preview=game.interaction.preview(tile.id,coords(e));
-   if(preview?.model){ghost=preview.tileId;drawBoard(preview.model,ghost)}else if(ghost!==null){ghost=null;drawBoard(game.model)}
+   if(preview?.model){ghost=preview.tileId;drawBoard(preview.model,ghost)}else if(ghost!==null){ghost=null;drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight))}
   });
   b.addEventListener('pointerup',e=>{
    if(dragId!==e.pointerId||!handDrag)return;
@@ -192,10 +199,10 @@ function sync(){
  if(offlineStarted&&document.body.dataset.offlineSave==='unavailable')$('message').textContent+=' · Não foi possível salvar neste navegador.';
 }
 // Capture phase sees a second pointer even outside the rack/first captured element.
-document.addEventListener('pointerdown',e=>{activePointers.add(e.pointerId);if(activePointers.size>1){gestureBlocked=true;cancelGesture();drawBoard(game.model)}},true);
+document.addEventListener('pointerdown',e=>{activePointers.add(e.pointerId);if(activePointers.size>1){gestureBlocked=true;cancelGesture();drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight))}},true);
 for(const type of ['pointerup','pointercancel'])document.addEventListener(type,e=>{activePointers.delete(e.pointerId);if(!activePointers.size)gestureBlocked=false});
-window.addEventListener('blur',()=>{cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(game.model)});
-document.addEventListener('visibilitychange',()=>{if(document.hidden){turnClock.pause();stopBotSequence();cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(game.model)}else{turnClock.resume();sync();scheduleBots()}});
+window.addEventListener('blur',()=>{cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight))});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){turnClock.pause();stopBotSequence();cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight))}else{turnClock.resume();sync();scheduleBots()}});
 function afterAction(){clearDragVisual();dragId=null;origin=null;ghost=null;sync();scheduleBots()}
 $('organize').onclick=()=>{
  if(!tableActive||decisionKind||game.state.phase!=='playing')return;
@@ -208,10 +215,10 @@ $('next-round').onclick=()=>{if(game.state.phase!=='round-complete')return;stopB
 $('play-again').onclick=()=>{if(game.state.phase!=='finished')return;stopBotSequence();cancelGesture();game.newMatch();sync();scheduleBots()};
 $('restart').onclick=()=>askLeave('new');
 $('route').onchange=()=>{cancelGesture();routeStyle=$('route').value==='random'?chooseRoute(secureIndex):$('route').value;sync()};
-$('zoom').onclick=()=>{cancelGesture();zoom=zoom>=8?1:Math.min(8,zoom*2);pan={x:0,y:0};drawBoard(game.model)};
-$('fit').onclick=()=>{cancelGesture();zoom=1;pan={x:0,y:0};drawBoard(game.model)};
+$('zoom').onclick=()=>{cancelGesture();zoom=zoom>=8?1:Math.min(8,zoom*2);pan={x:0,y:0};drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight))};
+$('fit').onclick=()=>{cancelGesture();zoom=1;pan={x:0,y:0};drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight))};
 $('table').addEventListener('pointerdown',e=>{if(zoom===1||e.target.closest('button')||!e.isPrimary||gestureBlocked)return;const r=$('app').getBoundingClientRect();panStart={id:e.pointerId,point:portraitPoint({x:e.clientX,y:e.clientY},r,viewportScale),pan:{...pan}};$('table').setPointerCapture(e.pointerId)});
-$('table').addEventListener('pointermove',e=>{if(!panStart||panStart.id!==e.pointerId)return;if(gestureBlocked){panStart=null;return}const p=portraitPoint({x:e.clientX,y:e.clientY},$('app').getBoundingClientRect(),viewportScale);pan={x:panStart.pan.x+p.x-panStart.point.x,y:panStart.pan.y+p.y-panStart.point.y};drawBoard(game.model)});
+$('table').addEventListener('pointermove',e=>{if(!panStart||panStart.id!==e.pointerId)return;if(gestureBlocked){panStart=null;return}const p=portraitPoint({x:e.clientX,y:e.clientY},$('app').getBoundingClientRect(),viewportScale);pan={x:panStart.pan.x+p.x-panStart.point.x,y:panStart.pan.y+p.y-panStart.point.y};drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight))});
 for(const type of ['pointerup','pointercancel','lostpointercapture'])$('table').addEventListener(type,()=>{panStart=null});
 $('fullscreen').onclick=toggleTableFullscreen;
 window.addEventListener('fullscreenchange',queueViewport);

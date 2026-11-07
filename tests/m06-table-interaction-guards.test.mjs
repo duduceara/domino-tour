@@ -38,7 +38,7 @@ test('Mesa Premium: pointer drag lifecycle remains wired', () => {
     assert.ok(app.includes(event), 'Missing pointer event: ' + event);
 });
 test('Mesa Premium: geometry and coordinate conversion remain present', () => {
-  for (const name of ['fittedTableSpace', 'tablePoint', 'portraitPoint'])
+  for (const name of ['chainSpace', 'cameraPoint', 'portraitPoint'])
     assert.ok(app.includes(name), 'Missing geometry function: ' + name);
 });
 test('Mesa Premium: score, table and hand elements remain mounted', () => {
