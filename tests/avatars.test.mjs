@@ -60,3 +60,12 @@ test('picker favorites, surprise and empty filtered results are functional',asyn
  const h=await picker();h.get('avatar-grid').children[0].children[1].click();h.get('avatar-favorites').click();assert.equal(h.get('avatar-grid').children.length,1);h.get('avatar-surprise').click();assert.equal(h.doc.body.dataset.avatarReady,'true');
  h.get('avatar-search').value='nothing-matches';h.get('avatar-search').listeners.input[0]();assert.equal(h.get('avatar-surprise').disabled,true);assert.match(h.get('avatar-grid').children[0].textContent,/Nenhum avatar/);
 });
+test('identity handoff updates table portraits in memory when storage is blocked and replaces an earlier photo',async()=>{
+ const h=await picker({denied:true});
+ const first={version:1,selectedId:catalog.items[0].id,favoriteIds:[],nickname:'Carlos',photo:'data:image/jpeg;base64,AAAA'};
+ h.win.dispatchEvent({type:'domino-tour:identity-saved',detail:{profile:first}});
+ assert.equal(h.seats[0].dataset.avatarId,'local-photo');assert.equal(h.seats[0].children[0].src,first.photo);
+ const second={...first,photo:'data:image/jpeg;base64,BBBB'};
+ h.win.dispatchEvent({type:'domino-tour:identity-saved',detail:{profile:second}});
+ assert.equal(h.seats[0].children[0].src,second.photo);assert.equal(h.doc.body.dataset.avatarReady,'true');
+});

@@ -1,3 +1,4 @@
+import {openIdentity} from './identity-screen.js';
 import {readPendingIdentification} from './match-setup.js';
 import {guestOptions,localGuest} from './guest-session.js';
 const flow=document.querySelector('#entry-flow'),setup=document.querySelector('#match-setup'),app=document.querySelector('#app');
@@ -12,13 +13,17 @@ window.addEventListener('domino-tour:identify-guest',()=>{
 });
 play.addEventListener('click',()=>{
  if(root.hidden||entering||!pending)return;
- entering=true;const detail={...pending,accepted:false};
- window.dispatchEvent(new CustomEvent('domino-tour:offline-options',{detail}));
- if(!detail.accepted){entering=false;status.textContent='Não foi possível preparar a partida. Tente novamente.';status.hidden=false;return}
- let storage=null;try{storage=window.localStorage}catch{}
- const id=crypto.randomUUID?.()??[...crypto.getRandomValues(new Uint8Array(16))].map(n=>n.toString(16).padStart(2,'0')).join('');
- localGuest(storage,id);document.body.dataset.session='guest';
- app.dataset.guestTheme=detail.tableStyle;root.hidden=true;app.inert=false;
- window.dispatchEvent(new Event('domino-tour:quick-play'));
+ root.hidden=true;
+ void openIdentity({onBack:()=>{root.hidden=false;play.focus({preventScroll:true})},onPlay:identity=>{
+  if(entering||!pending)return false;
+  entering=true;const detail={...pending,name:identity.nickname,accepted:false};
+  window.dispatchEvent(new CustomEvent('domino-tour:offline-options',{detail}));
+  if(!detail.accepted){entering=false;return false}
+  let storage=null;try{storage=window.localStorage}catch{}
+  const id=crypto.randomUUID?.()??[...crypto.getRandomValues(new Uint8Array(16))].map(n=>n.toString(16).padStart(2,'0')).join('');
+  localGuest(storage,id,identity.nickname);document.body.dataset.session='guest';
+  app.dataset.guestTheme=detail.tableStyle;app.inert=false;
+  window.dispatchEvent(new Event('domino-tour:quick-play'));return true;
+ }});
 });
 root.addEventListener('keydown',e=>{if(e.key==='Escape'&&!entering){root.hidden=true;setup.hidden=false;setup.querySelector('[data-config-action="start"]').focus({preventScroll:true})}});
