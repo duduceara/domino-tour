@@ -49,7 +49,7 @@ test('visitor entry defers session creation until identity JOGAR and starts only
  const doc={body:{dataset:{},append(){}},querySelector:s=>({'#entry-flow':flow,'#match-setup':setup,'#app':app}[s]),createElement:()=>root=new Element()};
  const store=storage();const win={localStorage:store,addEventListener:(k,f)=>listeners[k]=f,dispatchEvent:e=>{events.push(e);if(e.type==='domino-tour:offline-options')e.detail.accepted=true;listeners[e.type]?.(e)}};
  const c={...createMatchConfig(),difficulty:'hard',target:200,tableStyle:'blue'};
- const context=vm.createContext({document:doc,window:win,readPendingIdentification:()=>c,guestOptions,localGuest:(...a)=>{guestCount++;return localGuest(...a)},openIdentity:o=>callbacks=o,crypto:{randomUUID:()=> 'guest-id'},Event:class{constructor(type){this.type=type}},CustomEvent:class{constructor(type,o){this.type=type;this.detail=o.detail}}});
+ const context=vm.createContext({fitApprovedArtwork(){},document:doc,window:win,readPendingIdentification:()=>c,guestOptions,localGuest:(...a)=>{guestCount++;return localGuest(...a)},openIdentity:o=>callbacks=o,crypto:{randomUUID:()=> 'guest-id'},Event:class{constructor(type){this.type=type}},CustomEvent:class{constructor(type,o){this.type=type;this.detail=o.detail}}});
  vm.runInContext(read('web/guest-access.js').replace(/^import .*;\n/gm,''),context);
  listeners['domino-tour:identify-guest']();play.listeners.click();assert.equal(guestCount,0);assert.equal(events.length,0);
  callbacks.onBack();assert.equal(root.hidden,false);play.listeners.click();

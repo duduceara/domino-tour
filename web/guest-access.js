@@ -1,3 +1,4 @@
+import {fitApprovedArtwork} from './artwork-fit.js';
 import {openIdentity} from './identity-screen.js';
 import {readPendingIdentification} from './match-setup.js';
 import {guestOptions,localGuest} from './guest-session.js';
@@ -5,6 +6,7 @@ const flow=document.querySelector('#entry-flow'),setup=document.querySelector('#
 const root=document.createElement('section');root.id='guest-access';root.className='guest04';root.hidden=true;root.setAttribute('aria-label','Tela 04 — Acesse sua conta');
 root.innerHTML='<div class="guest04-art"><img src="./assets/approved/screen-02.png" width="1024" height="1536" alt="DOMINÓ TOUR — Acesse sua conta — EDVÓRIA"><button type="button" class="guest04-hit" disabled aria-label="Entrar com e-mail — indisponível durante os testes" style="left:17%;top:43.4%;width:66%;height:6.2%"></button><button type="button" class="guest04-hit" disabled aria-label="Continuar com Google — indisponível durante os testes" style="left:17%;top:50.7%;width:66%;height:6.2%"></button><button type="button" class="guest04-hit" disabled aria-label="Continuar com Facebook — indisponível durante os testes" style="left:17%;top:58%;width:66%;height:6.2%"></button><button type="button" id="guest04-play" class="guest04-hit" aria-label="Jogar como Visitante" style="left:17%;top:69%;width:66%;height:6.2%"></button><p class="guest04-status" role="status" hidden></p></div>';
 document.body.append(root);
+fitApprovedArtwork(root.querySelector('.guest04-art'),root,[0,.42,.83,1],1024,1536);
 const play=root.querySelector('#guest04-play'),status=root.querySelector('[role="status"]');let pending=null,entering=false;
 window.addEventListener('domino-tour:identify-guest',()=>{
  if(flow.hidden||setup.hidden)return;
