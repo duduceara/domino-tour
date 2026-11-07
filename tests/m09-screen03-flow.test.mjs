@@ -35,8 +35,8 @@ test('Jogar Rápido opens screen 03; Offline/Online, help and back preserve scre
  const action=k=>root.querySelector(`[data-config-action="${k}"]`);
  const choice=(f,v)=>root.querySelectorAll('[data-config-field]').find(n=>n.dataset.configField===f&&n.dataset.configValue===v);
  choice('difficulty','hard').click();action('online').click();assert.equal(root.dataset.mode,'online');action('online-create').click();assert.equal(dialog.open,true);assert.equal(title.textContent,'Jogar Online');dialog.close();
- action('offline').click();assert.equal(choice('difficulty','hard').attributes['aria-pressed'],'true');action('start').click();assert.equal(title.textContent,'Identificação em desenvolvimento');dialog.close();
+ action('offline').click();assert.equal(choice('difficulty','hard').attributes['aria-pressed'],'true');action('start').click();assert.equal(dialog.open,false);dialog.close();
  action('back').click();assert.equal(root.hidden,true);assert.equal(flow.inert,false);assert.equal(app.inert,false);assert.equal(document.activeElement,quick);
  other.click();assert.equal(ids['official02-title'].textContent,'Regras');assert.equal(ids['official02-dialog'].open,true);
- assert.deepEqual(events,['domino-tour:configure-match']);
+ assert.deepEqual(events,['domino-tour:configure-match','domino-tour:identify-guest']);
 });

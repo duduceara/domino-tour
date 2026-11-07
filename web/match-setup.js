@@ -49,7 +49,7 @@ const footer=artWindow('config03-footer',849,175,[['start','Iniciar Partida',{x:
  const result=prepareIdentification(state);
  if(result.status==='online-unavailable'){announceOnline();return}
  pendingIdentification=result.config;
- showInfo('Identificação em desenvolvimento',`Suas escolhas foram preservadas:\nOffline · ${difficultyLabels[state.difficulty]} · ${state.target} pontos · ${TABLE_LABELS[state.tableStyle]}.\n\nA Tela 04 ainda será implementada e homologada. Nenhuma partida foi iniciada.`);
+ window.dispatchEvent(new Event('domino-tour:identify-guest'));
 }]]);
 page.append(header,tabs,modeInfo,banner,difficulty.g,onlineOptions.g,points.g,themes.g,footer);
 function set(field,value){

@@ -225,9 +225,11 @@ layoutObserver.observe(document.documentElement);layoutObserver.observe($('table
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)queueViewport()});
 window.addEventListener('domino-tour:offline-options',e=>{
  if($('entry-flow').hidden||$('entry-flow').dataset.step!=='2')return;
- const o=e.detail;if(!['easy','medium','hard'].includes(o.difficulty)||![6,7].includes(o.deal))return;
- if(!o.resume){stopBotSequence();cancelGesture();game=new LocalSession(100,o.deal,o.difficulty);routeStyle=chooseRoute(secureIndex)}
- offlineName=String(o.name).slice(0,24);o.accepted=true;
+ const o=e.detail;if(!o||!['easy','medium','hard'].includes(o.difficulty)||![6,7].includes(o.deal))return;
+ const target=o.target??100;if(![100,200].includes(target)||o.mode&&o.mode!=='offline')return;
+ if(o.guest&&(!['green','red','blue','wood','purple'].includes(o.tableStyle)||o.resume))return;
+ if(!o.resume){stopBotSequence();cancelGesture();game=new LocalSession(target,o.deal,o.difficulty);routeStyle=chooseRoute(secureIndex)}
+ offlineName=String(o.name).slice(0,24);$('target').value=String(game.state.target);$('difficulty').value=game.difficulty;$('entry-difficulty').value=game.difficulty;$('deal').value=String(game.state.dealSize);o.accepted=true;
 });
 window.addEventListener('domino-tour:enter-game',()=>{offlineStarted=true;sync();scheduleBots();queueViewport();void lockLandscape(true)});
 window.addEventListener('pagehide',()=>{if(offlineStarted&&!offlineSaveBlocked)writeOffline(offlineStorage,game,routeStyle,offlineName)});
