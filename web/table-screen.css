@@ -59,7 +59,9 @@ body[data-entry="playing"] .app.premium06{visibility:visible}
 .premium06 .piece.inhand.selected{outline:2px solid #ffe399;outline-offset:2px;box-shadow:0 0 0 4px #ffda5a33,0 4px 7px #0009}
 .premium06 .mesa-actions{grid-row:7;display:flex;align-items:center;justify-content:space-between;gap:6px;min-width:0;padding-top:3px}
 .premium06 .mesa-actions #table-chat{width:44px;min-width:44px;padding:4px;font-size:20px}
-.premium06 .mesa-actions #organize{position:static;inset:auto;min-width:86px;min-height:44px;padding:5px 8px;font-size:13px}
+.premium06 .mesa-actions #organize{position:static;inset:auto;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:100px;min-height:44px;padding:5px 8px;font-size:13px}
+/* Organize: a restrained bidirectional sorting mark, not a domino pip icon. */
+.premium06 .mesa-actions #organize::before{content:'↕';display:inline-block;color:#f2cb74;font:700 22px/1 system-ui;vertical-align:middle}
 .premium06 .view-controls{display:flex;align-items:center;gap:6px;margin-left:auto}
 .premium06 .view-controls #zoom{width:44px;padding:4px;font-size:22px}
 .premium06 .view-controls #fit{min-width:72px;padding:4px 6px;font-size:12px}
