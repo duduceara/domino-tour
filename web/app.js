@@ -312,7 +312,7 @@ function decide(kind,title,message,choices){
  decisionKind=kind;stopBotSequence();cancelGesture();turnClock.pause();
  const d=tableUI.decision;d.querySelector('h2').textContent=title;d.querySelector('p').textContent=message;
  d.querySelector('.decision-actions').replaceChildren(...choices.map(([label,run])=>{
-  const b=document.createElement('button');b.textContent=label;b.onclick=()=>{d.close();decisionKind=null;turnClock.resume();run()};return b;
+  const b=document.createElement('button');b.textContent=label;b.onclick=()=>{d.close();decisionKind=null;if(!document.hidden&&!rotationSuspended)turnClock.resume();run()};return b;
  }));
  if(!d.open)d.showModal();
 }
@@ -372,7 +372,7 @@ function showCompleted(){
  window.dispatchEvent(new Event('domino-tour:participants-rendered'));
  d.addEventListener('close',()=>{d.classList.remove('premium-result');trophy.remove();table.remove();note.remove()},{once:true});
 }
-tableUI.decision.addEventListener('cancel',e=>{e.preventDefault();if(decisionKind==='leave'){tableUI.decision.close();decisionKind=null;turnClock.resume();keepPlaying()}});
+tableUI.decision.addEventListener('cancel',e=>{e.preventDefault();if(decisionKind==='leave'){tableUI.decision.close();decisionKind=null;if(!document.hidden&&!rotationSuspended)turnClock.resume();keepPlaying()}});
 $('leave-table').onclick=()=>askLeave();
 window.addEventListener('domino-tour:return-menu',()=>{queueViewport()});
 $('difficulty').value=game.difficulty;$('entry-difficulty').value=game.difficulty;$('target').value=String(game.state.target);$('deal').value=String(game.state.dealSize);
