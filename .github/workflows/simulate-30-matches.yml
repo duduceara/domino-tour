@@ -1,4 +1,4 @@
-name: Simulate 30 domino matches
+name: Simulate 60 domino matches
 on:
   workflow_dispatch:
   push:
@@ -11,7 +11,7 @@ on:
 permissions:
   contents: read
 jobs:
-  thirty-matches:
+  sixty-matches:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -19,5 +19,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Simulate thirty complete matches against actual game engine
+      - name: Simulate sixty complete matches against actual game engine
         run: node --test tests/automated-30-matches.test.mjs
