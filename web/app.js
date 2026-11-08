@@ -325,6 +325,8 @@ function newMatch(){
  game.newMatch();game.layoutOptions={fixedScale:true};sync();scheduleBots();
 }
 async function leaveTable(){
+ tableUI.decision.classList.remove('premium-result');
+ for(const old of tableUI.decision.querySelectorAll('.result-trophy,.result-ranking,.result-rewards-note'))old.remove();
  tableActive=false;rotationSuspended=false;rotationNotice.hidden=true;offlineStarted=false;stopBotSequence();cancelGesture();turnClock.stop();tableUI.clearMessages();completedKey=null;
  try{offlineStorage?.removeItem(SAVE_KEY);document.body.dataset.offlineSave='cleared'}catch{offlineSaveBlocked=true;document.body.dataset.offlineSave='unavailable'}
  // Only this unfinished match is discarded. Profile, avatar and other data remain.
@@ -348,6 +350,8 @@ function showCompleted(){
  decide('result',finished?'Resultado da Partida':'Resultado da Rodada',
   (winner===0?'Vitória! Você venceu!':'Vencedor: '+winnerName)+'.',choices);
  const d=tableUI.decision;
+ // A reused result dialog must contain exactly one trophy, ranking and note.
+ for(const old of d.querySelectorAll('.result-trophy,.result-ranking,.result-rewards-note'))old.remove();
  d.classList.add('premium-result');
  const p=d.querySelector('p');
  const trophy=document.createElement('div');trophy.className='result-trophy';trophy.setAttribute('aria-hidden','true');trophy.textContent=finished?'🏆':'🎲';
