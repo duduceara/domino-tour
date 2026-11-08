@@ -30,7 +30,7 @@ body[data-entry="playing"] .app.premium06{visibility:visible}
 .premium06 .opponent-1,.premium06 .opponent-3{top:calc(23% + 88px);flex-direction:column;width:30px;max-height:calc(77% - 104px);overflow:hidden}
 .premium06 .opponent-1{left:16px}.premium06 .opponent-3{right:16px}
 .premium06 .opponent-2{top:60px;left:50%;transform:translateX(-50%);gap:3px}
-.premium06 .domino-back{display:block;width:24px;height:12px;flex:none;border:1px solid #f1d89e;border-radius:3px;background:repeating-linear-gradient(45deg,transparent 0 3px,#92aedb70 3px 4px),repeating-linear-gradient(-45deg,#132c56 0 3px,#8ba3c770 3px 4px);box-shadow:inset 0 0 0 1px #041126,0 1px 2px #0008}
+.premium06 .domino-back{display:block;width:24px;height:12px;flex:none;border:1px solid #d8bd87;border-radius:3px;background:linear-gradient(145deg,#fffdf2 0%,#f4e7c9 54%,#dfc69b 100%);box-shadow:inset 0 1px 0 #ffffffcc,inset 0 -1px 0 #b18a55,0 2px 2px #0006}
 .premium06 .opponent-2 .domino-back{width:22px;height:11px}
 .premium06 .mesa-counter{position:absolute;left:50%;bottom:4px;transform:translateX(-50%);font:500 10px/1.1 system-ui;white-space:nowrap;color:#c4d4df;text-align:center;pointer-events:none}
 .premium06 .mesa-human-row{grid-row:4;display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0;padding-top:3px}
@@ -53,7 +53,7 @@ body[data-entry="playing"] .app.premium06{visibility:visible}
 .premium06 .piece.inhand::after{inset:0;width:100%;height:100%;transform:none}
 .app.premium06 .piece{min-width:0;min-height:0;padding:0;border-radius:4px;color:#121c28;background:linear-gradient(135deg,#fffae9,#f4d9a5);border:1px solid #e6c27c;box-shadow:inset 0 1px 1px #fff,0 2px 0 #a67830,0 3px 4px #0007}
 .premium06 .piece .divider{position:relative;background:#65523b}
-.premium06 .piece .divider:after{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:4px;height:4px;border-radius:50%;background:radial-gradient(circle at 25% 25%,#fff6ba,#c18c20);box-shadow:0 1px 1px #5c3618}
+.premium06 .piece .divider:after{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:2px;height:2px;border-radius:50%;background:#c49a43;box-shadow:0 0 .5px #8a6426}
 .premium06 .piece.inhand.unavailable:not(.selected){opacity:.82;filter:saturate(.7)}
 .premium06 .piece.inhand.playable:not(.selected){border-color:#ffe7a0}
 .premium06 .piece.inhand.selected{outline:2px solid #ffe399;outline-offset:2px;box-shadow:0 0 0 4px #ffda5a33,0 4px 7px #0009}
