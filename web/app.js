@@ -317,9 +317,9 @@ function showCompleted(){
  const d=tableUI.decision;
  d.classList.add('premium-result');
  const p=d.querySelector('p');
- const trophy=document.createElement('div');trophy.className='result-trophy';trophy.setAttribute('aria-hidden','true');trophy.textContent='🏆';
+ const trophy=document.createElement('div');trophy.className='result-trophy';trophy.setAttribute('aria-hidden','true');trophy.textContent=finished?'🏆':'🎲';
  const table=document.createElement('table');table.className='result-ranking';
- const caption=document.createElement('caption');caption.textContent='Classificação e pontuação atual';
+ const caption=document.createElement('caption');caption.textContent=finished?'Classificação final':'Pontuação após a rodada';
  table.append(caption);
  const head=document.createElement('thead'),hr=document.createElement('tr');
  for(const label of ['Posição','Jogador','Pontos']){const th=document.createElement('th');th.textContent=label;hr.append(th)}head.append(hr);table.append(head);
