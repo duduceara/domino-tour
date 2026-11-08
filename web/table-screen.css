@@ -131,3 +131,7 @@ body[data-entry="playing"] .app.premium06{visibility:visible}
 .premium06 .result-ranking td:nth-child(2){min-width:0;overflow-wrap:anywhere;vertical-align:middle}
 .premium06 .result-ranking .result-avatar{display:inline-flex;vertical-align:middle;margin-right:8px;width:34px;height:34px;border:2px solid #e6bc60;border-radius:50%;overflow:hidden;background:#092645;align-items:center;justify-content:center}
 .premium06 .result-ranking .result-avatar img{width:100%;height:100%;object-fit:cover}
+
+/* Tela 06: a rotação não muda a orientação do jogo. */
+#mesa-portrait-notice:not([hidden]){position:fixed;inset:0;z-index:2147483640;display:grid;place-items:center;padding:24px;text-align:center;background:#06172b;color:#fff0d1;font:700 clamp(18px,4vw,26px)/1.4 system-ui;box-sizing:border-box}
+#mesa-portrait-notice[hidden]{display:none}
