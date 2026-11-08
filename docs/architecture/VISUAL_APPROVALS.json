@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "source": "Aprovações expressas do proprietário nesta conversa; não inferidas de testes",
+  "approvals": [
+    {"screen": "01", "name": "Carregamento", "commit": "78dd8eb56ce25ec88e2edf987cdc8d1200b47174", "status": "owner-approved", "statement": "Excelente, aprovada. Aprovadíssima. Esse é o padrão", "pixelBaselines": []},
+    {"screen": "02", "name": "Apresentação / Rumo à Lenda", "commit": "2ee84db2a3e044c2373af4e07eaf5220eb6de597", "status": "owner-approved", "statement": "nesse momento eu vou aprovar a interface dela. Tá bem distribuída", "pixelBaselines": []}
+  ],
+  "pixelBaselineStatus": "Pendente: não há conjunto versionado de screenshots homologados por viewport/browser; não usar candidatos como referências automáticas"
+}

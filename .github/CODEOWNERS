@@ -1,0 +1,18 @@
+# Só protege merges quando a regra remota exige revisão de CODEOWNERS.
+/AGENTS.md @duduceara
+/.github/ @duduceara
+/docs/architecture/ @duduceara
+/docs/m13-r/approved-art-reference.json @duduceara
+/web/assets/approved/ @duduceara
+/web/layout.css @duduceara
+/web/premium-polish.css @duduceara
+/web/presentation-fit.js @duduceara
+/web/presentation-layout.js @duduceara
+/web/entry-flow.js @duduceara
+/web/index.html @duduceara
+/index.html @duduceara
+/scripts/check-architecture.mjs @duduceara
+/scripts/compare-premium-screenshots.py @duduceara
+/tests/ @duduceara
+/web/ @duduceara
+/dist/src/ @duduceara

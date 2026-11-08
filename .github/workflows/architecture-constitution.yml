@@ -1,0 +1,48 @@
+name: Architecture constitution
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/mobile-touch-v1]
+  pull_request:
+    branches: [feature/mobile-touch-v1]
+permissions:
+  contents: read
+jobs:
+  architecture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Protect historical artifacts and approved presentations
+        run: node scripts/check-architecture.mjs > architecture-report.json
+      - name: Run governance and focused functional regression tests
+        run: >-
+          node --test tests/architecture-constitution.test.mjs
+          tests/premium-recovery.test.mjs tests/m05-approved-art-integrity.test.mjs
+          tests/r01-full-viewport.test.mjs tests/r02-presentation-layout.test.mjs
+          tests/entry-flow.test.mjs tests/m07-art-preservation.test.mjs
+          tests/m07-match-config.test.mjs tests/m09-screen03-flow.test.mjs
+          tests/m10-guest.test.mjs tests/identity.test.mjs
+          tests/mobile-touch.test.mjs tests/round-transition.test.mjs
+      - name: Install screenshot comparison dependency
+        run: python -m pip install Pillow==11.3.0
+      - name: Verify comparator rejects differences and missing references
+        run: python tests/test_visual_comparator.py
+      - name: Report human visual gate
+        run: |
+          echo '## Visual approval is a separate requirement' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Screens 01/02: owner-approved versions locked. Full-screen pixel certification is PENDING approved viewport/browser screenshots. No reference is generated automatically.' >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: architecture-report
+          path: architecture-report.json
+          if-no-files-found: warn
+          retention-days: 14
