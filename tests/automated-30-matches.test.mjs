@@ -2,15 +2,19 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {newGame,play,pass,legalTiles,continueRound,runBotTurn,assertStateIntegrity} from '../dist/src/engine.js';
 
-// Thirty complete offline matches, not just thirty rounds.
+// Sixty complete offline matches, 10 per difficulty and deal size.
 // The human seat follows a deterministic, legal policy; the other seats use
 // the actual bot decision engine. This does not simulate touchscreen gestures.
-test('30 complete matches: human versus three bots, 6/7 tiles and three difficulties',()=>{
- const outcomes={human:0,robots:[0,0,0],rounds:0,turns:0};
- for(let i=0;i<30;i++){
-  const dealSize=i%2?7:6;
-  const difficulty=['easy','medium','hard'][Math.floor(i/2)%3];
-  const target=[100,150,200][Math.floor(i/6)%3];
+test('60 complete matches: 10 for each difficulty and deal size',()=>{
+ const outcomes={human:0,robots:[0,0,0],rounds:0,turns:0,groups:{}};
+ for(let i=0;i<60;i++){
+  const dealSize=Math.floor(i/30)===0?6:7;
+  const difficulty=['easy','medium','hard'][Math.floor((i%30)/10)];
+  const target=[100,150,200][i%3];
+  const groupKey=dealSize+'-'+difficulty;
+  const group=outcomes.groups[groupKey]??={matches:0,humanWins:0,botWins:[0,0,0],rounds:0,turns:0};
+  group.matches++;
+  const roundsBefore=outcomes.rounds,turnsBefore=outcomes.turns;
   const s=newGame(target,dealSize);
   let actions=0;
   while(s.phase!=='finished'){
@@ -39,9 +43,16 @@ test('30 complete matches: human versus three bots, 6/7 tiles and three difficul
   assertStateIntegrity(s);
   assert.ok(Number.isInteger(s.winner)&&s.winner>=0&&s.winner<4);
   assert.ok(s.players[s.winner].score>=target*2);
-  if(s.winner===0)outcomes.human++;else outcomes.robots[s.winner-1]++;
+  if(s.winner===0){outcomes.human++;group.humanWins++}else{outcomes.robots[s.winner-1]++;group.botWins[s.winner-1]++}
+  group.rounds+=outcomes.rounds-roundsBefore+1;
+  group.turns+=outcomes.turns-turnsBefore;
   console.log(JSON.stringify({match:i+1,dealSize,difficulty,target,winner:s.winner,rounds:s.roundsCompleted,actions}));
  }
- assert.equal(outcomes.human+outcomes.robots.reduce((a,b)=>a+b,0),30);
- console.log('SUMMARY_30_MATCHES',JSON.stringify(outcomes));
+ assert.equal(outcomes.human+outcomes.robots.reduce((a,b)=>a+b,0),60);
+ for(const [key,g] of Object.entries(outcomes.groups)){
+  assert.equal(g.matches,10,`Expected ten matches for ${key}`);
+  assert.equal(g.humanWins+g.botWins.reduce((a,b)=>a+b,0),10);
+  console.log('GROUP_STATS',JSON.stringify({group:key,...g,humanWinRatePercent:100*g.humanWins/g.matches,averageRounds:g.rounds/g.matches,averageTurns:g.turns/g.matches}));
+ }
+ console.log('SUMMARY_60_MATCHES',JSON.stringify(outcomes));
 });
