@@ -68,12 +68,18 @@ function syncPortraitOrientation(){
  }
 }
 function fitViewport(){
+ // Keep the last playable portrait frame while the rotation notice is visible.
+ if(rotationSuspended)return false;
  const probe=getComputedStyle($('safe-probe')),insets={top:parseFloat(probe.paddingTop),right:parseFloat(probe.paddingRight),bottom:parseFloat(probe.paddingBottom),left:parseFloat(probe.paddingLeft)};
  const visible=window.visualViewport;
  const v=portraitTableViewport(visible?.width??document.documentElement.clientWidth,visible?.height??window.innerHeight,insets,{left:visible?.offsetLeft??0,top:visible?.offsetTop??0});
  const signature=JSON.stringify(v);if(signature===viewportSignature)return false;
- viewportSignature=signature;cancelGesture();viewportScale=v.scale;zoom=1;pan={x:0,y:0};
- const app=$('app');app.style.width=v.width+'px';app.style.height=v.height+'px';app.style.left=v.left+'px';app.style.top=v.top+'px';app.style.transform=v.scale===1?'none':`scale(${v.scale})`;
+ const app=$('app');
+ const geometryChanged=app.style.width!==v.width+'px'||app.style.height!==v.height+'px';
+ viewportSignature=signature;cancelGesture();viewportScale=v.scale;
+ // Viewport offsets and browser chrome must not discard the player's zoom/pan.
+ if(geometryChanged){zoom=1;pan={x:0,y:0}}
+ app.style.width=v.width+'px';app.style.height=v.height+'px';app.style.left=v.left+'px';app.style.top=v.top+'px';app.style.transform=v.scale===1?'none':`scale(${v.scale})`;
  app.dataset.rotated='false';app.dataset.compact=String(v.height<700);app.dataset.dense='false';
  $('fullscreen').textContent=document.fullscreenElement?'Sair da tela cheia':'Tela cheia (opcional)';
  return true;
