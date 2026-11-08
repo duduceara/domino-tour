@@ -76,7 +76,10 @@ function fitViewport(){
  const signature=JSON.stringify(v);if(signature===viewportSignature)return false;
  const app=$('app');
  const geometryChanged=app.style.width!==v.width+'px'||app.style.height!==v.height+'px';
- viewportSignature=signature;cancelGesture();viewportScale=v.scale;
+ viewportSignature=signature;
+ // A viewport offset alone must not cancel a live finger drag.
+ if(geometryChanged)cancelGesture();
+ viewportScale=v.scale;
  // Viewport offsets and browser chrome must not discard the player's zoom/pan.
  if(geometryChanged){zoom=1;pan={x:0,y:0}}
  app.style.width=v.width+'px';app.style.height=v.height+'px';app.style.left=v.left+'px';app.style.top=v.top+'px';app.style.transform=v.scale===1?'none':`scale(${v.scale})`;
