@@ -251,8 +251,9 @@ $('restart').onclick=()=>askLeave('new');
 $('route').onchange=()=>{cancelGesture();routeStyle=$('route').value==='random'?chooseRoute(secureIndex):$('route').value;sync()};
 $('zoom').onclick=()=>{cancelGesture();zoom=zoom>=8?1:Math.min(8,zoom*2);pan={x:0,y:0};drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight))};
 $('fit').onclick=()=>{cancelGesture();zoom=1;pan={x:0,y:0};drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight))};
+function paintPan(){const layer=$('table').querySelector('.board-layer'),camera=tableSpace.camera;if(!layer||!camera)return;const scale=zoom*camera.scale;layer.style.transform=`translate(${$('table').clientWidth/2+pan.x}px,${$('table').clientHeight/2+pan.y}px) rotate(${camera.quarterTurn?90:0}deg) scale(${scale}) translate(${-camera.x}px,${-camera.y}px)`;}
 $('table').addEventListener('pointerdown',e=>{if(zoom===1||e.target.closest('button')||!e.isPrimary||gestureBlocked)return;const r=$('app').getBoundingClientRect();panStart={id:e.pointerId,point:portraitPoint({x:e.clientX,y:e.clientY},r,viewportScale),pan:{...pan}};$('table').setPointerCapture(e.pointerId)});
-$('table').addEventListener('pointermove',e=>{if(!panStart||panStart.id!==e.pointerId)return;if(gestureBlocked){panStart=null;return}const p=portraitPoint({x:e.clientX,y:e.clientY},$('app').getBoundingClientRect(),viewportScale);pan={x:panStart.pan.x+p.x-panStart.point.x,y:panStart.pan.y+p.y-panStart.point.y};drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight))});
+$('table').addEventListener('pointermove',e=>{if(!panStart||panStart.id!==e.pointerId)return;if(gestureBlocked){panStart=null;return}const p=portraitPoint({x:e.clientX,y:e.clientY},$('app').getBoundingClientRect(),viewportScale);pan={x:panStart.pan.x+p.x-panStart.point.x,y:panStart.pan.y+p.y-panStart.point.y};paintPan()});
 for(const type of ['pointerup','pointercancel','lostpointercapture'])$('table').addEventListener(type,()=>{panStart=null});
 $('fullscreen').onclick=toggleTableFullscreen;
 window.addEventListener('fullscreenchange',queueViewport);
