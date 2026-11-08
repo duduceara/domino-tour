@@ -348,7 +348,7 @@ function showCompleted(){
  if(!finished)choices.push(['Próxima rodada',()=>{if(game.nextRound()){turnClock.stop();sync();scheduleBots()}}]);
  choices.push(['Jogar novamente',()=>{if(finished)newMatch();else askLeave('new')}],['Voltar ao menu',()=>{if(finished)void leaveTable();else askLeave()}]);
  decide('result',finished?'Resultado da Partida':'Resultado da Rodada',
-  (winner===0?'Vitória! Você venceu!':'Vencedor: '+winnerName)+'.',choices);
+  (winner===0?(finished?'Vitória! Você venceu a partida!':'Você venceu esta rodada!'):(finished?'Vencedor da partida: ':'Vencedor da rodada: ')+winnerName),choices);
  const d=tableUI.decision;
  // A reused result dialog must contain exactly one trophy, ranking and note.
  for(const old of d.querySelectorAll('.result-trophy,.result-ranking,.result-rewards-note'))old.remove();
