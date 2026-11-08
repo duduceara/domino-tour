@@ -304,11 +304,32 @@ function showCompleted(){
  if(!tableActive||decisionKind||!['round-complete','finished'].includes(game.state.phase))return;
  const s=game.state,key=s.phase+':'+s.roundsCompleted;
  if(completedKey===key)return;completedKey=key;
- const scores=s.players.map(p=>(p.seat===0?offlineName:PLAYER_NAMES[p.seat])+': '+(p.score-s.target)+' pontos').join(' · ');
+ const finished=s.phase==='finished';
+ const winner=finished?s.winner:s.nextOpeningSeat;
+ const winnerName=winner===0?offlineName:PLAYER_NAMES[winner];
+ const scores=s.players.map(p=>({seat:p.seat,name:p.seat===0?offlineName:PLAYER_NAMES[p.seat],score:p.score-s.target}));
+ const ranking=[...scores].sort((a,b)=>b.score-a.score||a.seat-b.seat);
  const choices=[];
- if(s.phase==='round-complete')choices.push(['Próxima rodada',()=>{if(game.nextRound()){turnClock.stop();sync();scheduleBots()}}]);
- choices.push(['Nova partida',()=>{if(s.phase==='finished')newMatch();else askLeave('new')}],['Voltar ao menu',()=>{if(s.phase==='finished')void leaveTable();else askLeave()}]);
- decide('result',s.phase==='finished'?'Partida encerrada':'Rodada encerrada',scores,choices);
+ if(!finished)choices.push(['Próxima rodada',()=>{if(game.nextRound()){turnClock.stop();sync();scheduleBots()}}]);
+ choices.push(['Jogar novamente',()=>{if(finished)newMatch();else askLeave('new')}],['Voltar ao menu',()=>{if(finished)void leaveTable();else askLeave()}]);
+ decide('result',finished?'Resultado da Partida':'Resultado da Rodada',
+  (winner===0?'Vitória! Você venceu!':'Vencedor: '+winnerName)+'.',choices);
+ const d=tableUI.decision;
+ d.classList.add('premium-result');
+ const p=d.querySelector('p');
+ const trophy=document.createElement('div');trophy.className='result-trophy';trophy.setAttribute('aria-hidden','true');trophy.textContent='🏆';
+ const table=document.createElement('table');table.className='result-ranking';
+ const caption=document.createElement('caption');caption.textContent='Classificação e pontuação atual';
+ table.append(caption);
+ const head=document.createElement('thead'),hr=document.createElement('tr');
+ for(const label of ['Posição','Jogador','Pontos']){const th=document.createElement('th');th.textContent=label;hr.append(th)}head.append(hr);table.append(head);
+ const body=document.createElement('tbody');
+ ranking.forEach((player,index)=>{const row=document.createElement('tr');if(player.seat===winner)row.className='result-winner';
+  for(const value of [String(index+1)+'º',player.name,String(player.score)]){const cell=document.createElement('td');cell.textContent=value;row.append(cell)}body.append(row)});
+ table.append(body);
+ const note=document.createElement('p');note.className='result-rewards-note';note.textContent='Recompensas: serão exibidas quando confirmadas pelo sistema de progressão.';
+ p.after(trophy,table,note);
+ d.addEventListener('close',()=>{d.classList.remove('premium-result');trophy.remove();table.remove();note.remove()},{once:true});
 }
 tableUI.decision.addEventListener('cancel',e=>{e.preventDefault();if(decisionKind==='leave'){tableUI.decision.close();decisionKind=null;turnClock.resume();keepPlaying()}});
 $('leave-table').onclick=()=>askLeave();
