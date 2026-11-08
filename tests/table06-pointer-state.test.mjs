@@ -6,9 +6,9 @@ function make(){let commits=0;const interaction=new TableInteraction({},0,geomet
 // Real engine state and validSides are covered by the full-match matrix.
 // Here the pointer state machine is exercised with an actual legal engine hand.
 import {newGame,legalTiles} from '../dist/src/engine.js';
-function live(){const state=newGame(100,6,max=>0);const tile=legalTiles(state,0)[0];if(!tile)return null;const interaction=new TableInteraction(state,0,geometry,(id,side)=>({tileId:id,side,center:geometry.endpoints[side],valid:true}),()=>true);return {interaction,tile}}
+function live(){for(let seed=0;seed<100;seed++){let n=seed;const state=newGame(100,6,max=>{n=(Math.imul(n,1664525)+1013904223)>>>0;return n%max});if(state.turn!==0)continue;const tile=legalTiles(state,0)[0];if(!tile)continue;const interaction=new TableInteraction(state,0,geometry,(id,side)=>({tileId:id,side,center:geometry.endpoints[side],valid:true}),()=>true);return {interaction,tile}}throw new Error('No playable opening hand found')}
 test('pointer ownership, cancellation and multitouch blocking',()=>{
- const setup=live();if(!setup)return;
+ const setup=live();
  const {interaction:t,tile}=setup;
  assert.equal(t.begin(1,tile.id,{x:0,y:0}),true);
  assert.equal(t.begin(2,tile.id,{x:0,y:0}),false);
@@ -20,7 +20,7 @@ test('pointer ownership, cancellation and multitouch blocking',()=>{
  t.cancel();assert.equal(t.drag,null);assert.equal(t.selectedTile,null);
 });
 test('sideways drag does not commit a tile',()=>{
- const setup=live();if(!setup)return;
+ const setup=live();
  const {interaction:t,tile}=setup;
  assert.equal(t.begin(1,tile.id,{x:0,y:0}),true);
  assert.equal(t.move(1,{x:50,y:90}).committed,false);
