@@ -64,7 +64,9 @@ function syncPortraitOrientation(){
  if(sideways){
   turnClock.pause();stopBotSequence();cancelGesture();
  }else{
-  turnClock.resume();sync();scheduleBots();
+  // Returning to portrait must not restart a clock while the page is hidden or a decision is open.
+  if(!document.hidden&&!decisionKind)turnClock.resume();
+  sync();scheduleBots();
  }
 }
 function fitViewport(){
@@ -234,7 +236,7 @@ function sync(){
 document.addEventListener('pointerdown',e=>{activePointers.add(e.pointerId);if(activePointers.size>1){gestureBlocked=true;cancelGesture();drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight))}},true);
 for(const type of ['pointerup','pointercancel'])document.addEventListener(type,e=>{activePointers.delete(e.pointerId);if(!activePointers.size)gestureBlocked=false});
 window.addEventListener('blur',()=>{cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight))});
-document.addEventListener('visibilitychange',()=>{if(document.hidden){turnClock.pause();stopBotSequence();cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight))}else{if(!rotationSuspended)turnClock.resume();sync();scheduleBots()}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){turnClock.pause();stopBotSequence();cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight))}else{if(!rotationSuspended&&!decisionKind)turnClock.resume();sync();scheduleBots()}});
 function afterAction(){clearDragVisual();dragId=null;origin=null;ghost=null;sync();scheduleBots()}
 $('organize').onclick=()=>{
  if(!tableActive||decisionKind||game.state.phase!=='playing')return;
