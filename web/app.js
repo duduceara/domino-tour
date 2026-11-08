@@ -225,7 +225,7 @@ function sync(){
 document.addEventListener('pointerdown',e=>{activePointers.add(e.pointerId);if(activePointers.size>1){gestureBlocked=true;cancelGesture();drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight))}},true);
 for(const type of ['pointerup','pointercancel'])document.addEventListener(type,e=>{activePointers.delete(e.pointerId);if(!activePointers.size)gestureBlocked=false});
 window.addEventListener('blur',()=>{cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight))});
-document.addEventListener('visibilitychange',()=>{if(document.hidden){turnClock.pause();stopBotSequence();cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight))}else{turnClock.resume();sync();scheduleBots()}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){turnClock.pause();stopBotSequence();cancelGesture();activePointers.clear();gestureBlocked=false;drawBoard(reflowChain(game.model,tableSpace,$('table').clientWidth,$('table').clientHeight))}else{if(!rotationSuspended)turnClock.resume();sync();scheduleBots()}});
 function afterAction(){clearDragVisual();dragId=null;origin=null;ghost=null;sync();scheduleBots()}
 $('organize').onclick=()=>{
  if(!tableActive||decisionKind||game.state.phase!=='playing')return;
@@ -278,7 +278,7 @@ window.addEventListener('pagehide',()=>{if(offlineStarted&&!offlineSaveBlocked)w
 
 function updateClock(){
  const active=tableActive&&game.state.phase==='playing'&&game.state.turn===0;
- if(active)turnClock.start(game.state.roundsCompleted+':'+game.state.events.length);else turnClock.stop();
+ if(active){turnClock.start(game.state.roundsCompleted+':'+game.state.events.length);if(rotationSuspended)turnClock.pause()}else turnClock.stop();
  const seconds=turnClock.remaining(),el=$('turn-clock');el.hidden=!active;
  el.querySelector('strong').textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
  el.querySelector('meter').value=seconds;el.dataset.warning=String(active&&seconds<=10);
