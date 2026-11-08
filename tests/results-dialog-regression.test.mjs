@@ -19,3 +19,8 @@ test('results preserve next round, new match and menu choices',()=>{
  assert.match(app,/\['Jogar novamente'/);
  assert.match(app,/\['Voltar ao menu'/);
 });
+
+test('round winner is not falsely announced as match champion',()=>{
+ assert.match(app,/finished\?'Vitória! Você venceu a partida!':'Você venceu esta rodada!'/);
+ assert.match(app,/finished\?'Vencedor da partida: ':'Vencedor da rodada: '/);
+});
