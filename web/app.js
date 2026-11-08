@@ -28,7 +28,7 @@ function showPassNotice(seat){
 }
 function scheduleBots(){
  if(botTimer!==null){clearTimeout(botTimer);botTimer=null}botEpoch++;
- if(!tableActive||document.hidden||decisionKind||$('entry-flow')?.hidden===false||game.state.phase!=='playing'||passNoticeTimer!==null)return;
+ if(!tableActive||rotationSuspended||document.hidden||decisionKind||$('entry-flow')?.hidden===false||game.state.phase!=='playing'||passNoticeTimer!==null)return;
  const epoch=botEpoch,seat=game.state.turn;
  if(seat===0){
   if(game.state.lastPlayed!==null&&legalTiles(game.state,0).length===0){
@@ -44,6 +44,29 @@ function scheduleBots(){
  },3000);
 }
 function coords(e){const r=$('table').getBoundingClientRect();return cameraPoint({x:(e.clientX-r.left)/viewportScale-$('table').clientLeft,y:(e.clientY-r.top)/viewportScale-$('table').clientTop},{width:$('table').clientWidth,height:$('table').clientHeight},tableSpace,zoom,pan)}
+// Portrait-only play: rotation is a temporary suspension, never a new layout.
+const rotationNotice=document.createElement('div');
+rotationNotice.id='mesa-portrait-notice';
+rotationNotice.setAttribute('role','status');
+rotationNotice.setAttribute('aria-live','polite');
+rotationNotice.textContent='Gire o celular para a vertical para continuar a partida.';
+rotationNotice.hidden=true;
+document.body.append(rotationNotice);
+let rotationSuspended=false;
+function syncPortraitOrientation(){
+ const viewport=window.visualViewport;
+ const width=viewport?.width??window.innerWidth;
+ const height=viewport?.height??window.innerHeight;
+ const sideways=tableActive&&width>height;
+ if(sideways===rotationSuspended)return;
+ rotationSuspended=sideways;
+ rotationNotice.hidden=!sideways;
+ if(sideways){
+  turnClock.pause();stopBotSequence();cancelGesture();
+ }else{
+  turnClock.resume();sync();scheduleBots();
+ }
+}
 function fitViewport(){
  const probe=getComputedStyle($('safe-probe')),insets={top:parseFloat(probe.paddingTop),right:parseFloat(probe.paddingRight),bottom:parseFloat(probe.paddingBottom),left:parseFloat(probe.paddingLeft)};
  const visible=window.visualViewport;
@@ -229,6 +252,7 @@ let viewportFrame=null,viewportDirty=true,measuredSize='';
 function queueViewport(){viewportDirty=true;if(viewportFrame===null)viewportFrame=requestAnimationFrame(flushViewport)}
 function flushViewport(){
  viewportFrame=null;
+ syncPortraitOrientation();
  if(document.hidden)return;
  if(viewportDirty){viewportDirty=false;if(fitViewport())measuredSize=''}
  const size=$('table').clientWidth+':'+$('table').clientHeight;
@@ -249,7 +273,7 @@ window.addEventListener('domino-tour:offline-options',e=>{
  if(!o.resume){stopBotSequence();cancelGesture();game=new LocalSession(target,o.deal,o.difficulty);game.layoutOptions={fixedScale:true};routeStyle='classic';turnClock.stop();completedKey=null}
  offlineName=String(o.name).slice(0,24);$('target').value=String(game.state.target);$('difficulty').value=game.difficulty;$('entry-difficulty').value=game.difficulty;$('deal').value=String(game.state.dealSize);o.accepted=true;
 });
-window.addEventListener('domino-tour:enter-game',()=>{tableActive=true;offlineStarted=true;completedKey=null;turnClock.stop();sync();scheduleBots();queueViewport()});
+window.addEventListener('domino-tour:enter-game',()=>{tableActive=true;offlineStarted=true;completedKey=null;turnClock.stop();syncPortraitOrientation();sync();scheduleBots();queueViewport()});
 window.addEventListener('pagehide',()=>{if(offlineStarted&&!offlineSaveBlocked)writeOffline(offlineStorage,game,routeStyle,offlineName)});
 
 function updateClock(){
@@ -261,7 +285,7 @@ function updateClock(){
  el.querySelector('small').textContent=seconds<=10?'Tempo acabando!':'Jogada automática ao zerar';
 }
 setInterval(()=>{
- if(!tableActive||document.hidden||decisionKind)return;
+ if(!tableActive||rotationSuspended||document.hidden||decisionKind)return;
  updateClock();
  if(!turnClock.claimExpiry())return;
  cancelGesture();
@@ -292,7 +316,7 @@ function newMatch(){
  game.newMatch();game.layoutOptions={fixedScale:true};sync();scheduleBots();
 }
 async function leaveTable(){
- tableActive=false;offlineStarted=false;stopBotSequence();cancelGesture();turnClock.stop();tableUI.clearMessages();completedKey=null;
+ tableActive=false;rotationSuspended=false;rotationNotice.hidden=true;offlineStarted=false;stopBotSequence();cancelGesture();turnClock.stop();tableUI.clearMessages();completedKey=null;
  try{offlineStorage?.removeItem(SAVE_KEY);document.body.dataset.offlineSave='cleared'}catch{offlineSaveBlocked=true;document.body.dataset.offlineSave='unavailable'}
  // Only this unfinished match is discarded. Profile, avatar and other data remain.
  try{if(document.fullscreenElement)await document.exitFullscreen()}catch{}
