@@ -325,10 +325,11 @@ function showCompleted(){
  for(const label of ['Posição','Jogador','Pontos']){const th=document.createElement('th');th.textContent=label;hr.append(th)}head.append(hr);table.append(head);
  const body=document.createElement('tbody');
  ranking.forEach((player,index)=>{const row=document.createElement('tr');if(player.seat===winner)row.className='result-winner';
-  for(const value of [String(index+1)+'º',player.name,String(player.score)]){const cell=document.createElement('td');cell.textContent=value;row.append(cell)}body.append(row)});
+  for(const value of [String(index+1)+'º',player.name,String(player.score)]){const cell=document.createElement('td');if(value===player.name&&cell.cellIndex===-1&&row.children.length===1){const portrait=document.createElement('span');portrait.className='result-avatar';portrait.dataset.avatarSeat=String(player.seat);portrait.setAttribute('aria-hidden','true');cell.append(portrait,document.createTextNode(value))}else cell.textContent=value;row.append(cell)}body.append(row)});
  table.append(body);
  const note=document.createElement('p');note.className='result-rewards-note';note.textContent='Recompensas: serão exibidas quando confirmadas pelo sistema de progressão.';
  p.after(trophy,table,note);
+ window.dispatchEvent(new Event('domino-tour:participants-rendered'));
  d.addEventListener('close',()=>{d.classList.remove('premium-result');trophy.remove();table.remove();note.remove()},{once:true});
 }
 tableUI.decision.addEventListener('cancel',e=>{e.preventDefault();if(decisionKind==='leave'){tableUI.decision.close();decisionKind=null;turnClock.resume();keepPlaying()}});
