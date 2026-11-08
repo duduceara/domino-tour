@@ -1,0 +1,17 @@
+{
+  "screen": "02",
+  "name": "Menu principal — globo, mesa verde e Jogar Rápido",
+  "authorization": "Solicitação expressa WORK R02 · SUBSTITUIÇÃO DEFINITIVA DA TELA 02, com imagem anexada 1000453798.jpg",
+  "previousApprovedCommit": "2ee84db2a3e044c2373af4e07eaf5220eb6de597",
+  "integrationBase": "64b3761e4a114413b3c714a2ec86f569f8c3c061",
+  "asset": "web/assets/approved/screen-02-menu-oficial-r02.jpg",
+  "sha256": "1a04ec265596f7cde5d7afff5d4df4215dcca2cd3f48f805b09ea9813ca5f3da",
+  "format": "JPEG",
+  "width": 708,
+  "height": 1536,
+  "artStatus": "owner-approved attachment",
+  "implementationStatus": "pending owner visual and functional homologation",
+  "authorizedEntry": "import './presentation-official.js';\n",
+  "pixelBaselines": [],
+  "preservation": "Tela 01 e todos os arquivos históricos de arte permanecem intactos; nenhuma aprovação de screenshot é gerada automaticamente"
+}

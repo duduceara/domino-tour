@@ -26,7 +26,7 @@ jobs:
         run: >-
           node --test tests/architecture-constitution.test.mjs
           tests/premium-recovery.test.mjs tests/m05-approved-art-integrity.test.mjs
-          tests/r01-full-viewport.test.mjs tests/r02-presentation-layout.test.mjs
+          tests/r01-full-viewport.test.mjs tests/r02-presentation-layout.test.mjs tests/r02-official-menu.test.mjs
           tests/entry-flow.test.mjs tests/m07-art-preservation.test.mjs
           tests/m07-match-config.test.mjs tests/m09-screen03-flow.test.mjs
           tests/m10-guest.test.mjs tests/identity.test.mjs

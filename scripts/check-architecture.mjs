@@ -50,7 +50,16 @@ export function auditArchitecture(readCurrent,readApproved){
   if(!dimensions||!expected||JSON.stringify(dimensions)!==JSON.stringify(expected))errors.push('ART_DIMENSIONS '+path);
   if(expected?.format==='JPEG')historicalMetadataWarnings.push({path,actual:expected,recorded:{width:r.width,height:r.height},reason:'Historical .png file contains JPEG; original bytes preserved'});
  }
- for(const path of LOCKED_PRESENTATION)if(!read(path).equals(Buffer.from(readApproved(path))))errors.push('APPROVED_UI_CHANGED '+path);
+ // Express owner-authorized replacement: narrow entry-point exception, not a baseline refresh.
+ const replacement=JSON.parse(read('docs/architecture/SCREEN02_REPLACEMENT_AUTHORIZATION.json'));
+ const authorizedEntry="import './presentation-official.js';\n";
+ if(replacement.sha256!=='1a04ec265596f7cde5d7afff5d4df4215dcca2cd3f48f805b09ea9813ca5f3da'||replacement.implementationStatus!=='pending owner visual and functional homologation')errors.push('INVALID_SCREEN02_AUTHORIZATION');
+ const newArt=read('web/assets/approved/screen-02-menu-oficial-r02.jpg');
+ if(createHash('sha256').update(newArt).digest('hex')!==replacement.sha256||JSON.stringify(imageDimensions(newArt))!==JSON.stringify({format:'JPEG',width:708,height:1536}))errors.push('SCREEN02_NEW_ART_INTEGRITY');
+ for(const path of LOCKED_PRESENTATION){
+  if(path==='web/presentation-fit.js'&&read(path).toString()===authorizedEntry)continue;
+  if(!read(path).equals(Buffer.from(readApproved(path))))errors.push('APPROVED_UI_CHANGED '+path);
+ }
  for(const path of Object.keys(CSS_SCOPES))errors.push(...cssScopeErrors(path,read(path).toString()));
  return {ok:errors.length===0,approvedBase:APPROVED_BASE,approvedImages:Object.keys(manifest.files).length,lockedFiles:LOCKED_PRESENTATION.length,cssScopes:Object.keys(CSS_SCOPES).length,historicalMetadataWarnings,errors,pixelCertification:'PENDING_APPROVED_VIEWPORT_SCREENSHOTS'};
 }

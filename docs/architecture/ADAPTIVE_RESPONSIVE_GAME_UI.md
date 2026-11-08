@@ -35,3 +35,6 @@ O detector de escopo é conservador e limitado ao CSS atual, sem suporte a nesti
 
 ## Divergência histórica de formato
 A inspeção encontrou cinco arquivos com extensão `.png` que contêm JPEG: `screen-02-apresentacao-rumo-a-lenda.png`, `screen-02.png`, `screen-03.png`, `screen-05.png` e `screen-06.png`. O manifesto antigo interpretou bytes JPEG como dimensões PNG, produzindo metadados incorretos. Ele foi preservado, assim como as artes e seus testes. O novo guard lê PNG/JPEG pelo formato real, compara JPEGs ao conteúdo do commit homologado e informa a divergência no relatório. Isso não autoriza converter ou renomear as artes.
+
+## Substituição expressamente autorizada da Tela 02
+Uma solicitação posterior autorizou a nova arte anexada `1000453798.jpg`. A aprovação histórica em 2ee84db permanece recuperável; a autorização e o hash do novo JPEG estão em [SCREEN02_REPLACEMENT_AUTHORIZATION.json](SCREEN02_REPLACEMENT_AUTHORIZATION.json). A integração nova permanece pendente de homologação visual e funcional. A exceção do entry point é específica desta substituição e não libera alterações na Tela 01 ou em estilos compartilhados.
